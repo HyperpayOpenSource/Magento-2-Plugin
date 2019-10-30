@@ -1,0 +1,31 @@
+{
+  "name": "hyperpay/extension",
+  "description": "Hyperpay: A Magento 2 payment extension",
+  "type": "magento2-module",
+  "version": "2.0.0",
+  "license": [
+    "OSL-3.0",
+    "AFL-3.0"
+  ],
+  "require": {
+    "magento/framework": "101.0.*",
+    "magento/module-config": "101.0.*",
+    "magento/module-directory": "100.2.*",
+    "magento/module-payment": "100.2.*",
+    "magento/module-checkout": "100.2.*",
+    "magento/module-sales": "101.0.*"
+
+  },
+  "authors":[
+        {
+            "name": "Husam aldean Almomani",
+            "email": "husamaldean.almomani@hyperpay.com"
+        }
+],
+  "autoload": {
+    "files": [ "registration.php" ],
+    "psr-4": {
+      "Hyperpay\\Extension\\": ""
+    }
+  }
+}

@@ -1,0 +1,337 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+             <group id="hyperpay" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HyperPay Basic Settings</label>
+                <field id="mode" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Mode</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Mode</source_model>
+                </field>
+                 <field id="auth" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                     <label>Token</label>
+                 </field>
+                <field id="style" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Style</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Style</source_model>
+                </field>
+                 <field id="css" translate="label" type="textarea" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>CSS</label>
+                    <comment>Example: body {background-color:#16a085;}</comment>
+                </field>
+                <field id="testurl" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Test URL</label>
+                </field>
+                <field id="liveurl" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Live URL</label>
+                </field>
+                <field id="order_status" translate="label" type="select" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Order Status</label>
+                    <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
+                </field>
+                <field id="riskChannelId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Risk Channel Id</label>
+                    <comment>If risk shield enabled </comment>
+                </field>
+            </group> 
+             <group id="HyperPay_Visa" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HyperPay Visa</label>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="payment_action" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Payment action</label>
+                    <source_model>Hyperpay\Extension\Model\Source\PaymentAction</source_model>
+                </field>
+                <field id="connector" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connector</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Connectors</source_model>
+                </field>
+                <field id="entityId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Entity Id</label>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="currencycode" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                </field>
+            </group>
+            <group id="HyperPay_ApplePay" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HyperPay Apple Pay</label>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="payment_action" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Payment action</label>
+                    <source_model>Hyperpay\Extension\Model\Source\PaymentAction</source_model>
+                </field>
+                <field id="connector" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connector</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Connectors</source_model>
+                </field>
+                <field id="entityId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Entity Id</label>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="currencycode" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                </field>
+            </group>
+            <group id="HyperPay_Mada" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HyperPay Mada</label>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="payment_action" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Payment action</label>
+                    <source_model>Hyperpay\Extension\Model\Source\PaymentAction</source_model>
+                </field>
+                <field id="connector" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connector</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Connectors</source_model>
+                </field>
+                <field id="entityId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Entity Id</label>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="currencycode" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                </field>
+            </group>
+            <group id="HyperPay_Master" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HyperPay MasterCard</label>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="payment_action" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Payment action</label>
+                    <source_model>Hyperpay\Extension\Model\Source\PaymentAction</source_model>
+                </field>
+                <field id="connector" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connector</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Connectors</source_model>
+                </field>
+                <field id="entityId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Entity Id</label>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="currencycode" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                </field>
+            </group>
+            <group id="HyperPay_SadadNcb" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HyperPay Sadad NCB</label>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="payment_action" translate="label" type="hidden" sortOrder="3" showInDefault="0" showInWebsite="0" showInStore="0" >     
+                </field>
+                <field id="entityId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Entity Id</label>
+                </field>
+                <field id="connector" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connector</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Connectors</source_model>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="currencycode" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                </field>
+            </group>
+            <group id="HyperPay_SadadPayware" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HyperPay Sadad Payware</label>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="api_user_name" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>API User Name</label>
+                </field>
+                <field id="api_secret" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>API Secret</label>
+                </field>
+                <field id="merchant_id" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Merchant Id</label>
+                </field>
+               <field id="connector" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connector</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Connectors</source_model>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                 <field id="payment_action" translate="label" type="hidden" sortOrder="3" showInDefault="0" showInWebsite="0" showInStore="0" >     
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="currencycode" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                </field>
+            </group>
+            <group id="HyperPay_Amex" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>HyperPay AMEX</label>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="payment_action" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Payment action</label>
+                    <source_model>Hyperpay\Extension\Model\Source\PaymentAction</source_model>
+                </field>
+                <field id="entityId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Entity Id</label>
+                </field>
+                <field id="connector" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connector</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Connectors</source_model>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="currencycode" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                </field>
+            </group>
+            <group id="HyperPay_PayPal" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Hyperpay PayPal</label>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="payment_action" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Payment action</label>
+                    <source_model>Hyperpay\Extension\Model\Source\PaymentAction</source_model>
+                </field>
+                <field id="entityId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Entity Id</label>
+                </field>
+                <field id="connector" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Connector</label>
+                    <source_model>Hyperpay\Extension\Model\Source\Connectors</source_model>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sort Order</label>
+                    <frontend_class>validate-number</frontend_class>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="currencycode" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Currency Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

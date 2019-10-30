@@ -1,0 +1,31 @@
+<style>
+<?php if($block->getLang()=="ar"){ ?>
+	.wpwl-wrapper-cardNumber,wpwl-group{
+            direction: ltr !important;
+        }
+<?php } ?>
+
+<?php echo $block->getCss();?>
+</style>
+<script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+<script>
+	jq331 = jQuery.noConflict( true );
+	var wpwlOptions = {
+		locale: "<?php echo $block->getLang();?>",
+		paymentTarget: "_top",
+		style: "<?php echo $block->getStyle();?>",
+		onReady: function(){
+		jq331('[name="form_key"]').remove();
+		}
+
+	}
+	wpwlOptions.applePay = {
+		merchantCapabilities:["supports3DS"],
+		supportedNetworks: ["amex", "masterCard", "visa", "mada"]
+	}
+</script>
+<script src="<?php echo $block->getFormUrl(); ?>"></script>
+<form action="<?php echo $block->getShopperUrl(); ?>" class="paymentWidgets" data-brands="<?php echo $block->getPaymentBrand(); ?>"></form>

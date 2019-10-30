@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+                <HyperPay_Visa>
+                    <title>VISA</title>
+                    <model>Hyperpay\Extension\Model\Method\Visa</model> 
+                    <active>0</active>
+                    <payment_action>DB</payment_action>              
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_Visa>
+                <HyperPay_ApplePay>
+                    <title>ApplePay</title>
+                    <model>Hyperpay\Extension\Model\Method\Applepay</model>
+                    <active>0</active>
+                    <payment_action>DB</payment_action>
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_ApplePay>
+                <HyperPay_Mada>
+                    <title>Mada</title>
+                    <model>Hyperpay\Extension\Model\Method\Mada</model>
+                    <active>0</active>
+                    <payment_action>DB</payment_action>
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_Mada>
+                <HyperPay_Master>
+                    <title>MASTERCARD</title>
+                    <model>Hyperpay\Extension\Model\Method\Master</model> 
+                    <active>0</active>
+                    <payment_action>DB</payment_action>              
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_Master>
+                <HyperPay_SadadNcb>
+                    <title>SADAD</title>
+                    <model>Hyperpay\Extension\Model\Method\SadadNcb</model> 
+                    <active>0</active>
+                    <payment_action>DB</payment_action>              
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_SadadNcb>
+                <HyperPay_SadadPayware>
+                    <title>SADAD</title>
+                    <model>Hyperpay\Extension\Model\Method\SadadPayware</model> 
+                    <active>0</active>
+                    <payment_action>DB</payment_action>              
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_SadadPayware>
+                <HyperPay_Amex>
+                    <title>AMEX</title>
+                    <model>Hyperpay\Extension\Model\Method\Amex</model> 
+                    <active>0</active>
+                    <payment_action>DB</payment_action>              
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_Amex>
+                <HyperPay_PayPal>
+                    <title>PayPal</title>
+                    <model>Hyperpay\Extension\Model\Method\PayPal</model> 
+                    <active>0</active>
+                    <payment_action>DB</payment_action>              
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_PayPal>
+        </payment>
+    </default>
+</config>

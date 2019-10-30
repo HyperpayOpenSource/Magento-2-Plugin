@@ -1,0 +1,24 @@
+<?php
+if ($block->getStatus()=='success') {
+?>
+<h1><?php echo __('Your order has been received.') ?></h1>
+<h3><?php echo __('Thank you for your purchase!') ?></h3>
+<p><?php echo  sprintf(__('Your order number is: %1.', $block->getOrderId())) ?></p>
+
+<?php
+ } elseif ($block->getStatus()=='fail') {
+?>
+
+<h1><?php echo __('Sorry ,Your Order Has Been rejected.') ?></h1>
+<p><?php echo  sprintf(__('Your order number is: %1.', $block->getOrderId())) ?></p>
+
+<?php
+} else {
+?>
+	<h1><?php echo __('Sorry ,Your Order Has Been rejected.') ?></h1>
+	<p><?php echo  sprintf(__('Your order number is: %1.', $block->getOrderId())) ?></p>
+	<strong><?php echo __('Description:') ?> </strong>
+	<p><?php echo $block->getStatus();?></p>
+<?php
+}
+?> 
