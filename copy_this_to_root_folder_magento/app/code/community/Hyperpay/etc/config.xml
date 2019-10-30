@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ *
+ * @package     Hyperpay
+ * @copyright   Copyright (c) 2014 HYPERPAY
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+    <modules>
+        <Hyperpay>
+            <version>1.1.2</version>
+        </Hyperpay>
+    </modules>
+
+    <global>
+        <helpers>
+            <hyperpay>
+                <class>Hyperpay_Helper</class>
+            </hyperpay>
+        </helpers>
+        <models>
+            <hyperpay>
+                <class>Hyperpay_Model</class>
+            </hyperpay>
+        </models>
+        <resources>
+            <hyperpay_setup>
+                <setup>
+                    <module>Hyperpay</module>
+					<class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </hyperpay_setup>
+        </resources>		
+        <blocks>
+            <hyperpay>
+                <class>Hyperpay_Block</class>
+            </hyperpay>
+        </blocks>
+        <events>
+            <sales_model_service_quote_submit_success>
+                <observers>
+                    <hyperpay_success_observer>
+                        <type>model</type>
+                        <class>Hyperpay_Model_Success_Observer</class>
+                        <method>activateQuote</method>
+                    </hyperpay_success_observer>
+                </observers>
+            </sales_model_service_quote_submit_success>     
+        </events>
+        <sales>
+            <order>
+                <statuses>
+                    <payment_accepted translate="label">
+                        <label>Payment Accepted</label>
+                    </payment_accepted>
+                    <payment_remotely translate="label">
+                        <label>Payment Remotely Accepted</label>
+                    </payment_remotely>					
+                </statuses>
+				<states>
+					<pending_payment>
+						<statuses>
+							<payment_remotely/>
+						</statuses>
+					</pending_payment>
+					<processing>
+						<statuses>
+							<payment_accepted/>
+						</statuses>
+					</processing>					
+				</states>
+            </order>
+        </sales>		
+    </global>
+
+    <frontend>
+        <translate>
+            <modules>
+                <Hyperpay>
+                    <files>
+                        <default>Hyperpay.csv</default>
+                    </files>
+                </Hyperpay>
+            </modules>
+        </translate>
+    </frontend>
+
+    <adminhtml>
+        <translate>
+            <modules>
+                <Hyperpay>
+                    <files>
+                        <default>Hyperpay.csv</default>
+                    </files>
+                </Hyperpay>
+            </modules>
+        </translate>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <hyperpay>
+                <use>admin</use>
+                <args>
+                    <module>Hyperpay</module>
+                    <frontName>hyperpay</frontName>
+                </args>
+            </hyperpay>
+        </routers>
+    </admin>
+
+    <frontend>
+        <routers>
+            <hyperpay>
+                <use>standard</use>
+                <args>
+                    <module>Hyperpay</module>
+                    <frontName>hyperpay</frontName>
+                </args>
+            </hyperpay>
+        </routers>
+    </frontend>
+
+    <default>
+        <payment>
+            <hyperpay_visa>
+                <title>VISA</title>
+                <active>0</active>
+                <model>hyperpay/method_visa</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_visa>
+
+            <hyperpay_master>
+                <title>MASTERCARD</title>
+                <active>0</active>
+                <model>hyperpay/method_master</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_master>
+            
+            <hyperpay_amex>
+                <title>AMEX</title>
+                <active>0</active>
+                <model>hyperpay/method_amex</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_amex>
+			
+            <hyperpay_sadadncb>
+                <title>SADAD</title>
+                <active>0</active>
+                <model>hyperpay/method_sadadncb</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_sadadncb>
+
+            <hyperpay_sadadpayware>
+                <title>SADAD</title>
+                <active>0</active>
+                <model>hyperpay/method_sadadpayware</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_sadadpayware>
+
+            <hyperpay_paypal>
+                <title>PAYPAL</title>
+                <active>0</active>
+                <model>hyperpay/method_paypal</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_paypal>
+            
+            <hyperpay_mada>
+                <title>MADA</title>
+                <active>0</active>
+                <model>hyperpay/method_mada</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_mada>
+			
+        </payment>
+    </default>
+
+</config>

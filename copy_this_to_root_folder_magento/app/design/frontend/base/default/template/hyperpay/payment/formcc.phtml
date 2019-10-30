@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ *
+ * @package     Hyperpay
+ * @copyright   Copyright (c) 2014 HYPERPAY
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * 
+ */
+?>
+<?php
+	$langs = Mage::helper('hyperpay')->getLocaleIsoCode(); 
+	switch ($langs) {
+		case 'de':
+		case 'fr':
+		case 'nl':
+		case 'it':
+		case 'ar':
+		  $lang = $langs;
+		  break;
+
+		default:
+		  $lang='en';
+	}
+?>
+<script>
+
+    var wpwlOptions = {
+            locale: "<?php echo $lang;?>",
+            paymentTarget: "_top",
+            style: "<?php echo Mage::getSingleton('customer/session')->getStyle();?>"
+        }
+</script>
+<script src="<?php echo Mage::getSingleton('customer/session')->getJsUrl();?>"></script>
+
+<style>
+    <?php if($lang=="ar"){ ?>
+    .wpwl-wrapper-cardNumber,wpwl-group{
+        direction: ltr !important;
+    }
+    <?php } ?>
+
+    <?php echo Mage::getSingleton('customer/session')->getCss();?>
+</style>
+<form action="<?php echo Mage::getSingleton('customer/session')->getIframeFrontendResponse();?>" class="paymentWidgets" data-brands="<?php echo Mage::getSingleton('customer/session')->getIframeBrand();?>"></form>
