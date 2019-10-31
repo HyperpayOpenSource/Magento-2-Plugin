@@ -373,7 +373,7 @@ abstract class Hyperpay_Model_Method_Abstract extends Mage_Payment_Model_Method_
      */
     public function getTitle()
     {
-			return Mage::getStoreConfig('payment/' . $this->getCode() . '/title', $this->getOrder()->getStoreId());
+        return Mage::getStoreConfig('payment/' . $this->getCode() . '/title',  Mage::app()->getStore());
 
     }
 

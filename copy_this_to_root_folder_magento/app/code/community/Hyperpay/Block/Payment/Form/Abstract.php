@@ -22,7 +22,7 @@ abstract class Hyperpay_Block_Payment_Form_Abstract extends Mage_Payment_Block_F
 {
    protected function _construct()
     {
-        $this->setTemplate('hyperpay/logo.phtml');
+        //$this->setTemplate('hyperpay/logo.phtml');
 
         parent::_construct();
 
@@ -35,6 +35,11 @@ abstract class Hyperpay_Block_Payment_Form_Abstract extends Mage_Payment_Block_F
     protected function _getDescription()
     {
         return $this->_paymentText;
+    }
+
+public function getMethodLabelAfterHtml(Mage_Payment_Model_Method_Abstract $method){
+
+        return '<img style="position:reltive;float:right;" src="'. $this->getLogoUrl() .'" width="50" height="50" />';
     }
 
 }
