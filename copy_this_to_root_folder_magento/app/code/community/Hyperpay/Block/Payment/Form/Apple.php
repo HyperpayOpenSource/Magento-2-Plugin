@@ -18,28 +18,11 @@
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-abstract class Hyperpay_Block_Payment_Form_Abstract extends Mage_Payment_Block_Form
+class Hyperpay_Block_Payment_Form_Apple extends Hyperpay_Block_Payment_Form_Abstract
 {
-   protected function _construct()
+    public function getLogoUrl()
     {
-        //$this->setTemplate('hyperpay/logo.phtml');
-
-        parent::_construct();
-
-    }
-    /**
-     * Retrieve logo html string
-     *
-     * @return string
-     */
-    protected function _getDescription()
-    {
-        return $this->_paymentText;
-    }
-
-public function getMethodLabelAfterHtml($method){
-
-        return '<img style="position:reltive;float:right;" src="'. $this->getLogoUrl() .'" width="50" height="50" />';
+        return  $this->getSkinUrl('images/hyperpay/apple.svg');
     }
 
 }

@@ -227,7 +227,18 @@
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
             </hyperpay_mada>
-			
+            <hyperpay_apple>
+                <title>APPLEPAY</title>
+                <active>0</active>
+                <model>hyperpay/method_apple</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_apple>
         </payment>
     </default>
 

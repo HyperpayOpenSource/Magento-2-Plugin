@@ -42,6 +42,10 @@
             paymentTarget: "_top",
             style: "<?php echo Mage::getSingleton('customer/session')->getStyle();?>"
         }
+    wpwlOptions.applePay = {
+        merchantCapabilities:["supports3DS"],
+        supportedNetworks: ["amex", "masterCard", "visa", "mada"]
+    }
 </script>
 <script src="<?php echo Mage::getSingleton('customer/session')->getJsUrl();?>"></script>
 

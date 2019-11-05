@@ -448,7 +448,7 @@ abstract class Hyperpay_Model_Method_Abstract extends Mage_Payment_Model_Method_
         $dataTransaction['payment_type'] = "RF";
         $dataTransaction['amount'] = $grandTotal;
         $data = getPostCaptureOrRefund($dataTransaction);
-        $result=getToken($data,$url,$this->getServerMode());
+        $result=getToken($data,$url,$this->getServerMode(),$dataTransaction['auth']);
         $payment->setAdditionalInformation('Refund', $result['result']['description']);
 
         if (preg_match('/^(000\.400\.0|000\.400\.100)/', $result['result']['code'])
