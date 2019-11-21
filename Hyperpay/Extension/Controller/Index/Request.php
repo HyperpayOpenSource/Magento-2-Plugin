@@ -139,7 +139,7 @@ class Request extends \Magento\Framework\App\Action\Action
 
         $ip = $this->_remote->getRemoteAddress();
         $url = $this->_adapter->getUrl().'checkouts';
-        $data = "authentication.entityId=".$this->_adapter->getEntity($payment).
+        $data = "entityId=".$this->_adapter->getEntity($payment).
         "&amount=".$grandTotal.
         "&currency=".$currency.
         "&paymentType=".$paymentType. 

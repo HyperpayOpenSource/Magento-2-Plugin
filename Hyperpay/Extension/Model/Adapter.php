@@ -521,7 +521,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      */
     public function buildCaptureOrRefundRequest($payment,$currency,$grandTotal,$op)
     {
-        $data = "authentication.entityId=".$this->getEntity($payment).
+        $data = "entityId=".$this->getEntity($payment).
             "&currency=".$currency.
             "&amount=".$grandTotal.
             "&paymentType=".$op;

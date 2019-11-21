@@ -124,7 +124,7 @@ class Status extends \Magento\Framework\App\Action\Action
 
         $id = $this->_request->getParam('id');
         $url = $this->_adapter->getUrl()."checkouts/".$id."/payment";
-        $url .= "?authentication.entityId=".$this->_adapter->getEntity($payment);
+        $url .= "?entityId=".$this->_adapter->getEntity($payment);
         $auth = array('Authorization'=>'Bearer '.$this->_adapter->getAccessToken());
         $this->_helper->setHeaders($auth);
         $decodedData = $this->_helper->getCurlRespData($url);
