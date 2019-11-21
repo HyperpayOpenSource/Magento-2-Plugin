@@ -27,7 +27,7 @@
                 $dataCust['amount'] = number_format($dataCust['amount'], 2, '.', '');
             }
 
-            $data = "authentication.entityId=".$dataTransaction['entityId'].
+            $data = "entityId=".$dataTransaction['entityId'].
                 "&amount=".$dataCust['amount'].
                 "&currency=".$dataCust['currency'].
                 "&paymentType=".$dataTransaction['payment_type'].
@@ -167,7 +167,7 @@
 		function getPostCaptureOrRefund($dataTransaction)
 		{
 
-            $data = "authentication.entityId=".$dataTransaction['entityId'].
+            $data = "entityId=".$dataTransaction['entityId'].
                 "&currency=".$dataTransaction['currency'].
                 "&amount=".$dataTransaction['amount'].
                 "&paymentType=".$dataTransaction['payment_type'];
@@ -200,7 +200,7 @@
 			else
 				$url = tokenUrlTest .'/'. $token.'/payment';
 
-			$url .= "?authentication.entityId=".$entityId;
+			$url .= "?entityId=".$entityId;
 			return $url;
 		}
 	}
