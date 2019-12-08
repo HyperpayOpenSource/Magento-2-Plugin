@@ -53,8 +53,15 @@
             if($dataTransaction['method']=='sadadncb') {
                 $data .="&bankAccount.country=SA";
             }
+            if ($dataTransaction['method']=='stc') {
+                $data .= '&customParameters[branch_id]=1';
+                $data .= '&customParameters[teller_id]=1';
+                $data .= '&customParameters[device_id]=1';
+                $data .= '&customParameters[locale]=' . substr(Mage::app()->getLocale()->getLocaleCode(), 0, -3);
+                $data .= '&customParameters[bill_number]=' . $dataTransaction['orderId'];
+            }
 
-            return $data;
+                return $data;
 		}	
 	}
 	if (!function_exists('getBillingAndShippingAddress')){

@@ -149,7 +149,18 @@
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
             </hyperpay_visa>
-
+            <hyperpay_stc>
+                <title>STCPAY</title>
+                <active>0</active>
+                <model>hyperpay/method_stc</model>
+                <order_status>pending_payment</order_status>
+                <transaction_mode>DB</transaction_mode>
+                <currency>SAR</currency>
+                <entityid>Enter your Entity Id</entityid>
+                <payment_action>authorize</payment_action>
+                <connector>migs</connector>
+                <server_mode>test</server_mode>
+            </hyperpay_stc>
             <hyperpay_master>
                 <title>MASTERCARD</title>
                 <active>0</active>
