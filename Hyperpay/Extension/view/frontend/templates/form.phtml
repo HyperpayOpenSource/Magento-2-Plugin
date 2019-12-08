@@ -18,8 +18,62 @@
 		paymentTarget: "_top",
 		style: "<?php echo $block->getStyle();?>",
 		onReady: function(){
-		jq331('[name="form_key"]').remove();
-		}
+	jq331('[name="form_key"]').remove();
+    jq331(".wpwl-label-mobilePhone").hide();
+    jq331(".wpwl-wrapper-mobilePhone").hide();
+    if(wpwlOptions.locale == "ar" ){
+        jq331(".wpwl-form-virtualAccount-STC_PAY")[0].style.direction="rtl";
+        var myFormular= "<p>الرجاء اختيار طريقة الدفع :</p>"+
+        "<div>"+
+        "<input type='radio' id='mobile_method'"+
+            "name='customParameters[SHOPPER_payment_mode]' value='mobile'>"+
+        "<label for='contactChoice1'>رقم الهاتف</label>&nbsp;&nbsp;"+
+        "<input type='radio' id='qr_method'"+
+            "name='customParameters[SHOPPER_payment_mode]' value='qr_code'>"+
+        "<label for='contactChoice2'>رمز QR</label>"+
+        "<br></div>";
+    }else{
+        var myFormular= "<p>Please select your preferred payment method:</p>"+
+        "<div>"+
+        "<input type='radio' id='mobile_method'"+
+            "name='customParameters[SHOPPER_payment_mode]' value='mobile'>"+
+        "<label for='contactChoice1'>Mobile Phone</label>&nbsp;&nbsp;"+
+        "<input type='radio' id='qr_method'"+
+            "name='customParameters[SHOPPER_payment_mode]' value='qr_code'>"+
+        "<label for='contactChoice2'>QR code</label>"+
+        "<br></div>";
+    }
+   
+    jq331(".wpwl-group-mobilePhone").before(myFormular);
+    jq331( "#mobile_method" ).on("click", function() {
+        jq331(".wpwl-wrapper-mobilePhone").show();
+        jq331("#wpwl-noselection-error")[0].innerHTML = "";
+    });
+    jq331( "#qr_method" ).on("click", function() {
+        jq331(".wpwl-wrapper-mobilePhone").hide();
+        jq331("#wpwl-noselection-error")[0].innerHTML = "";
+    });
+    jq331(".wpwl-group-mobilePhone").after("<div id='wpwl-noselection-error'></div>");
+},
+onBeforeSubmitVirtualAccount: function(event){
+    if(event.target.classList.contains("wpwl-form-virtualAccount-STC_PAY")){
+        if(wpwlOptions.locale == "ar" ){
+            var errorMessage = "الرجاء اختيار احد الخيارات.";
+            var errorMessagePhone = "رقم الهاتف مطلوب";
+        }else{
+            var errorMessage = "select one of the two options.";
+            var errorMessagePhone = "phone number is required.";
+        }
+        if(jq331( "#mobile_method" ).is(':checked') && !jq331(".wpwl-control-mobilePhone").val()){
+            var someinner = jq331("#wpwl-noselection-error")[0].innerHTML = errorMessagePhone.fontcolor("red");
+            return false;
+        }
+        if ( !jq331( "#mobile_method" ).is(':checked') && !jq331( "#qr_method" ).is(':checked') ){
+            var someinner = jq331("#wpwl-noselection-error")[0].innerHTML = errorMessage.fontcolor("red");
+            return false;
+        }
+    }
+}
 
 	}
 	wpwlOptions.applePay = {

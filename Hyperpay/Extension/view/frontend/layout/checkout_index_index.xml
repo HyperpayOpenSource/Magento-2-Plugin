@@ -44,7 +44,9 @@
                                                                         <item name="HyperPay_SadadPayware" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
-
+																			<item name="HyperPay_stc" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
                                                                     </item>
                                                                 </item>
                                                             </item>

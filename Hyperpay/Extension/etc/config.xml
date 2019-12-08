@@ -11,6 +11,15 @@
                     <entityId>Enter your Entity Id</entityId>
                     <connector>migs</connector>
                 </HyperPay_Visa>
+                <HyperPay_stc>
+                    <title>STCPAY</title>
+                    <model>Hyperpay\Extension\Model\Method\Stc</model> 
+                    <active>0</active>
+                    <payment_action>DB</payment_action>              
+                    <currencycode>SAR</currencycode>
+                    <entityId>Enter your Entity Id</entityId>
+                    <connector>migs</connector>
+                </HyperPay_stc>
                 <HyperPay_ApplePay>
                     <title>ApplePay</title>
                     <model>Hyperpay\Extension\Model\Method\Applepay</model>

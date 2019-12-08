@@ -48,7 +48,7 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param \Hyperpay\Extension\Helper\Data                         $helper
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
      * @param \Magento\Framework\View\Result\PageFactory           $pageFactory
-     * @param \Magento\Store\Model\StoreManagerInterface           $storeManager
+     * @param \Magento\Framework\Locale\Resolver                    $storeManager
      * @param \Hyperpay\Extension\Model\Adapter                       $adapter
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
      */
@@ -58,7 +58,7 @@ class Request extends \Magento\Framework\App\Action\Action
         \Hyperpay\Extension\Helper\Data $helper,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\Locale\Resolver $storeManager,
         \Hyperpay\Extension\Model\Adapter $adapter,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
     ) 
@@ -162,8 +162,16 @@ class Request extends \Magento\Framework\App\Action\Action
         $data .= $this->_adapter->getModeHyperpay();
         /*   .
         "&shipping.method=".$shippingMethod*/
-        if($payment->getData('method')=='SadadNcb') {
+        if($payment->getData('method')=='HyperPay_SadadNcb') {
             $data .="&bankAccount.country=SA"; 
+        }
+        if ($payment->getData('method')=='HyperPay_stc') {
+            $data .= '&customParameters[branch_id]=1';
+            $data .= '&customParameters[teller_id]=1';
+            $data .= '&customParameters[device_id]=1';
+            $data .= '&customParameters[locale]='. substr($this->_storeManager->getLocale(),0,-3);
+            $data .= '&customParameters[bill_number]=' . $orderId;
+
         }
         if($this->_adapter->getEnv() && $payment->getData('method')=='HyperPay_ApplePay') {
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";

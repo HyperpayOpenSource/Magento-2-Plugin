@@ -148,6 +148,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 break;
                 case 'HyperPay_ApplePay':
                     $paymentMethod = 'APPLEPAY';
+                case 'HyperPay_stc':
+                    $paymentMethod= 'STC_PAY';
+    
                 break;
             }
 
@@ -446,6 +449,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 break;
             case 'HyperPay_ApplePay':
                 $paymentImage= $this->_assetRepo->getUrl("Hyperpay_Extension::images/apple.svg");;
+                break;
+            case 'HyperPay_stc':
+                $paymentImage= $this->_assetRepo->getUrl("Hyperpay_Extension::images/stc.png");;
                 break;
 
         }
