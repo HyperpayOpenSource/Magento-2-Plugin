@@ -148,6 +148,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 break;
                 case 'HyperPay_ApplePay':
                     $paymentMethod = 'APPLEPAY';
+		break;
                 case 'HyperPay_stc':
                     $paymentMethod= 'STC_PAY';
     
