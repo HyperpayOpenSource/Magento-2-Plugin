@@ -40,6 +40,10 @@ class Request extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
     protected $_remote;
+     /**
+     * @var \Magento\CatalogInventory\Api\StockManagementInterface
+     */
+    protected $_stockManagement;
     /**
      * Constructor
      * 
@@ -49,6 +53,7 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
      * @param \Magento\Framework\View\Result\PageFactory           $pageFactory
      * @param \Magento\Framework\Locale\Resolver                    $storeManager
+     * @param \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement
      * @param \Hyperpay\Extension\Model\Adapter                       $adapter
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
      */
@@ -60,6 +65,7 @@ class Request extends \Magento\Framework\App\Action\Action
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Magento\Framework\Locale\Resolver $storeManager,
         \Hyperpay\Extension\Model\Adapter $adapter,
+	\Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
     ) 
     { 
@@ -71,6 +77,8 @@ class Request extends \Magento\Framework\App\Action\Action
         $this->_adapter=$adapter;
         $this->_storeManager = $storeManager;
         $this->_remote=$remote;
+        $this->_stockManagement = $stockManagement;
+
 
     }
     public function execute()
@@ -85,7 +93,11 @@ class Request extends \Magento\Framework\App\Action\Action
             $this->messageManager->addError($e->getMessage());
             return $this->_pageFactory->create();
         }
-        
+       if ($this->_adapter->getStockOption() == true) {
+            foreach ($order->getAllItems() as $item) {
+                $this->_stockManagement->backItemQty($item->getProductId(), $item->getQtyOrdered());
+            }
+        } 
         if($order->getStatus() != 'pending') {
             $this->_redirect($this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB));
             return ;

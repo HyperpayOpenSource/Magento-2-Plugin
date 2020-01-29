@@ -105,7 +105,14 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @var \Magento\Sales\Api\OrderManagementInterface
      */
     protected $_orderManagement;
-
+    /**
+     * @var \Magento\CatalogInventory\Api\StockRegistryInterface
+     */
+    protected $_stockRegistry;
+    /**
+     * @var \Magento\Catalog\Model\ProductRepository
+     */
+    protected $_productRepository;
 
     /**
      * Constructor
@@ -121,6 +128,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\DB\TransactionFactory                           $transactionFactory
      * @param \Magento\Framework\ObjectManagerInterface                          $objectManager
      * @param \Magento\Sales\Api\OrderManagementInterface                        $orderManagement
+     * @param \Magento\Catalog\Model\ProductRepository                           $productRepository
+     * @param  \Magento\CatalogInventory\Api\StockRegistryInterface              $stockRegistry
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource            $resource 
      * @param \Magento\Framework\Data\Collection\AbstractDb                      $resourceCollection
      * @param array                                                              $data
@@ -136,6 +145,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Sales\Api\OrderManagementInterface $orderManagement,
+	\Magento\Catalog\Model\ProductRepository $productRepository,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = array()
@@ -149,10 +160,20 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         $this->_invoiceCollectionFactory = $invoiceCollectionFactory;
         $this->_invoiceService = $invoiceService;
         $this->_transactionFactory = $transactionFactory;
+ 	$this->_stockRegistry = $stockRegistry;
+        $this->_productRepository = $productRepository;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
-
+    /**
+     * Retrieve the Decrease Stock When Order is Placed option from configuration
+     *
+     * @return string
+     */
+    public function getStockOption()
+    {
+        return $this->_scopeConfig->getValue('cataloginventory/options/can_subtract', $this->_storeScope);
+    }
     /**
      * Retrieve the server mode from configuration
      *
@@ -396,6 +417,19 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $decodedData['result']['code'])) {
             $order->addStatusHistoryComment($decodedData['result']['description'], $this->getStatus());
             $order->setState($this->getStatus());
+	    if ($this->getStockOption() == true) {
+                $invoiceItems = $order->getAllItems();
+                foreach ($invoiceItems as $item) {
+                    $productId = $item->getProductId();
+                    $product = $this->_productRepository->getById($productId);
+                    $sku = $product->getSku();
+                    $stockItem = $this->_stockRegistry->getStockItemBySku($sku);
+                    $qty = $stockItem->getQty() - $item->getQtyOrdered();
+                    $stockItem->setQty($qty);
+                    $stockItem->setIsInStock((bool)$qty);
+                    $this->_stockRegistry->updateStockItemBySku($sku, $stockItem);
+                }
+            }
             $this->_orderManagement->notify($order->getEntityId());
             $order->save();
             $this->createInvoice($order);
