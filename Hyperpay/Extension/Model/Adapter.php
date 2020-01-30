@@ -413,13 +413,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      */
     public function orderStatus($decodedData,$order)
     {
-        if (preg_match('/^(000\.400\.0|000\.400\.100)/', $decodedData['result']['code'])
-            || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $decodedData['result']['code'])) {
-            $order->addStatusHistoryComment($decodedData['result']['description'], $this->getStatus());
-            $order->setState($this->getStatus());
-	    if ($this->getStockOption() == true) {
-                $invoiceItems = $order->getAllItems();
-                foreach ($invoiceItems as $item) {
+	if ($this->getStockOption() == true) {
+                $items = $order->getAllItems();
+                foreach ($items as $item) {
                     $productId = $item->getProductId();
                     $product = $this->_productRepository->getById($productId);
                     $sku = $product->getSku();
@@ -429,7 +425,11 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
                     $stockItem->setIsInStock((bool)$qty);
                     $this->_stockRegistry->updateStockItemBySku($sku, $stockItem);
                 }
-            }
+        }
+        if (preg_match('/^(000\.400\.0|000\.400\.100)/', $decodedData['result']['code'])
+            || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $decodedData['result']['code'])) {
+            $order->addStatusHistoryComment($decodedData['result']['description'], $this->getStatus());
+            $order->setState($this->getStatus());
             $this->_orderManagement->notify($order->getEntityId());
             $order->save();
             $this->createInvoice($order);
