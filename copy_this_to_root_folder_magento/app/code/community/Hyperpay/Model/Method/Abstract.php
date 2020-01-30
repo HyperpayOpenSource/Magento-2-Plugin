@@ -198,7 +198,15 @@ abstract class Hyperpay_Model_Method_Abstract extends Mage_Payment_Model_Method_
 
         return $paymentInfo->getQuote();
     }
-
+    /**
+     * Retrieve the Decrease Stock When Order is Placed option from configuration
+     *
+     * @return string
+     */
+    public function getStockOption()
+    {
+        return Mage::getStoreConfig('cataloginventory/options/can_subtract', $this->getOrder()->getStoreId());
+    }
     /**
      * Retrieve the order place URL
      *
@@ -206,6 +214,11 @@ abstract class Hyperpay_Model_Method_Abstract extends Mage_Payment_Model_Method_
      */
     public function getOrderPlaceRedirectUrl()
     {
+	if ($this->getStockOption() == true) {
+            foreach ($this->getOrder()->getAllItems() as $item) {
+                Mage::getSingleton('cataloginventory/stock')->backItemQty($item->getProductId(), $item->getQty());
+            }
+        }
         $name = Mage::helper('hyperpay')->getNameData($this->getOrder());
         $address = Mage::helper('hyperpay')->getAddressData($this->getOrder());
         $contact = Mage::helper('hyperpay')->getContactData($this->getOrder());

@@ -112,6 +112,18 @@ class Hyperpay_ResponseController extends Mage_Core_Controller_Front_Action
         $url = getStatusUrl($server, $id, $order);
         $resultJson = checkStatusPayment($server,$url,$order);
         $returnMessage =$resultJson['result']['description'];
+	 if (Mage::getStoreConfig('cataloginventory/options/can_subtract', $order->getStoreId()) == true) {
+            $invoiceItems = $order->getAllItems();
+            foreach ($invoiceItems as $item) {
+                $productId = $item->getProductId();
+                $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($productId);
+                $qty = $stockItem->getQty() - $item->getQtyOrdered();
+                $stockItem->setQty($qty);
+                $stockItem->setIsInStock((bool)$qty);
+                $stockItem->save();
+
+            }
+        }
         $params = array();
         if (preg_match('/^(000\.400\.0|000\.400\.100)/', $resultJson['result']['code'])
             || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $resultJson['result']['code'])) {
