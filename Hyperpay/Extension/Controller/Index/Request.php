@@ -44,6 +44,11 @@ class Request extends \Magento\Framework\App\Action\Action
      * @var \Magento\CatalogInventory\Api\StockManagementInterface
      */
     protected $_stockManagement;
+     /**
+     *
+     * @var string
+     */
+    protected $_storeScope= \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
     /**
      * Constructor
      * 
@@ -95,7 +100,7 @@ class Request extends \Magento\Framework\App\Action\Action
         }
        if ($this->_adapter->getStockOption() == true) {
             foreach ($order->getAllItems() as $item) {
-                $this->_stockManagement->backItemQty($item->getProductId(), $item->getQtyOrdered());
+                $this->_stockManagement->backItemQty($item->getProductId(), $item->getQtyOrdered(), $this->_storeScope);
             }
         } 
         if($order->getStatus() != 'pending') {
