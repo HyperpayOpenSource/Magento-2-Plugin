@@ -1,6 +1,15 @@
 <?php
 if ($block->getStatus()=='success') {
 ?>
+<script>
+        require([
+            'Magento_Customer/js/customer-data'
+        ], function (customerData) {
+            var sections = ['cart'];
+            customerData.invalidate(sections);
+            customerData.reload(sections, true);
+        });
+    </script>
 <h1><?php echo __('Your order has been received.') ?></h1>
 <h3><?php echo __('Thank you for your purchase!') ?></h3>
 <p><?php echo  sprintf(__('Your order number is: %1.', $block->getOrderId())) ?></p>
