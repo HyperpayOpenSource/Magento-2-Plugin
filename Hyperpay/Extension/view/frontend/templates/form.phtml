@@ -18,6 +18,7 @@
 		paymentTarget: "_top",
 		style: "<?php echo $block->getStyle();?>",
 		onReady: function(){
+			jq331('[name="form_key"]').remove();
             jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-qrcode').hide();
             jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile').hide();
             jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-group-paymentMode').hide();
