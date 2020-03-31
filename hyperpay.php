@@ -69,6 +69,7 @@ function hyperpay_init_gateway_class()
             $this->lang = $this->settings['lang'];
 
             $this->tokenization = $this->settings['tokenization'];
+            $lang = 'en';
             if (strpos($this->lang, 'ar') !== false) {
                 $lang = 'ar';
             }
@@ -322,7 +323,7 @@ var wpwlOptions = {
                 if ($this->lang == 'ar') {
                     echo '<style>
 				.wpwl-group{
-				direction:ltr !important;
+				direction:rtl !important;
                 }
                 
 			  </style>';

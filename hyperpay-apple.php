@@ -48,6 +48,7 @@ function hyperpayapplepay_init_gateway_class(){
             $this->payment_style = $this->settings['payment_style'];
             $this->mailerrors = $this->settings['mailerrors'];
             $this->lang = $this->settings['lang'];
+            $lang = 'en';
             if(strpos($this->lang,'ar')!==false){
                 $lang='ar';
               }
