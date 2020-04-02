@@ -429,9 +429,6 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         if (preg_match('/^(000\.400\.0|000\.400\.100)/', $decodedData['result']['code'])
             || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $decodedData['result']['code'])) {
             $order->addStatusHistoryComment($decodedData['result']['description'], $this->getStatus());
-            $order->setState($this->getStatus());
-            $this->_orderManagement->notify($order->getEntityId());
-            $order->save();
             $this->createInvoice($order);
             $this->_status = 'success';
         } else {
@@ -603,6 +600,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $order->addStatusHistoryComment('Automatically INVOICED', false);
             $transactionSave = $this->_transactionFactory->create()->addObject($invoice)->addObject($invoice->getOrder());
             $transactionSave->save();
+            $order->setState($this->getStatus())->setStatus($this->getStatus());
+            $this->_orderManagement->notify($order->getEntityId());
+            $order->save();
         } catch (\Exception $e) {
             $order->addStatusHistoryComment('Exception message: '.$e->getMessage(), 
                 OrderStatus::STATE_HOLDED);
