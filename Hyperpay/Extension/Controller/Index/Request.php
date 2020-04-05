@@ -46,6 +46,11 @@ class Request extends \Magento\Framework\App\Action\Action
     protected $_stockManagement;
      /**
      *
+     * @var \Magento\Framework\Locale\Resolver
+     */
+    protected $_resolver;
+     /**
+     *
      * @var string
      */
     protected $_storeScope= \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
@@ -57,7 +62,8 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param \Hyperpay\Extension\Helper\Data                         $helper
      * @param \Magento\Checkout\Model\Session                      $checkoutSession
      * @param \Magento\Framework\View\Result\PageFactory           $pageFactory
-     * @param \Magento\Framework\Locale\Resolver                    $storeManager
+     * @param \Magento\Store\Model\StoreManagerInterface            $storeManager
+     * @param \Magento\Framework\Locale\Resolver                    $resolver
      * @param \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement
      * @param \Hyperpay\Extension\Model\Adapter                       $adapter
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
@@ -68,7 +74,8 @@ class Request extends \Magento\Framework\App\Action\Action
         \Hyperpay\Extension\Helper\Data $helper,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
-        \Magento\Framework\Locale\Resolver $storeManager,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\Locale\Resolver                    $resolver,
         \Hyperpay\Extension\Model\Adapter $adapter,
 	\Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
@@ -81,6 +88,7 @@ class Request extends \Magento\Framework\App\Action\Action
         $this->_pageFactory = $pageFactory;
         $this->_adapter=$adapter;
         $this->_storeManager = $storeManager;
+        $this->_resolver = $resolver;
         $this->_remote=$remote;
         $this->_stockManagement = $stockManagement;
 
@@ -186,7 +194,7 @@ class Request extends \Magento\Framework\App\Action\Action
             $data .= '&customParameters[branch_id]=1';
             $data .= '&customParameters[teller_id]=1';
             $data .= '&customParameters[device_id]=1';
-            $data .= '&customParameters[locale]='. substr($this->_storeManager->getLocale(),0,-3);
+            $data .= '&customParameters[locale]='. substr($this->_resolver->getLocale(),0,-3);
             $data .= '&customParameters[bill_number]=' . $orderId;
 
         }
