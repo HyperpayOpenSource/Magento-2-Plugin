@@ -600,12 +600,19 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $transactionSave = $this->_transactionFactory->create()->addObject($invoice)->addObject($invoice->getOrder());
             $transactionSave->save();
             $order->setState($this->getStatus())->setStatus($this->getStatus());
-            $this->_orderManagement->notify($order->getEntityId());
             $order->save();
         } catch (\Exception $e) {
             $order->addStatusHistoryComment('Exception message: '.$e->getMessage(), 
                 OrderStatus::STATE_HOLDED);
             $order->setState(OrderStatus::STATE_HOLDED); 
+            $order->save();
+            return null;
+        }
+        try {
+            $this->_orderManagement->notify($order->getEntityId());
+            $order->save();
+        } catch (\Exception $e) {
+            $order->addStatusHistoryComment('Exception message: '.$e->getMessage(),false);
             $order->save();
             return null;
         }
