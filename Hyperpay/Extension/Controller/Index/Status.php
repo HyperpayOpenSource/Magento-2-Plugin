@@ -33,9 +33,9 @@ class Status extends \Magento\Framework\App\Action\Action
     protected $_request;
     /**
      *
-     * @var \Magento\Checkout\Model\Session
+     * @var \Magento\Sales\Model\OrderFactory
      */
-    protected $_checkoutSession;
+    protected $_orderFactory;
     /**
      *
      * @var \Magento\Store\Model\StoreManagerInterface
@@ -50,7 +50,7 @@ class Status extends \Magento\Framework\App\Action\Action
      * @param \Hyperpay\Extension\Helper\Data               $helper
      * @param \Magento\Framework\View\Result\PageFactory $pageFactory
      * @param \Magento\Framework\App\Request\Http        $request
-     * @param \Magento\Checkout\Model\Session            $checkoutSession
+     * @param \Magento\Sales\Model\OrderFactory $orderFactory,
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -60,14 +60,14 @@ class Status extends \Magento\Framework\App\Action\Action
         \Hyperpay\Extension\Helper\Data $helper,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Magento\Framework\App\Request\Http $request,
-        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) 
     { 
         parent::__construct($context);
         $this->_pageFactory = $pageFactory;
         $this->_coreRegistry=$coreRegistry;
-        $this->_checkoutSession = $checkoutSession;
+        $this->_orderFactory = $orderFactory;
         $this->_request = $request;
         $this->_helper=$helper;
         $this->_storeManager=$storeManager;
@@ -75,25 +75,24 @@ class Status extends \Magento\Framework\App\Action\Action
     }
     public function execute()
     {
-        try {
-            if(!($this->_checkoutSession->getLastRealOrderId())) {
+        try{
+            $data= $this->getHyperpayStatus();
+            $order = $this->_orderFactory->create()->loadByIncrementId($data['merchantTransactionId']);
+            if(!$order) {
                 $this->_helper->doError('Order id does not found');
             }
-   
-            $order=$this->_checkoutSession->getLastRealOrder();
-        } catch (\Exception $e) {
-            $this->messageManager->addError($e->getMessage());
+        }catch (\Exception $exception)
+        {
+            $this->messageManager->addError($exception->getMessage());
             return $this->_pageFactory->create();
-        }
-
-        
-        if($order->getStatus() != 'pending') {
-            $this->_redirect($this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB));
-            return ;
         }
         
         try{
-            $data= $this->getHyperpayStatus($order);
+            if($order->getStatus() != 'pending') {
+                $this->_redirect($this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB));
+                return ;
+            }
+            $this->_adapter->setInfo($order, $data['id']);
             $status = $this->_adapter->orderStatus($data, $order);
             $this->_coreRegistry->register('status', $status);
         }catch(\Exception $e)
@@ -104,8 +103,6 @@ class Status extends \Magento\Framework\App\Action\Action
             $this->messageManager->addError($e->getMessage());
             $this->_pageFactory->create();
         }
-
-        
         return $this->_pageFactory->create();
 
     }
@@ -115,16 +112,15 @@ class Status extends \Magento\Framework\App\Action\Action
      * @param $order
      * @return string
      */ 
-    public function getHyperpayStatus($order)
+    public function getHyperpayStatus()
     {
-       $payment= $order->getPayment();
         if(empty($this->_request->getParam('id'))) {
             $this->_helper->doError('Checkout id does not found');
         }
 
         $id = $this->_request->getParam('id');
         $url = $this->_adapter->getUrl()."checkouts/".$id."/payment";
-        $url .= "?entityId=".$this->_adapter->getEntity($payment);
+        $url .= "?entityId=".$this->_adapter->getEntity($this->_request->getParam('method'));
         $auth = array('Authorization'=>'Bearer '.$this->_adapter->getAccessToken());
         $this->_helper->setHeaders($auth);
         $decodedData = $this->_helper->getCurlRespData($url);
@@ -135,9 +131,6 @@ class Status extends \Magento\Framework\App\Action\Action
         if (!isset($decodedData['id'])) {
             $this->_helper->doError('Failed to get response from the payment gateway,Please check your request data and url');
         }
-        $this->_adapter->setInfo($order, $decodedData['id']);
-          
-        
         return $decodedData;
         
     }

@@ -73,7 +73,7 @@ class Display extends \Magento\Framework\View\Element\Template
      */  
     public function getShopperUrl()
     {
-        return $this->_helper->getRedirectUrl();
+        return $this->_coreRegistry->registry('status');
     }
     /**
      * Retrieve local for paymrnt form 

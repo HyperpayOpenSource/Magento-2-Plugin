@@ -185,16 +185,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $streetAdd;
     }
     /**
-     * Retrieve shopper result url 
-     *
-     * @return string
-     */  
-    public function getRedirectUrl()
-    {
-        $base = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
-        return $base."hyperpay/index/status";
-    }
-    /**
      * Retrieve Increment order id to status view
      *
      * @return string
@@ -224,7 +214,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */  
     public function convertPrice($payment,$amountValue)
     {   
-        $currentCurrency = $this->_adapter->getSupportedCurrencyCode($payment);
+        $currentCurrency = $this->_adapter->getSupportedCurrencyCode($payment->getData('method'));
         $baseCurrency = $this->_storeManager->getStore()->getBaseCurrency()->getCode();
         if ($currentCurrency != $baseCurrency) {
             try 
@@ -274,7 +264,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $data="";
         $payment = $order->getPayment();
-      
+        $method = $payment->getData('method');
       $shippingAddress = $order->getShippingAddress();
     if(isset($shippingAddress) && !empty($shippingAddress)){
         $firstNameShipping = $order->getShippingAddress()->getFirstname();
@@ -286,29 +276,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $cityShipping = $order->getShippingAddress()->getCity();
         $streetShippingCompare = implode(',', $streetShipping);
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($cityShipping)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($cityShipping)==false)) {
             $data.="&shipping.city=".$cityShipping; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($countryShipping)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($countryShipping)==false)) {
             $data.="&shipping.country=".$countryShipping; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($postCodeShipping)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($postCodeShipping)==false)) {
             $data.="&shipping.postcode=".$postCodeShipping; 
         }
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($firstNameShipping)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($firstNameShipping)==false)) {
             $data.="&shipping.customer.givenName=".$firstNameShipping; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($surNameShipping)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($surNameShipping)==false)) {
             $data.="&shipping.customer.surname=".$surNameShipping; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($telShipping)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($telShipping)==false)) {
             $data.="&shipping.customer.phone=".$telShipping; 
         }
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($streetShippingCompare)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($streetShippingCompare)==false)) {
             $data.=$this->getStreetAddresses($streetShipping, "shipping"); 
         }
     }
@@ -327,33 +317,33 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         
       
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($city)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($city)==false)) {
             $data.="&billing.city=".$city; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($country)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($country)==false)) {
             $data.="&billing.country=".$country; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($firsName)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($firsName)==false)) {
             $data.="&customer.givenName=".$firsName; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($tel)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($tel)==false)) {
             $data.="&customer.phone=".$tel; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($postCode)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($postCode)==false)) {
             $data.="&billing.postcode=".$postCode; 
         }
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($surName)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($surName)==false)) {
             $data.="&customer.surname=".$surName; 
         }
 
         
 
-        if(!($this->_adapter->getConnector($payment)=='migs' && $this->isThisEnglishText($streetCompare)==false)) {
+        if(!($this->_adapter->getConnector($method)=='migs' && $this->isThisEnglishText($streetCompare)==false)) {
             $data.=$this->getStreetAddresses($street, "billing"); 
         }
 

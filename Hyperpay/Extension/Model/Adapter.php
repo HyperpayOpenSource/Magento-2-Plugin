@@ -249,9 +249,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      *
      * @return string
      */
-    public function getConnector($payment)
+    public function getConnector($method)
     {
-        return $this->getConfigDataForSpecificMethod($payment, self::CONNECTOR);
+        return $this->getConfigDataForSpecificMethod($method, self::CONNECTOR);
     }
     /**
      * Retrieve the entity id from configuration
@@ -259,9 +259,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param  $payment
      * @return string
      */
-    public function getEntity($payment)
+    public function getEntity($method)
     {
-        return $this->getConfigDataForSpecificMethod($payment, self::ENTITY_ID);
+        return $this->getConfigDataForSpecificMethod($method, self::ENTITY_ID);
 
     }
     /**
@@ -270,9 +270,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param  $payment
      * @return string
      */
-    public function getPaymentType($payment)
+    public function getPaymentType($method)
     {
-        return $this->getConfigDataForSpecificMethod($payment, self::PAYMENT_ACTION);
+        return $this->getConfigDataForSpecificMethod($method, self::PAYMENT_ACTION);
     }
     /**
      * Retrieve the currency code depending on method code from configuration
@@ -280,9 +280,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param  $payment
      * @return string
      */
-    public function getSupportedCurrencyCode($payment)
+    public function getSupportedCurrencyCode($method)
     {
-        return $this->getConfigDataForSpecificMethod($payment, self::CURRENCY_CODE);
+        return $this->getConfigDataForSpecificMethod($method, self::CURRENCY_CODE);
     }
     /**
      * Retrieve the status from configuration
@@ -300,9 +300,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param  $payment
      * @return string
      */
-    public function getApiUserName($payment)
+    public function getApiUserName($method)
     {
-        return $this->getConfigDataForSpecificMethod($payment, self::API_USER_NAME);
+        return $this->getConfigDataForSpecificMethod($method, self::API_USER_NAME);
     }
     /**
      * Retrieve the api secret for sadad depending on method code from configuration
@@ -310,9 +310,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param  $payment
      * @return string
      */
-    public function getApiSecret($payment)
+    public function getApiSecret($method)
     {
-        return $this->getConfigDataForSpecificMethod($payment, self::API_SECRET);
+        return $this->getConfigDataForSpecificMethod($method, self::API_SECRET);
     }
     /**
      * Retrieve the merchant id for sadad depending on method code from configuration
@@ -320,9 +320,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param  $payment
      * @return string
      */
-    public function getMerchantId($payment)
+    public function getMerchantId($method)
     {
-        return $this->getConfigDataForSpecificMethod($payment, self::MERCHANT_ID);
+        return $this->getConfigDataForSpecificMethod($method, self::MERCHANT_ID);
     }
     /**
      * Add mode to data of curl request depending on server mode
@@ -536,9 +536,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param  $field 
      * @return string
      */
-    public function getConfigDataForSpecificMethod($payment,$field)
+    public function getConfigDataForSpecificMethod($method,$field)
     {
-        $method=$payment->getData('method');
         return $this->_scopeConfig->getValue('payment/'.$method.'/'.$field, $this->_storeScope);
 
     }
@@ -587,8 +586,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             }
 
             $invoice = $this->_invoiceService->prepareInvoice($order);
-            $payment = $order->getPayment();
-            if ($this->getPaymentType($payment) == "DB") {
+            $method = $order->getPayment()->getData('method');
+            if ($this->getPaymentType($method) == "DB") {
                 $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
             }
             else{

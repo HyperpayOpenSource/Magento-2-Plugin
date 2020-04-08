@@ -128,6 +128,9 @@ class Request extends \Magento\Framework\App\Action\Action
         }
 
         $this->_coreRegistry->register('formurl', $urlReq);
+        $base = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+        $status= $base."hyperpay/index/status/?method=".$order->getPayment()->getData('method');
+        $this->_coreRegistry->register('status', $status);
 
         return $this->_pageFactory->create();
     }
@@ -142,7 +145,7 @@ class Request extends \Magento\Framework\App\Action\Action
     {
 
         $payment= $order->getPayment();
-        
+        $method = $payment->getData('method');
         
         //$shippingMethod =$order->getShippingMethod();
         $email = $order->getBillingAddress()->getEmail();
@@ -158,13 +161,13 @@ class Request extends \Magento\Framework\App\Action\Action
             $grandTotal=number_format($total, 2, '.', '');
         }
 
-        $currency=$this->_adapter->getSupportedCurrencyCode($payment);
-        $paymentType =$this->_adapter->getPaymentType($payment);
+        $currency=$this->_adapter->getSupportedCurrencyCode($method);
+        $paymentType =$this->_adapter->getPaymentType($method);
         $this->_adapter->setPaymentTypeAndCurrency($order, $paymentType, $currency);
 
         $ip = $this->_remote->getRemoteAddress();
         $url = $this->_adapter->getUrl().'checkouts';
-        $data = "entityId=".$this->_adapter->getEntity($payment).
+        $data = "entityId=".$this->_adapter->getEntity($method).
         "&amount=".$grandTotal.
         "&currency=".$currency.
         "&paymentType=".$paymentType. 
@@ -187,10 +190,10 @@ class Request extends \Magento\Framework\App\Action\Action
         $data .= $this->_adapter->getModeHyperpay();
         /*   .
         "&shipping.method=".$shippingMethod*/
-        if($payment->getData('method')=='HyperPay_SadadNcb') {
+        if($method=='HyperPay_SadadNcb') {
             $data .="&bankAccount.country=SA"; 
         }
-        if ($payment->getData('method')=='HyperPay_stc') {
+        if ($method=='HyperPay_stc') {
             $data .= '&customParameters[branch_id]=1';
             $data .= '&customParameters[teller_id]=1';
             $data .= '&customParameters[device_id]=1';
@@ -198,7 +201,7 @@ class Request extends \Magento\Framework\App\Action\Action
             $data .= '&customParameters[bill_number]=' . $orderId;
 
         }
-        if($this->_adapter->getEnv() && $payment->getData('method')=='HyperPay_ApplePay') {
+        if($this->_adapter->getEnv() && $method=='HyperPay_ApplePay') {
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";
         }
         $decodedData = $this->_helper->getCurlReqData($url, $data);
