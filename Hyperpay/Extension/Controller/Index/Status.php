@@ -8,7 +8,7 @@ class Status extends \Magento\Framework\App\Action\Action
 {
     /**
      *
-     * @var \Magento\Framework\View\Result\PageFactory 
+     * @var \Magento\Framework\View\Result\PageFactory
      */
     protected $_pageFactory;
     /**
@@ -38,9 +38,9 @@ class Status extends \Magento\Framework\App\Action\Action
     protected $_orderFactory;
     /**
      *
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var \Magento\Framework\Controller\Result\RedirectFactory
      */
-    protected $_storeManager;
+    protected $_resultRedirectFactory;
     /**
      * Constructor
      * 
@@ -51,6 +51,7 @@ class Status extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\View\Result\PageFactory $pageFactory
      * @param \Magento\Framework\App\Request\Http        $request
      * @param \Magento\Sales\Model\OrderFactory $orderFactory,
+     * @param \Magento\Framework\Controller\Result\RedirectFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -61,7 +62,7 @@ class Status extends \Magento\Framework\App\Action\Action
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Magento\Framework\App\Request\Http $request,
         \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Framework\Controller\Result\RedirectFactory $resultRedirectFactory
     ) 
     { 
         parent::__construct($context);
@@ -70,8 +71,8 @@ class Status extends \Magento\Framework\App\Action\Action
         $this->_orderFactory = $orderFactory;
         $this->_request = $request;
         $this->_helper=$helper;
-        $this->_storeManager=$storeManager;
         $this->_adapter=$adapter;
+        $this->_resultRedirectFactory = $resultRedirectFactory;
     }
     public function execute()
     {
@@ -79,32 +80,42 @@ class Status extends \Magento\Framework\App\Action\Action
             $data= $this->getHyperpayStatus();
             $order = $this->_orderFactory->create()->loadByIncrementId($data['merchantTransactionId']);
             if(!$order) {
-                $this->_helper->doError('Order id does not found');
+                $this->_helper->doError(__('Order id does not found'));
             }
         }catch (\Exception $exception)
         {
             $this->messageManager->addError($exception->getMessage());
-            return $this->_pageFactory->create();
+            $resultRedirect = $this->_resultRedirectFactory->create();
+            $resultRedirect->setPath('checkout/onepage/failure');
+            return $resultRedirect;
         }
         
         try{
             if($order->getStatus() != 'pending') {
-                $this->_redirect($this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB));
-                return ;
+                $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
+                $resultRedirect = $this->_resultRedirectFactory->create();
+                $resultRedirect->setPath('checkout/onepage/failure');
+                return $resultRedirect;
             }
             $this->_adapter->setInfo($order, $data['id']);
             $status = $this->_adapter->orderStatus($data, $order);
             $this->_coreRegistry->register('status', $status);
+            if ($status !== 'success')
+            {
+                $this->_redirect('checkout/onepage/failure');
+
+            }else{
+                $this->_redirect('checkout/onepage/success');
+
+            }
         }catch(\Exception $e)
         {
-            $order->setState(OrderStatus::STATE_HOLDED);
-            $order->addStatusHistoryComment('Exception message: '.$e->getMessage(), OrderStatus::STATE_HOLDED);
-            $order->save();
+            $order->addStatusHistoryComment('Exception message: '.$e->getMessage(), false);
             $this->messageManager->addError($e->getMessage());
-            $this->_pageFactory->create();
+            $resultRedirect = $this->_resultRedirectFactory->create();
+            $resultRedirect->setPath('checkout/onepage/failure');
+            return $resultRedirect;
         }
-        return $this->_pageFactory->create();
-
     }
     /**
      * Retrieve payment gateway response and set id to payment table
@@ -115,7 +126,7 @@ class Status extends \Magento\Framework\App\Action\Action
     public function getHyperpayStatus()
     {
         if(empty($this->_request->getParam('id'))) {
-            $this->_helper->doError('Checkout id does not found');
+            $this->_helper->doError(__('Checkout id does not found'));
         }
 
         $id = $this->_request->getParam('id');
@@ -126,10 +137,10 @@ class Status extends \Magento\Framework\App\Action\Action
         $decodedData = $this->_helper->getCurlRespData($url);
         
         if (!isset($decodedData)) {
-            $this->_helper->doError('No response data found');
+            $this->_helper->doError(__('No response data found'));
         }
         if (!isset($decodedData['id'])) {
-            $this->_helper->doError('Failed to get response from the payment gateway,Please check your request data and url');
+            $this->_helper->doError(__('Failed to get response from the payment gateway'));
         }
         return $decodedData;
         

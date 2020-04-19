@@ -24,6 +24,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     const MERCHANT_ID = 'merchant_id';
     const RISK_CHANNEL_ID = 'riskChannelId';
     const ACCESS_TOKEN = 'auth';
+    const QTY_BACK = 'return_qty_pending';
     /**
      *  
      * @var string
@@ -182,6 +183,15 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     public function getMode()
     {
         return $this->getConfigData(self::MODE);
+    }
+    /**
+     * Retrieve the Decrease Stock When Order is Placed option from configuration
+     *
+     * @return string
+     */
+    public function isBackItem()
+    {
+        return $this->getConfigData(self::QTY_BACK);
     }
     /**
      * Retrieve Access token from configuration
@@ -413,7 +423,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      */
     public function orderStatus($decodedData,$order)
     {
-	if ($this->getStockOption() == true) {
+	if ($this->getStockOption() == true && $this->isBackItem()) {
                 $items = $order->getAllItems();
                 foreach ($items as $item) {
                     $productId = $item->getProductId();
@@ -428,7 +438,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         }
         if (preg_match('/^(000\.400\.0|000\.400\.100)/', $decodedData['result']['code'])
             || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $decodedData['result']['code'])) {
-            $order->addStatusHistoryComment($decodedData['result']['description'], $this->getStatus());
+            $order->addStatusHistoryComment($decodedData['result']['description'], false);
             $this->createInvoice($order);
             $this->_status = 'success';
         } else {
@@ -568,6 +578,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     {
 
         if(!$order->getId()) {
+            $order->addStatusHistoryComment('The order id is not found',$this->getStatus());
+            $order->setState($this->getStatus())->setStatus($this->getStatus());
+            $order->save();
             return $this;
         }
 
@@ -578,16 +591,30 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $invoices->getSelect()->limit(1);
 
             if ((int)$invoices->count() !== 0) {
+                $order->addStatusHistoryComment('The order has been invoiced already ',$this->getStatus());
+                $order->setState($this->getStatus())->setStatus($this->getStatus());
+                $order->save();
                 return null;
             }
 
             if(!$order->canInvoice()) {
+                $order->addStatusHistoryComment('Could not create an invoice,Creating invoices is inactive',$this->getStatus());
+                $order->setState($this->getStatus())->setStatus($this->getStatus());
+                $order->save();
                 return null;
             }
-
+            foreach ($order->getAllItems() as $item) {
+                if($item->getProduct()->getIsVirtual())
+                {
+                    $order->addStatusHistoryComment('Could not create an invoice,The items has virtual product',$this->getStatus());
+                    $order->setState($this->getStatus())->setStatus($this->getStatus());
+                    $order->save();
+                    return null;
+                }
+            }
             $invoice = $this->_invoiceService->prepareInvoice($order);
-            $method = $order->getPayment()->getData('method');
-            if ($this->getPaymentType($method) == "DB") {
+            $code = $order->getPayment()->getData('method');
+            if ($this->getPaymentType($code) == "DB") {
                 $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
             }
             else{
@@ -599,23 +626,24 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $order->addStatusHistoryComment('Automatically INVOICED', false);
             $transactionSave = $this->_transactionFactory->create()->addObject($invoice)->addObject($invoice->getOrder());
             $transactionSave->save();
+            $order->addStatusHistoryComment('Request successfully processed', $this->getStatus());
             $order->setState($this->getStatus())->setStatus($this->getStatus());
             $order->save();
         } catch (\Exception $e) {
-            $order->addStatusHistoryComment('Exception message: '.$e->getMessage(), 
+            $order->addStatusHistoryComment('Exception message: '.$e->getMessage(),
                 OrderStatus::STATE_HOLDED);
-            $order->setState(OrderStatus::STATE_HOLDED); 
+            $order->setState(OrderStatus::STATE_HOLDED);
             $order->save();
             return null;
         }
         try {
             $this->_orderManagement->notify($order->getEntityId());
+            $invoice->getOrder()->setCustomerNoteNotify(true);
             $order->save();
         } catch (\Exception $e) {
             $order->addStatusHistoryComment('Exception message: '.$e->getMessage(),false);
             $order->save();
             return null;
         }
-
     }
 }

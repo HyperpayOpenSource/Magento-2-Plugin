@@ -53,6 +53,11 @@ class Request extends \Magento\Framework\App\Action\Action
      *
      * @var string
      */
+    /**
+     *
+     * @var \Magento\Framework\Controller\Result\RedirectFactory
+     */
+    protected $_resultRedirectFactory;
     protected $_storeScope= \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
     /**
      * Constructor
@@ -66,6 +71,7 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\Locale\Resolver                    $resolver
      * @param \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement
      * @param \Hyperpay\Extension\Model\Adapter                       $adapter
+     * @param \Magento\Framework\Controller\Result\RedirectFactory
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
      */
     public function __construct(
@@ -78,6 +84,7 @@ class Request extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Locale\Resolver                    $resolver,
         \Hyperpay\Extension\Model\Adapter $adapter,
 	\Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
+        \Magento\Framework\Controller\Result\RedirectFactory $resultRedirectFactory,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
     ) 
     { 
@@ -91,14 +98,14 @@ class Request extends \Magento\Framework\App\Action\Action
         $this->_resolver = $resolver;
         $this->_remote=$remote;
         $this->_stockManagement = $stockManagement;
-
+        $this->_resultRedirectFactory = $resultRedirectFactory;
 
     }
     public function execute()
     {
         try {
             if(!($this->_checkoutSession->getLastRealOrderId())) {
-                $this->_helper->doError('Order id does not found');
+                $this->_helper->doError(__('Order is not found'));
             }   
        
             $order=$this->_checkoutSession->getLastRealOrder();
@@ -106,17 +113,17 @@ class Request extends \Magento\Framework\App\Action\Action
             $this->messageManager->addError($e->getMessage());
             return $this->_pageFactory->create();
         }
-       if ($this->_adapter->getStockOption() == true) {
+       if ($this->_adapter->getStockOption() == true && $this->_adapter->isBackItem()) {
             foreach ($order->getAllItems() as $item) {
                 $this->_stockManagement->backItemQty($item->getProductId(), $item->getQtyOrdered(), $this->_storeScope);
             }
-        } 
-        if($order->getStatus() != 'pending') {
-            $this->_redirect($this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB));
-            return ;
         }
-         
-        $this->_adapter->setOrder($order);
+        if($order->getStatus() != 'pending') {
+            $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
+            $resultRedirect = $this->_resultRedirectFactory->create();
+            $resultRedirect->setPath('checkout/onepage/failure');
+            return $resultRedirect;
+        }
         try 
         {
             $urlReq=$this->prepareTheCheckout($order);
@@ -146,10 +153,8 @@ class Request extends \Magento\Framework\App\Action\Action
 
         $payment= $order->getPayment();
         $method = $payment->getData('method');
-        
-        //$shippingMethod =$order->getShippingMethod();
         $email = $order->getBillingAddress()->getEmail();
-        //order# 
+        //order#
         $orderId=$order->getIncrementId();
         $amount=$order->getBaseGrandTotal();
         $total=$this->_helper->convertPrice($payment, $amount);
@@ -184,12 +189,7 @@ class Request extends \Magento\Framework\App\Action\Action
                     "&risk.amount=".$grandTotal.
                     "&risk.parameters[USER_DATA1]=Mobile";
         }
-        
-             
-        
         $data .= $this->_adapter->getModeHyperpay();
-        /*   .
-        "&shipping.method=".$shippingMethod*/
         if($method=='HyperPay_SadadNcb') {
             $data .="&bankAccount.country=SA"; 
         }
@@ -206,7 +206,7 @@ class Request extends \Magento\Framework\App\Action\Action
         }
         $decodedData = $this->_helper->getCurlReqData($url, $data);
         if (!isset($decodedData['id'])) {
-            $this->_helper->doError('Failed to get response from the payment gateway,Please check your request data and url');
+            $this->_helper->doError(__('Request id is not found'));
         }
         return $this->_adapter->getUrl()."paymentWidgets.js?checkoutId=".$decodedData['id'];
 
