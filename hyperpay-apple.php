@@ -9,19 +9,23 @@
 
  */
 
-add_filter( 'woocommerce_payment_gateways', 'hyperpayapplepay_add_gateway_class' );
-function hyperpayapplepay_add_gateway_class( $gateways ) {
-	$gateways[] = 'WC_Hyperpay_ApplePay_Gateway'; // your class name is here
-	return $gateways;
+add_filter('woocommerce_payment_gateways', 'hyperpayapplepay_add_gateway_class');
+function hyperpayapplepay_add_gateway_class($gateways)
+{
+    $gateways[] = 'WC_Hyperpay_ApplePay_Gateway'; // your class name is here
+    return $gateways;
 }
 
-add_action( 'plugins_loaded', 'hyperpayapplepay_init_gateway_class' );
+add_action('plugins_loaded', 'hyperpayapplepay_init_gateway_class');
 
-function hyperpayapplepay_init_gateway_class(){
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    class WC_Hyperpay_ApplePay_Gateway extends WC_Payment_Gateway{
+function hyperpayapplepay_init_gateway_class()
+{
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    class WC_Hyperpay_ApplePay_Gateway extends WC_Payment_Gateway
+    {
         protected $msg = array();
-        public function __construct(){
+        public function __construct()
+        {
             $this->id = 'hyperpay_applepay';
             $this->has_fields = false;
             $this->method_title = 'Hyperpay ApplePay Gateway';
@@ -49,20 +53,20 @@ function hyperpayapplepay_init_gateway_class(){
             $this->mailerrors = $this->settings['mailerrors'];
             $this->lang = $this->settings['lang'];
             $lang = 'en';
-            if(strpos($this->lang,'ar')!==false){
-                $lang='ar';
-              }
+            if (strpos($this->lang, 'ar') !== false) {
+                $lang = 'ar';
+            }
             $this->redirect_page_id = $this->settings['redirect_page_id'];
             //$this->description = ' ';
 
-               if($lang=='ar'){
-            $this->failed_message = 'تم رفض العملية ';
+            if ($lang == 'ar') {
+                $this->failed_message = 'تم رفض العملية ';
 
-            $this->success_message = 'تم إجراء عملية الدفع بنجاح.';
-            }else{
-            $this->failed_message = 'Your transaction has been declined.';
+                $this->success_message = 'تم إجراء عملية الدفع بنجاح.';
+            } else {
+                $this->failed_message = 'Your transaction has been declined.';
 
-            $this->success_message = 'Your payment has been procssed successfully.';
+                $this->success_message = 'Your payment has been procssed successfully.';
             }
 
             $this->msg['message'] = "";
@@ -72,8 +76,9 @@ function hyperpayapplepay_init_gateway_class(){
             add_action('woocommerce_receipt_hyperpay_applepay', array(&$this, 'receipt_page'));
         }
 
-        public function init_form_fields(){
- 
+        public function init_form_fields()
+        {
+
             $postbackURL = get_option('siteurl');
             $successURL = $postbackURL . '?hyperpayapple_callback=1&success=1';
             $failURL = $postbackURL . '?hyperpayapple_callback=1&fail=1';
@@ -82,7 +87,8 @@ function hyperpayapplepay_init_gateway_class(){
                     'title' => __('Enable/Disable'),
                     'type' => 'checkbox',
                     'label' => __('Enable Hyperpay Payment Module.'),
-                    'default' => 'no'),
+                    'default' => 'no'
+                ),
                 'lang' => array(
                     'title' => __('Language'),
                     'type' => 'select',
@@ -122,7 +128,8 @@ function hyperpayapplepay_init_gateway_class(){
                 'accesstoken' => array(
                     'title' => __('Access Token'),
                     'type' => 'text',
-                    'description' => ''),
+                    'description' => ''
+                ),
                 'entityId' => array(
                     'title' => __('Entity ID'),
                     'type' => 'text',
@@ -138,22 +145,26 @@ function hyperpayapplepay_init_gateway_class(){
                     'title' => __('Payment Style'),
                     'type' => 'select',
                     'options' => $this->get_hyperpayApplePay_payment_style(),
-                    'description' => ''),
+                    'description' => ''
+                ),
                 'mailerrors' => array(
                     'title' => __('Enable error logging by email?'),
                     'type' => 'checkbox',
                     'label' => __('Yes'),
                     'default' => 'no',
-                    'description' => __('If checked, an email will be sent to ' . get_bloginfo('admin_email') . ' whenever a callback fails.'),),
+                    'description' => __('If checked, an email will be sent to ' . get_bloginfo('admin_email') . ' whenever a callback fails.'),
+                ),
                 'redirect_page_id' => array(
                     'title' => __('Return Page'),
                     'type' => 'select',
                     'options' => $this->get_pages('Select Page'),
-                    'description' => "URL of success page")
+                    'description' => "URL of success page"
+                )
             );
         }
 
-        function get_hyperpayApplePay_trans_type() {
+        function get_hyperpayApplePay_trans_type()
+        {
             $hyperpayApplePay_trans_type = array(
                 'DB' => 'Debit',
                 'PA' => 'Pre-Authorization'
@@ -162,7 +173,8 @@ function hyperpayapplepay_init_gateway_class(){
             return $hyperpayApplePay_trans_type;
         }
 
-        function get_hyperpayApplePay_trans_mode() {
+        function get_hyperpayApplePay_trans_mode()
+        {
             $hyperpayApplePay_trans_mode = array(
                 'CONNECTOR_TEST' => 'CONNECTOR_TEST',
                 'INTEGRATOR_TEST' => 'INTEGRATOR_TEST',
@@ -172,7 +184,8 @@ function hyperpayapplepay_init_gateway_class(){
             return $hyperpayApplePay_trans_mode;
         }
 
-        function get_hyperpayApplePay_connector_type() {
+        function get_hyperpayApplePay_connector_type()
+        {
             $hyperpayApplePay_connector_type = array(
                 'MPGS' => 'MPGS',
                 'VISA_ACP' => 'VISA_ACP'
@@ -181,19 +194,21 @@ function hyperpayapplepay_init_gateway_class(){
             return $hyperpayApplePay_connector_type;
         }
 
-        function get_hyperpayApplePay_payment_methods() {
+        function get_hyperpayApplePay_payment_methods()
+        {
             $hyperpayApplePay_payments = array(
                 'APPLEPAY' => 'Apple Pay',
-                'VISA'=>'Visa',
-                'MASTER'=>'MasterCard',
+                'VISA' => 'Visa',
+                'MASTER' => 'MasterCard',
                 'MADA' => 'Mada',
-                'AMEX'=>'American Express'
+                'AMEX' => 'American Express'
             );
 
             return $hyperpayApplePay_payments;
         }
 
-        function get_hyperpayApplePay_payment_style() {
+        function get_hyperpayApplePay_payment_style()
+        {
             $hyperpayApplePay_payment_style = array(
                 'card' => 'Card',
                 'plain' => 'Plain'
@@ -204,82 +219,43 @@ function hyperpayapplepay_init_gateway_class(){
 
 
 
-     function receipt_page($order) {
+        function receipt_page($order)
+        {
             global $woocommerce;
             $order = new WC_Order($order);
 
             if (isset($_GET['g2p_token'])) {
                 $token = $_GET['g2p_token'];
+                $this->renderPaymentForm($order, $token);
+            }
 
-                $order_id = $order->id;
-
-                if ($this->testmode == 0) {
-                    $scriptURL = $this->script_url;
-                } else {
-                    $scriptURL = $this->script_url_test;
-                }
-
-                $scriptURL .= $token;
-
-                $payment_brands = implode(' ', $this->brands);
-
-                $postbackURL = $order->get_checkout_payment_url(true);
-
-               echo '<script>
-                            var wpwlOptions = {
-
-                            
-                                style:"' . $this->payment_style . '",
-                                locale:"' . $this->lang . '",
-                                paymentTarget: "_top",
-
-                            }
-		wpwlOptions.applePay = {
-		merchantCapabilities:["supports3DS"],
-		supportedNetworks: ["amex", "masterCard", "visa", "mada"]
-	}
-                    </script>';
-                        //if the lang is Arabic change the direction to ltr
-                    if ($this->lang == 'ar'){
-                        echo '<style>
-                            .wpwl-group{
-                            local: "ar",
-                            direction:ltr !important;
-                            }
-                          </style>';
-                        };
-                    // payment form
-                    echo '<script  src="' . $scriptURL . '"></script>
-                        <form action="' . $postbackURL . '" class="paymentWidgets">
-                          ' . $payment_brands . '
-                        </form>';
-    
-            } if (isset($_GET['id'])) {
+            if (isset($_GET['id'])) {
                 $token = $_GET['id'];
 
-                if ($this->testmode == 0) 
-                {
+                if ($this->testmode == 0) {
                     $url = $this->transaction_status_url;
-                } else 
-                {
+                } else {
                     $url = $this->transaction_status_url_test;
                 }
-             
+
                 $url = str_replace('##TOKEN##', $token, $url);
-                $url .= "?entityId=".$this->entityid;
+                $url .= "?entityId=" . $this->entityid;
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $url);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Authorization:Bearer '.$this->accesstoken));
+                    'Authorization:Bearer ' . $this->accesstoken
+                ));
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
                 $resultPayment = curl_exec($ch);
                 curl_close($ch);
                 $resultJson = json_decode($resultPayment, true);
-                
+
                 $sccuess = 0;
                 $failed_msg = '';
                 $orderid = '';
+
+                $error = false; // used to rerender the form in case of an error
 
                 if (isset($resultJson['result']['code'])) {
                     $successCodePattern = '/^(000\.000\.|000\.100\.1|000\.[36])/';
@@ -304,15 +280,8 @@ function hyperpayapplepay_init_gateway_class(){
                                 $order->payment_complete();
                                 $woocommerce->cart->empty_cart();
 
-                         
-				$uniqueId = $resultJson['id'];
 
-                   
-
-
-                                
-
-
+                                $uniqueId = $resultJson['id'];
                             }
 
                             wp_redirect($this->get_return_url($order));
@@ -322,42 +291,96 @@ function hyperpayapplepay_init_gateway_class(){
                              */
                         } else {
                             $order->add_order_note($this->failed_message . $failed_msg);
-                            if($this->lang == 'ar'){
-              
-                            wc_add_notice(__('حدث خطأ في عملية الدفع والسبب <br/>'. $failed_msg .'<br/>'.'يرجى المحاولة مرة أخرى'), 'error');
-                            }else{
-                             wc_add_notice(__('(Transaction Error) ' . $failed_msg), 'error');
+                            if ($this->lang == 'ar') {
+
+                                wc_add_notice(__('حدث خطأ في عملية الدفع والسبب <br/>' . $failed_msg . '<br/>' . 'يرجى المحاولة مرة أخرى'), 'error');
+                            } else {
+                                wc_add_notice(__('(Transaction Error) ' . $failed_msg), 'error');
                             }
                             wc_print_notices();
-                            $woocommerce->cart->empty_cart();
+                            $error = true;
                         }
                     } else {
                         $order->add_order_note($this->failed_message);
                         $order->update_status('failed');
-                        if($this->lang == 'ar'){
+                        if ($this->lang == 'ar') {
                             wc_add_notice(__('(حدث خطأ في عملية الدفع يرجى المحاولة مرة أخرى) '), 'error');
-                        }else{
-                        wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
-                            }
-                       wc_print_notices();
-                       $woocommerce->cart->empty_cart();
-
+                        } else {
+                            wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
+                        }
+                        wc_print_notices();
+                        $error = true;
                     }
                 } else {
                     $order->add_order_note($this->failed_message);
                     $order->update_status('failed');
 
-                    if($this->lang == 'ar'){
+                    if ($this->lang == 'ar') {
                         wc_add_notice(__('(حدث خطأ في عملية الدفع يرجى المحاولة مرة أخرى) '), 'error');
-                    }else{
-                    wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
+                    } else {
+                        wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
                     }
                     wc_print_notices();
+                    $error = true;
                 }
+            }
+
+            if ($error) {
+                $this->renderPaymentForm($order, $this->process_payment($order->id)['token']);
             }
         }
 
-        public function process_payment($order_id){
+        private function renderPaymentForm($order, $token)
+        {
+            if ($token) {
+
+                $order_id = $order->id;
+
+                if ($this->testmode == 0) {
+                    $scriptURL = $this->script_url;
+                } else {
+                    $scriptURL = $this->script_url_test;
+                }
+
+                $scriptURL .= $token;
+
+                $payment_brands = implode(' ', $this->brands);
+
+                $postbackURL = $order->get_checkout_payment_url(true);
+
+                echo '<script>
+                            var wpwlOptions = {
+
+                            
+                                style:"' . $this->payment_style . '",
+                                locale:"' . $this->lang . '",
+                                paymentTarget: "_top",
+
+                            }
+		wpwlOptions.applePay = {
+		merchantCapabilities:["supports3DS"],
+		supportedNetworks: ["amex", "masterCard", "visa", "mada"]
+	}
+                    </script>';
+                //if the lang is Arabic change the direction to ltr
+                if ($this->lang == 'ar') {
+                    echo '<style>
+                            .wpwl-group{
+                            local: "ar",
+                            direction:ltr !important;
+                            }
+                          </style>';
+                };
+                // payment form
+                echo '<script  src="' . $scriptURL . '"></script>
+                        <form action="' . $postbackURL . '" class="paymentWidgets">
+                          ' . $payment_brands . '
+                        </form>';
+            }
+        }
+
+        public function process_payment($order_id)
+        {
             global $woocommerce;
 
 
@@ -365,7 +388,7 @@ function hyperpayapplepay_init_gateway_class(){
             $this->console_log($this->get_return_url($order));
             $user = $order->get_user();
 
-        
+
 
             if ($this->testmode == 0) {
                 $url = $this->token_url;
@@ -392,33 +415,31 @@ function hyperpayapplepay_init_gateway_class(){
             $state = $order->billing_state;
             $country = $order->billing_country;
             $email = $order->billing_email;
-            
+
 
             if (empty($state)) {
                 $state = $city;
             }
-           
+
             $data = "entityId=$entityid" .
-                    "&amount=$amount" .
-                    "&currency=$currency" .
-                    "&paymentType=$type" .
-                    "&merchantTransactionId=$transactionID" .
-                    "&customer.email=$email";
+                "&amount=$amount" .
+                "&currency=$currency" .
+                "&paymentType=$type" .
+                "&merchantTransactionId=$transactionID" .
+                "&customer.email=$email";
 
-            if ($mode == 'CONNECTOR_TEST') 
-            {
-                $data .="&testMode=EXTERNAL";
+            if ($mode == 'CONNECTOR_TEST') {
+                $data .= "&testMode=EXTERNAL";
             }
 
-            if ($this->connector_type == 'VISA_ACP') 
-            {
-                    $data .="&billing.street1=$street";
-                    $data .="&billing.city=$city";
-                    $data .="&billing.state=$state";
-                    $data .="&billing.country=$country";
+            if ($this->connector_type == 'VISA_ACP') {
+                $data .= "&billing.street1=$street";
+                $data .= "&billing.city=$city";
+                $data .= "&billing.state=$state";
+                $data .= "&billing.country=$country";
             }
 
-          
+
 
 
             $customerID = $order->get_customer_id();
@@ -426,7 +447,8 @@ function hyperpayapplepay_init_gateway_class(){
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Authorization:Bearer '.$accesstoken));
+                'Authorization:Bearer ' . $accesstoken
+            ));
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -441,8 +463,8 @@ function hyperpayapplepay_init_gateway_class(){
             }
 
             $result = json_decode($response);
-        
-           
+
+
             $token = '';
 
             if (isset($result->id)) {
@@ -455,23 +477,20 @@ function hyperpayapplepay_init_gateway_class(){
             );
         }
 
-        function get_pages($title = false, $indent = true) 
+        function get_pages($title = false, $indent = true)
         {
             $wp_pages = get_pages('sort_column=menu_order');
             $page_list = array();
 
             if ($title)
                 $page_list[] = $title;
-            
-            foreach ($wp_pages as $page) 
-            {
+
+            foreach ($wp_pages as $page) {
                 $prefix = '';
                 // show indented child pages?
-                if ($indent) 
-                {
+                if ($indent) {
                     $has_parent = $page->post_parent;
-                    while ($has_parent) 
-                    {
+                    while ($has_parent) {
                         $prefix .= ' - ';
                         $next_page = get_page($has_parent);
                         $has_parent = $next_page->post_parent;
@@ -483,15 +502,14 @@ function hyperpayapplepay_init_gateway_class(){
             return $page_list;
         }
 
-        function console_log($output, $with_script_tags = true) {
+        function console_log($output, $with_script_tags = true)
+        {
             $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) .
-            ');';
+                ');';
             if ($with_script_tags) {
-            $js_code = '<script>' . $js_code . '</script>';
+                $js_code = '<script>' . $js_code . '</script>';
             }
             echo $js_code;
-            }
+        }
     }
 }
-
-?>

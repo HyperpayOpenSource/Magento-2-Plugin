@@ -67,13 +67,13 @@ function hyperpay_init_gateway_class()
             $this->mailerrors = $this->settings['mailerrors'];
             $this->lang = $this->settings['lang'];
 
-	
+
             $this->tokenization = $this->settings['tokenization'];
             $lang = 'en';
             if (strpos($this->lang, 'ar') !== false) {
                 $lang = 'ar';
             }
-		
+
             $this->redirect_page_id = $this->settings['redirect_page_id'];
 
 
@@ -91,7 +91,6 @@ function hyperpay_init_gateway_class()
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             add_action('woocommerce_receipt_hyperpay', array(&$this, 'receipt_page'));
-
         }
 
         public function init_form_fields()
@@ -259,82 +258,9 @@ function hyperpay_init_gateway_class()
 
             if (isset($_GET['g2p_token'])) {
                 $token = $_GET['g2p_token'];
-
-                $order_id = $order->id;
-
-                if ($this->testmode == 0) {
-                    $scriptURL = $this->script_url;
-                } else {
-                    $scriptURL = $this->script_url_test;
-                }
-
-                $scriptURL .= $token;
-
-                $payment_brands = implode(' ', $this->brands);
-
-                $postbackURL = $order->get_checkout_payment_url(true);
-
-
-                echo '<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>';
-?>
-<script>
-var wpwlOptions = {
-
-    onReady: function() {
-        <?php
-        if ($this->tokenization == 'enable') {
-        ?>
-
-            var storeMsg = 'Store payment details?';
-            var style = 'style="direction: ltr"';
-            if (wpwlOptions.locale == "ar") {
-                storeMsg = ' هل تريد حفظ معلومات البطاقة ؟';
-                style = 'style="direction: rtl"';
+                $this->renderPaymentForm($order, $token);
             }
-            var createRegistrationHtml = '<div class="customLabel style ="' + style + '">' + storeMsg +
-                '</div><div class="customInput style ="'+ style +'""><input type="checkbox" name="createRegistration" value="true" /></div>';
-            $('form.wpwl-form-card').find('.wpwl-button').before(createRegistrationHtml); 
-        <?php } ?>
 
-
-
-        $('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-qrcode').hide();
-        $('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile').hide();
-        $('.wpwl-form-virtualAccount-STC_PAY .wpwl-group-paymentMode').hide();
-        $('.wpwl-form-virtualAccount-STC_PAY .wpwl-group-mobilePhone').show();
-        $('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile .wpwl-control-radio-mobile').attr('checked',true);
-        $('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile .wpwl-control-radio-mobile').trigger('click');
-        
-    },
-    "style": "<?php echo $this->payment_style  ?>",
-    "locale": "<?php echo  $this->lang ?>",
-    "paymentTarget": "_top",
-    "registrations": {
-        "hideInitialPaymentForms": "true",
-        "requireCvv": "true"
-    }
-
-
-
-
-}
-</script>
-
-<?php
-                if ($this->lang == 'ar') {
-                    echo '<style>
-				.wpwl-group{
-				direction:ltr !important;
-                }
-                
-			  </style>';
-                };
-
-                echo '<script  src="' . $scriptURL . '"></script>
-		        <form action="' . $postbackURL . '" class="paymentWidgets">
-		          ' . $payment_brands . '
-		        </form>';
-            }
             if (isset($_GET['id'])) {
                 $token = $_GET['id'];
 
@@ -360,6 +286,8 @@ var wpwlOptions = {
                 $sccuess = 0;
                 $failed_msg = '';
                 $orderid = '';
+
+                $error = false; // used to rerender the form in case of an error
 
                 if (isset($resultJson['result']['code'])) {
                     $successCodePattern = '/^(000\.000\.|000\.100\.1|000\.[36])/';
@@ -407,7 +335,7 @@ var wpwlOptions = {
                                                                          SELECT * 
                                                                      FROM wp_woocommerce_saving_cards
                                                                          WHERE registration_id ='$registrationID'
-                                                                         and mode = '".$this->testmode."'
+                                                                         and mode = '" . $this->testmode . "'
                                                                          "
                                     );
 
@@ -444,12 +372,12 @@ var wpwlOptions = {
                         } else {
                             $order->add_order_note($this->failed_message . $failed_msg);
                             if ($this->lang == 'ar') {
-
                                 wc_add_notice(__('حدث خطأ في عملية الدفع والسبب <br/>' . $failed_msg . '<br/>' . 'يرجى المحاولة مرة أخرى'), 'error');
                             } else {
                                 wc_add_notice(__('(Transaction Error) ' . $failed_msg), 'error');
                             }
                             wc_print_notices();
+                            $error = true;
                         }
                     } else {
                         $order->add_order_note($this->failed_message);
@@ -460,6 +388,7 @@ var wpwlOptions = {
                             wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
                         }
                         wc_print_notices();
+                        $error = true;
                     }
                 } else {
                     $order->add_order_note($this->failed_message);
@@ -471,7 +400,94 @@ var wpwlOptions = {
                         wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
                     }
                     wc_print_notices();
+                    $error = true;
                 }
+            }
+
+            if ($error) {
+                $this->renderPaymentForm($order, $this->process_payment($order->id)['token']);
+            }
+        }
+
+        private function renderPaymentForm($order, $token = '')
+        {
+            if ($token) {
+                $token = $token;
+
+                $order_id = $order->id;
+
+                if ($this->testmode == 0) {
+                    $scriptURL = $this->script_url;
+                } else {
+                    $scriptURL = $this->script_url_test;
+                }
+
+                $scriptURL .= $token;
+
+                $payment_brands = implode(' ', $this->brands);
+
+                $postbackURL = $order->get_checkout_payment_url(true);
+
+
+                echo '<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>';
+?>
+                <script>
+                    var wpwlOptions = {
+
+                        onReady: function() {
+                            <?php
+                            if ($this->tokenization == 'enable') {
+                            ?>
+
+                                var storeMsg = 'Store payment details?';
+                                var style = 'style="direction: ltr"';
+                                if (wpwlOptions.locale == "ar") {
+                                    storeMsg = ' هل تريد حفظ معلومات البطاقة ؟';
+                                    style = 'style="direction: rtl"';
+                                }
+                                var createRegistrationHtml = '<div class="customLabel style ="' + style + '">' + storeMsg +
+                                    '</div><div class="customInput style ="' + style + '""><input type="checkbox" name="createRegistration" value="true" /></div>';
+                                $('form.wpwl-form-card').find('.wpwl-button').before(createRegistrationHtml);
+                            <?php } ?>
+
+
+
+                            $('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-qrcode').hide();
+                            $('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile').hide();
+                            $('.wpwl-form-virtualAccount-STC_PAY .wpwl-group-paymentMode').hide();
+                            $('.wpwl-form-virtualAccount-STC_PAY .wpwl-group-mobilePhone').show();
+                            $('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile .wpwl-control-radio-mobile').attr('checked', true);
+                            $('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile .wpwl-control-radio-mobile').trigger('click');
+
+                        },
+                        "style": "<?php echo $this->payment_style  ?>",
+                        "locale": "<?php echo  $this->lang ?>",
+                        "paymentTarget": "_top",
+                        "registrations": {
+                            "hideInitialPaymentForms": "true",
+                            "requireCvv": "true"
+                        }
+
+
+
+
+                    }
+                </script>
+
+<?php
+                if ($this->lang == 'ar') {
+                    echo '<style>
+				.wpwl-group{
+				direction:ltr !important;
+                }
+                
+			  </style>';
+                };
+
+                echo '<script  src="' . $scriptURL . '"></script>
+		        <form action="' . $postbackURL . '" class="paymentWidgets">
+		          ' . $payment_brands . '
+		        </form>';
             }
         }
 
@@ -557,7 +573,7 @@ var wpwlOptions = {
                 //$data .=  "&createRegistration=true";
                 global $wpdb;
                 $customerID = $order->get_customer_id();
-                $registrationIDs = $wpdb->get_results("SELECT * FROM wp_woocommerce_saving_cards WHERE customer_id =$customerID and mode = '".$this->testmode."'");
+                $registrationIDs = $wpdb->get_results("SELECT * FROM wp_woocommerce_saving_cards WHERE customer_id =$customerID and mode = '" . $this->testmode . "'");
                 if ($registrationIDs) {
 
                     foreach ($registrationIDs as $key => $id) {
@@ -599,6 +615,7 @@ var wpwlOptions = {
 
             return array(
                 'result' => 'success',
+                'token' => $token,
                 'redirect' => add_query_arg('g2p_token', $token, $order->get_checkout_payment_url(true))
             );
         }
@@ -627,7 +644,6 @@ var wpwlOptions = {
             }
             return $page_list;
         }
-
     }
 }
 ?>

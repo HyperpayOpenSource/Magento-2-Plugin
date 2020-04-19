@@ -222,44 +222,7 @@ function hyperpay_mada_init_gateway_class()
 
             if (isset($_GET['g2p_token'])) {
                 $token = $_GET['g2p_token'];
-
-                $order_id = $order->id;
-
-                if ($this->testmode == 0) {
-                    $scriptURL = $this->script_url;
-                } else {
-                    $scriptURL = $this->script_url_test;
-                }
-
-                $scriptURL .= $token;
-
-                $payment_brands = implode(' ', $this->brands);
-
-                $postbackURL = $order->get_checkout_payment_url(true);
-
-                echo '<script>
-                            var wpwlOptions = {          
-                                style:"' . $this->payment_style . '",
-                                locale:"' . $this->lang . '",
-                                paymentTarget: "_top",
-
-                            }
-
-                    </script>';
-                //if the lang is Arabic change the direction to ltr
-                if ($this->lang == 'ar') {
-                    echo '<style>
-                            .wpwl-group{
-                            local: "ar",
-                            direction:ltr !important;
-                            }
-                          </style>';
-                };
-                // payment form
-                echo '<script  src="' . $scriptURL . '"></script>
-                        <form action="' . $postbackURL . '" class="paymentWidgets">
-                          ' . $payment_brands . '
-                        </form>';
+                $this->renderPaymentForm($order, $token);
             }
             if (isset($_GET['id'])) {
                 $token = $_GET['id'];
@@ -286,6 +249,8 @@ function hyperpay_mada_init_gateway_class()
                 $sccuess = 0;
                 $failed_msg = '';
                 $orderid = '';
+
+                $error = false; // used to rerender the form in case of an error
 
                 if (isset($resultJson['result']['code'])) {
                     $successCodePattern = '/^(000\.000\.|000\.100\.1|000\.[36])/';
@@ -328,7 +293,7 @@ function hyperpay_mada_init_gateway_class()
                                 wc_add_notice(__('(Transaction Error) ' . $failed_msg), 'error');
                             }
                             wc_print_notices();
-                            $woocommerce->cart->empty_cart();
+                            $error = true;
                         }
                     } else {
                         $order->add_order_note($this->failed_message);
@@ -339,7 +304,7 @@ function hyperpay_mada_init_gateway_class()
                             wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
                         }
                         wc_print_notices();
-                        $woocommerce->cart->empty_cart();
+                        $error = true;
                     }
                 } else {
                     $order->add_order_note($this->failed_message);
@@ -351,7 +316,56 @@ function hyperpay_mada_init_gateway_class()
                         wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
                     }
                     wc_print_notices();
+                    $error = true;
                 }
+            }
+
+            if ($error) {
+                $this->renderPaymentForm($order, $this->process_payment($order->id)['token']);
+            }
+        }
+
+        private function renderPaymentForm($order, $token = '')
+        {
+
+            if ($token) {
+                $order_id = $order->id;
+
+                if ($this->testmode == 0) {
+                    $scriptURL = $this->script_url;
+                } else {
+                    $scriptURL = $this->script_url_test;
+                }
+
+                $scriptURL .= $token;
+
+                $payment_brands = implode(' ', $this->brands);
+
+                $postbackURL = $order->get_checkout_payment_url(true);
+
+                echo '<script>
+                            var wpwlOptions = {          
+                                style:"' . $this->payment_style . '",
+                                locale:"' . $this->lang . '",
+                                paymentTarget: "_top",
+
+                            }
+
+                    </script>';
+                //if the lang is Arabic change the direction to ltr
+                if ($this->lang == 'ar') {
+                    echo '<style>
+                            .wpwl-group{
+                            local: "ar",
+                            direction:ltr !important;
+                            }
+                          </style>';
+                };
+                // payment form
+                echo '<script  src="' . $scriptURL . '"></script>
+                        <form action="' . $postbackURL . '" class="paymentWidgets">
+                          ' . $payment_brands . '
+                        </form>';
             }
         }
 
@@ -449,6 +463,7 @@ function hyperpay_mada_init_gateway_class()
 
             return array(
                 'result' => 'success',
+                'token' => $token,
                 'redirect' => add_query_arg('g2p_token', $token, $order->get_checkout_payment_url(true))
             );
         }
