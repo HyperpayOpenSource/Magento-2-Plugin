@@ -29,7 +29,6 @@ function hyperpay_init_gateway_class()
          registration_id VARCHAR(255) NOT NULL,
          customer_id VARCHAR(255) NOT NULL,
          mode int (10) NOT NULL,
-     
          PRIMARY KEY (id)
      )  ENGINE=INNODB;";
 
@@ -68,11 +67,13 @@ function hyperpay_init_gateway_class()
             $this->mailerrors = $this->settings['mailerrors'];
             $this->lang = $this->settings['lang'];
 
+	
             $this->tokenization = $this->settings['tokenization'];
             $lang = 'en';
             if (strpos($this->lang, 'ar') !== false) {
                 $lang = 'ar';
             }
+		
             $this->redirect_page_id = $this->settings['redirect_page_id'];
 
 
@@ -90,6 +91,7 @@ function hyperpay_init_gateway_class()
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             add_action('woocommerce_receipt_hyperpay', array(&$this, 'receipt_page'));
+
         }
 
         public function init_form_fields()
@@ -290,8 +292,7 @@ var wpwlOptions = {
                 style = 'style="direction: rtl"';
             }
             var createRegistrationHtml = '<div class="customLabel style ="' + style + '">' + storeMsg +
-                '</div><div class="customInput style ="' + style +
-                '""><input type="checkbox" name="createRegistration" value="true" /></div>';
+                '</div><div class="customInput style ="'+ style +'""><input type="checkbox" name="createRegistration" value="true" /></div>';
             $('form.wpwl-form-card').find('.wpwl-button').before(createRegistrationHtml); 
         <?php } ?>
 
@@ -323,7 +324,7 @@ var wpwlOptions = {
                 if ($this->lang == 'ar') {
                     echo '<style>
 				.wpwl-group{
-				direction:rtl !important;
+				direction:ltr !important;
                 }
                 
 			  </style>';
@@ -377,7 +378,7 @@ var wpwlOptions = {
                     }
 
                     $order_response = new WC_Order($orderid);
-                    if ($lang == 'ar') {
+                    if ($this->lang == 'ar') {
                         echo  " <style>
                             .woocommerce-error {
                             text-align: right;
@@ -406,7 +407,7 @@ var wpwlOptions = {
                                                                          SELECT * 
                                                                      FROM wp_woocommerce_saving_cards
                                                                          WHERE registration_id ='$registrationID'
-                                                                         and mode = '$testmode'
+                                                                         and mode = '".$this->testmode."'
                                                                          "
                                     );
 
@@ -419,7 +420,7 @@ var wpwlOptions = {
                                             array(
                                                 'customer_id' => $customerID,
                                                 'registration_id' => $registrationID,
-                                                'mode' => "$testmode",
+                                                'mode' => $this->testmode,
                                             )
 
                                         );
@@ -442,25 +443,23 @@ var wpwlOptions = {
                              */
                         } else {
                             $order->add_order_note($this->failed_message . $failed_msg);
-                            if ($lang == 'ar') {
+                            if ($this->lang == 'ar') {
 
                                 wc_add_notice(__('حدث خطأ في عملية الدفع والسبب <br/>' . $failed_msg . '<br/>' . 'يرجى المحاولة مرة أخرى'), 'error');
                             } else {
                                 wc_add_notice(__('(Transaction Error) ' . $failed_msg), 'error');
                             }
                             wc_print_notices();
-                            $woocommerce->cart->empty_cart();
                         }
                     } else {
                         $order->add_order_note($this->failed_message);
                         $order->update_status('failed');
-                        if ($lang == 'ar') {
+                        if ($this->lang == 'ar') {
                             wc_add_notice(__('(حدث خطأ في عملية الدفع يرجى المحاولة مرة أخرى) '), 'error');
                         } else {
                             wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
                         }
                         wc_print_notices();
-                        $woocommerce->cart->empty_cart();
                     }
                 } else {
                     $order->add_order_note($this->failed_message);
@@ -558,7 +557,7 @@ var wpwlOptions = {
                 //$data .=  "&createRegistration=true";
                 global $wpdb;
                 $customerID = $order->get_customer_id();
-                $registrationIDs = $wpdb->get_results("SELECT * FROM wp_woocommerce_saving_cards WHERE customer_id =$customerID ");
+                $registrationIDs = $wpdb->get_results("SELECT * FROM wp_woocommerce_saving_cards WHERE customer_id =$customerID and mode = '".$this->testmode."'");
                 if ($registrationIDs) {
 
                     foreach ($registrationIDs as $key => $id) {
@@ -628,6 +627,7 @@ var wpwlOptions = {
             }
             return $page_list;
         }
+
     }
 }
 ?>

@@ -321,7 +321,7 @@ function hyperpay_mada_init_gateway_class()
                              */
                         } else {
                             $order->add_order_note($this->failed_message . $failed_msg);
-                            if ($lang == 'ar') {
+                            if ($this->lang == 'ar') {
 
                                 wc_add_notice(__('حدث خطأ في عملية الدفع والسبب <br/>' . $failed_msg . '<br/>' . 'يرجى المحاولة مرة أخرى'), 'error');
                             } else {
@@ -333,7 +333,7 @@ function hyperpay_mada_init_gateway_class()
                     } else {
                         $order->add_order_note($this->failed_message);
                         $order->update_status('failed');
-                        if ($lang == 'ar') {
+                        if ($this->lang == 'ar') {
                             wc_add_notice(__('(حدث خطأ في عملية الدفع يرجى المحاولة مرة أخرى) '), 'error');
                         } else {
                             wc_add_notice(__('(Transaction Error) Error processing payment.'), 'error');
