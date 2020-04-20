@@ -29,10 +29,6 @@
                     <label>Order Status</label>
                     <source_model>Magento\Sales\Model\Config\Source\Order\Status\Processing</source_model>
                 </field>
-                 <field id="return_qty_pending" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                     <label>Pending payment - return quantity to store</label>
-                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                 </field>
                 <field id="riskChannelId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Risk Channel Id</label>
                     <comment>If risk shield enabled </comment>

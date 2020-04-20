@@ -24,7 +24,6 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     const MERCHANT_ID = 'merchant_id';
     const RISK_CHANNEL_ID = 'riskChannelId';
     const ACCESS_TOKEN = 'auth';
-    const QTY_BACK = 'return_qty_pending';
     /**
      *  
      * @var string
@@ -183,15 +182,6 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     public function getMode()
     {
         return $this->getConfigData(self::MODE);
-    }
-    /**
-     * Retrieve the Decrease Stock When Order is Placed option from configuration
-     *
-     * @return string
-     */
-    public function isBackItem()
-    {
-        return $this->getConfigData(self::QTY_BACK);
     }
     /**
      * Retrieve Access token from configuration
@@ -423,19 +413,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      */
     public function orderStatus($decodedData,$order)
     {
-	if ($this->getStockOption() == true && $this->isBackItem()) {
-                $items = $order->getAllItems();
-                foreach ($items as $item) {
-                    $productId = $item->getProductId();
-                    $product = $this->_productRepository->getById($productId);
-                    $sku = $product->getSku();
-                    $stockItem = $this->_stockRegistry->getStockItemBySku($sku);
-                    $qty = $stockItem->getQty() - $item->getQtyOrdered();
-                    $stockItem->setQty($qty);
-                    $stockItem->setIsInStock((bool)$qty);
-                    $this->_stockRegistry->updateStockItemBySku($sku, $stockItem);
-                }
-        }
+
         if (preg_match('/^(000\.400\.0|000\.400\.100)/', $decodedData['result']['code'])
             || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $decodedData['result']['code'])) {
             $order->addStatusHistoryComment($decodedData['result']['description'], false);
