@@ -24,7 +24,7 @@ function hyperpay_init_gateway_class()
 
 
     global $wpdb;
-    $sql = "CREATE TABLE IF NOT EXISTS wp_woocommerce_saving_cards (
+    $sql = "CREATE TABLE wp_woocommerce_saving_cards (
         id INT AUTO_INCREMENT,
          registration_id VARCHAR(255) NOT NULL,
          customer_id VARCHAR(255) NOT NULL,
