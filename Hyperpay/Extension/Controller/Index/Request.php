@@ -121,12 +121,15 @@ class Request extends \Magento\Framework\App\Action\Action
         }
         try 
         {
-            $urlReq=$this->prepareTheCheckout($order);
+                $urlReq = $this->prepareTheCheckout($order);
+
         }
         catch (\Exception $e)
         {
             $this->messageManager->addError($e->getMessage());
-            return $this->_pageFactory->create();
+            $resultRedirect = $this->_resultRedirectFactory->create();
+            $resultRedirect->setPath('checkout/onepage/failure');
+            return $resultRedirect;
         }
 
         $this->_coreRegistry->register('formurl', $urlReq);
@@ -164,18 +167,20 @@ class Request extends \Magento\Framework\App\Action\Action
         $currency=$this->_adapter->getSupportedCurrencyCode($method);
         $paymentType =$this->_adapter->getPaymentType($method);
         $this->_adapter->setPaymentTypeAndCurrency($order, $paymentType, $currency);
-
+        $entityId = $this->_adapter->getEntity($method);
         $ip = $this->_remote->getRemoteAddress();
-        $url = $this->_adapter->getUrl().'checkouts';
-        $data = "entityId=".$this->_adapter->getEntity($method).
+        $baseUrl = $this->_adapter->getUrl();
+        $url = $baseUrl.'checkouts';
+        $data = "entityId=".$entityId.
         "&amount=".$grandTotal.
         "&currency=".$currency.
         "&paymentType=".$paymentType. 
         "&customer.ip=".$ip.
         "&customer.email=".$email.
         "&shipping.customer.email=".$email.
-        "&merchantTransactionId=".$orderId; 
-        $auth = array('Authorization'=>'Bearer '.$this->_adapter->getAccessToken());
+        "&merchantTransactionId=".$orderId;
+        $accesstoken = $this->_adapter->getAccessToken();
+        $auth = array('Authorization'=>'Bearer '.$accesstoken);
         $this->_helper->setHeaders($auth);
         $data .= $this->_helper->getBillingAndShippingAddress($order);
         if(!empty($this->_adapter->getRiskChannelId())) {
@@ -199,6 +204,10 @@ class Request extends \Magento\Framework\App\Action\Action
         if($this->_adapter->getEnv() && $method=='HyperPay_ApplePay') {
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";
         }
+
+        if ($this->checkIfExist($entityId,$accesstoken,$orderId,$baseUrl)) {
+            throw new \Exception(__("This order has already been processed,Please place a new order"));
+        }
         $decodedData = $this->_helper->getCurlReqData($url, $data);
         if (!isset($decodedData['id'])) {
             $this->_helper->doError(__('Request id is not found'));
@@ -207,6 +216,27 @@ class Request extends \Magento\Framework\App\Action\Action
 
         
     }
-
-    
+    private function checkIfExist($entityId,$auth,$id,$baseUrl)
+    {
+        $url = $baseUrl."query";
+        $url .= "?entityId=".$entityId;
+        $url .=	"&merchantTransactionId=".$id;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Authorization:Bearer '.$auth));
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);// this should be set to true in production
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $responseData = curl_exec($ch);
+        if(curl_errno($ch)) {
+            return curl_error($ch);
+        }
+        curl_close($ch);
+        $response = json_decode($responseData);
+        if ($response->result->code==="700.400.580")
+        {
+            return false;
+        }
+        return true;
+    }
 }
