@@ -113,7 +113,7 @@ class Request extends \Magento\Framework\App\Action\Action
             $this->messageManager->addError($e->getMessage());
             return $this->_pageFactory->create();
         }
-        if($order->getStatus() != 'pending') {
+        if($order->getState() !== 'new') {
             $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
             $resultRedirect = $this->_resultRedirectFactory->create();
             $resultRedirect->setPath('checkout/onepage/failure');

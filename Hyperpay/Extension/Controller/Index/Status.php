@@ -91,7 +91,7 @@ class Status extends \Magento\Framework\App\Action\Action
         }
         
         try{
-            if($order->getStatus() != 'pending') {
+            if($order->getState() !== 'new') {
                 $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
                 $resultRedirect = $this->_resultRedirectFactory->create();
                 $resultRedirect->setPath('checkout/onepage/failure');
