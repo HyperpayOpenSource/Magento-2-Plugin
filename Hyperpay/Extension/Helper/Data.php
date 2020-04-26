@@ -360,8 +360,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */  
     public function catchExceptionRedirectAndCancelOrder($order,$e)
     {
-        $order->setState(OrderStatus::STATE_HOLDED);
-        $order->addStatusHistoryComment('Exception message: '.$e->getMessage(), OrderStatus::STATE_HOLDED);
+        $order->setState(OrderStatus::STATE_CANCELED);
+        $order->addStatusHistoryComment('Exception message: '.$e->getMessage(), OrderStatus::STATE_CANCELED);
         $order->save();
         $this->_messageManager->addError($e->getMessage());
         $this->_logger->critical($e->getMessage());

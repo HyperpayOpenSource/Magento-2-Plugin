@@ -571,6 +571,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             if ((int)$invoices->count() !== 0) {
                 $order->addStatusHistoryComment('The order has been invoiced already ',$this->getStatus());
                 $order->setState($this->getStatus())->setStatus($this->getStatus());
+                $this->_orderManagement->notify($order->getEntityId());
                 $order->save();
                 return null;
             }
@@ -578,6 +579,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             if(!$order->canInvoice()) {
                 $order->addStatusHistoryComment('Could not create an invoice,Creating invoices is inactive',$this->getStatus());
                 $order->setState($this->getStatus())->setStatus($this->getStatus());
+                $this->_orderManagement->notify($order->getEntityId());
                 $order->save();
                 return null;
             }
@@ -586,6 +588,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
                 {
                     $order->addStatusHistoryComment('Could not create an invoice,The items has virtual product',$this->getStatus());
                     $order->setState($this->getStatus())->setStatus($this->getStatus());
+                    $this->_orderManagement->notify($order->getEntityId());
                     $order->save();
                     return null;
                 }
@@ -609,8 +612,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $order->save();
         } catch (\Exception $e) {
             $order->addStatusHistoryComment('Exception message: '.$e->getMessage(),
-                OrderStatus::STATE_HOLDED);
-            $order->setState(OrderStatus::STATE_HOLDED);
+                false);
+            $this->_orderManagement->notify($order->getEntityId());
             $order->save();
             return null;
         }
