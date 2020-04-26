@@ -620,6 +620,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         try {
             $this->_orderManagement->notify($order->getEntityId());
             $invoice->getOrder()->setCustomerNoteNotify(true);
+            $order->setEmailSent(true);
             $order->save();
         } catch (\Exception $e) {
             $order->addStatusHistoryComment('Exception message: '.$e->getMessage(),false);
