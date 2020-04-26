@@ -572,6 +572,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
                 $order->addStatusHistoryComment('The order has been invoiced already ',$this->getStatus());
                 $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
                 $this->_orderManagement->notify($order->getEntityId());
+                $order->setEmailSent(true);
                 $order->save();
                 return null;
             }
@@ -580,6 +581,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
                 $order->addStatusHistoryComment('Could not create an invoice,Creating invoices is inactive',$this->getStatus());
                 $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
                 $this->_orderManagement->notify($order->getEntityId());
+                $order->setEmailSent(true);
                 $order->save();
                 return null;
             }
@@ -589,6 +591,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
                     $order->addStatusHistoryComment('Could not create an invoice,The items has virtual product',$this->getStatus());
                     $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
                     $this->_orderManagement->notify($order->getEntityId());
+                    $order->setEmailSent(true);
                     $order->save();
                     return null;
                 }
@@ -614,6 +617,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $order->addStatusHistoryComment('Exception message: '.$e->getMessage(),
                 false);
             $this->_orderManagement->notify($order->getEntityId());
+            $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
+            $order->setEmailSent(true);
             $order->save();
             return null;
         }
