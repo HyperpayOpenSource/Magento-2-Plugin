@@ -557,7 +557,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
 
         if(!$order->getId()) {
             $order->addStatusHistoryComment('The order id is not found',$this->getStatus());
-            $order->setState($this->getStatus())->setStatus($this->getStatus());
+            $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
             $order->save();
             return $this;
         }
@@ -570,7 +570,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
 
             if ((int)$invoices->count() !== 0) {
                 $order->addStatusHistoryComment('The order has been invoiced already ',$this->getStatus());
-                $order->setState($this->getStatus())->setStatus($this->getStatus());
+                $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
                 $this->_orderManagement->notify($order->getEntityId());
                 $order->save();
                 return null;
@@ -578,7 +578,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
 
             if(!$order->canInvoice()) {
                 $order->addStatusHistoryComment('Could not create an invoice,Creating invoices is inactive',$this->getStatus());
-                $order->setState($this->getStatus())->setStatus($this->getStatus());
+                $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
                 $this->_orderManagement->notify($order->getEntityId());
                 $order->save();
                 return null;
@@ -587,7 +587,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
                 if($item->getProduct()->getIsVirtual())
                 {
                     $order->addStatusHistoryComment('Could not create an invoice,The items has virtual product',$this->getStatus());
-                    $order->setState($this->getStatus())->setStatus($this->getStatus());
+                    $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
                     $this->_orderManagement->notify($order->getEntityId());
                     $order->save();
                     return null;
@@ -608,7 +608,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $transactionSave = $this->_transactionFactory->create()->addObject($invoice)->addObject($invoice->getOrder());
             $transactionSave->save();
             $order->addStatusHistoryComment('Request successfully processed', $this->getStatus());
-            $order->setState($this->getStatus())->setStatus($this->getStatus());
+            $order->setState(OrderStatus::STATE_PROCESSING)->setStatus($this->getStatus());
             $order->save();
         } catch (\Exception $e) {
             $order->addStatusHistoryComment('Exception message: '.$e->getMessage(),
