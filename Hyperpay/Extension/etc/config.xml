@@ -10,6 +10,7 @@
                     <currencycode>SAR</currencycode>
                     <entityId>Enter your Entity Id</entityId>
                     <connector>migs</connector>
+                    <cron_cancel>0</cron_cancel>
                 </HyperPay_Visa>
                 <HyperPay_stc>
                     <title>STCPAY</title>
@@ -19,6 +20,7 @@
                     <currencycode>SAR</currencycode>
                     <entityId>Enter your Entity Id</entityId>
                     <connector>migs</connector>
+                    <cron_cancel>0</cron_cancel>
                 </HyperPay_stc>
                 <HyperPay_ApplePay>
                     <title>ApplePay</title>
@@ -28,6 +30,7 @@
                     <currencycode>SAR</currencycode>
                     <entityId>Enter your Entity Id</entityId>
                     <connector>migs</connector>
+                    <cron_cancel>0</cron_cancel>
                 </HyperPay_ApplePay>
                 <HyperPay_Mada>
                     <title>Mada</title>
@@ -37,6 +40,7 @@
                     <currencycode>SAR</currencycode>
                     <entityId>Enter your Entity Id</entityId>
                     <connector>migs</connector>
+                    <cron_cancel>0</cron_cancel>
                 </HyperPay_Mada>
                 <HyperPay_Master>
                     <title>MASTERCARD</title>
@@ -46,6 +50,7 @@
                     <currencycode>SAR</currencycode>
                     <entityId>Enter your Entity Id</entityId>
                     <connector>migs</connector>
+                    <cron_cancel>0</cron_cancel>
                 </HyperPay_Master>
                 <HyperPay_SadadNcb>
                     <title>SADAD</title>
@@ -73,6 +78,7 @@
                     <currencycode>SAR</currencycode>
                     <entityId>Enter your Entity Id</entityId>
                     <connector>migs</connector>
+                    <cron_cancel>0</cron_cancel>
                 </HyperPay_Amex>
                 <HyperPay_PayPal>
                     <title>PayPal</title>
@@ -82,6 +88,7 @@
                     <currencycode>SAR</currencycode>
                     <entityId>Enter your Entity Id</entityId>
                     <connector>migs</connector>
+                    <cron_cancel>0</cron_cancel>
                 </HyperPay_PayPal>
         </payment>
     </default>
