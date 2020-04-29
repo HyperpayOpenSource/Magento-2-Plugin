@@ -323,7 +323,7 @@ function hyperpay_stcpay_init_gateway_class()
 
             if ($error) {
                 WC()->session->set('hp_stc_payment_retry', WC()->session->get('hp_stc_payment_retry', 0) + 1);
-                $this->renderPaymentForm($order, $this->process_payment($order->id)['token']);
+                $this->renderPaymentForm($order, $this->process_payment($order->get_id())['token']);
             }
         }
 
@@ -331,7 +331,7 @@ function hyperpay_stcpay_init_gateway_class()
         {
 
             if ($token) {
-                $order_id = $order->id;
+                $order_id = $order->get_id();
 
                 if ($this->testmode == 0) {
                     $scriptURL = $this->script_url;

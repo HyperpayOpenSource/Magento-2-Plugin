@@ -326,7 +326,7 @@ function hyperpayapplepay_init_gateway_class()
             }
 
             if ($error) {
-                $this->renderPaymentForm($order, $this->process_payment($order->id)['token']);
+                $this->renderPaymentForm($order, $this->process_payment($order->get_id())['token']);
             }
         }
 
@@ -334,7 +334,7 @@ function hyperpayapplepay_init_gateway_class()
         {
             if ($token) {
 
-                $order_id = $order->id;
+                $order_id = $order->get_id();
 
                 if ($this->testmode == 0) {
                     $scriptURL = $this->script_url;
