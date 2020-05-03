@@ -16,12 +16,11 @@ function hyperpay_add_gateway_class($gateways)
     return $gateways;
 }
 
-add_action('plugins_loaded', 'hyperpay_init_gateway_class');
+register_activation_hook(__FILE__, 'install');
 
-function hyperpay_init_gateway_class()
+function install()
 {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
 
     global $wpdb;
     $sql = "CREATE TABLE wp_woocommerce_saving_cards (
@@ -33,7 +32,14 @@ function hyperpay_init_gateway_class()
      )  ENGINE=INNODB;";
 
     dbDelta($sql);
+}
 
+
+add_action('plugins_loaded', 'hyperpay_init_gateway_class');
+
+function hyperpay_init_gateway_class()
+{
+    
     class WC_Hyperpay_Gateway extends WC_Payment_Gateway
     {
         protected $msg = array();
