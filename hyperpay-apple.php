@@ -359,7 +359,9 @@ function hyperpayapplepay_init_gateway_class()
                             }
 		wpwlOptions.applePay = {
 		merchantCapabilities:["supports3DS"],
-		supportedNetworks: ["amex", "masterCard", "visa", "mada"]
+		supportedNetworks: ["amex", "masterCard", "visa", "mada"],
+        displayName: "' . get_bloginfo() . '",
+        total: { label: "' . get_bloginfo() . ', INC." }
 	}
                     </script>';
                 //if the lang is Arabic change the direction to ltr
