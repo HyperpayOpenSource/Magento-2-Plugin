@@ -278,6 +278,7 @@ function hyperpay_mada_init_gateway_class()
 
 
                                 $uniqueId = $resultJson['id'];
+                                $order->add_order_note($this->success_message . 'Transaction ID: ' . $uniqueId);
                             }
 
                             wp_redirect($this->get_return_url($order));
