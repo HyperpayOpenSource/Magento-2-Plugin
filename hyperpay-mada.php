@@ -409,15 +409,15 @@ function hyperpay_mada_init_gateway_class()
 
                 if ($this->tokenization == 'enable') {
 
-                    $registration =  `var storeMsg = 'Store payment details?';
-                    var style = 'style="direction: ltr"';
+                    $registration =  'var storeMsg = \'Store payment details?\';
+                    var style = \'style="direction: ltr"\';
                     if (wpwlOptions.locale == "ar") {
-                        storeMsg = ' هل تريد حفظ معلومات البطاقة ؟';
-                        style = 'style="direction: rtl"';
+                        storeMsg = \' هل تريد حفظ معلومات البطاقة ؟\';
+                        style = \'style="direction: rtl"\';
                     }
-                    var createRegistrationHtml = '<div class="customLabel style ="' + style + '">' + storeMsg +
-                        '</div><div class="customInput style ="' + style + '""><input type="checkbox" name="createRegistration" value="true" /></div>';
-                    $('form.wpwl-form-card').find('.wpwl-button').before(createRegistrationHtml);`;
+                    var createRegistrationHtml = \'<div class="customLabel style ="\' + style + \'">\' + storeMsg +
+                        \'</div><div class="customInput style ="\' + style + \'""><input type="checkbox" name="createRegistration" value="true" /></div>\';
+                    $(\'form.wpwl-form-card\').find(\'.wpwl-button\').before(createRegistrationHtml);';
                 }
 
                 echo '<script>
