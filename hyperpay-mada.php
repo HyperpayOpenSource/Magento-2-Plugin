@@ -16,6 +16,25 @@ function hyperpay_mada_add_gateway_class($gateways)
     return $gateways;
 }
 
+register_activation_hook(__FILE__, 'hyperpay_mada_install');
+
+function hyperpay_mada_install()
+{
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+    global $wpdb;
+    $sql = "CREATE TABLE wp_woocommerce_hyperpay_mada_saving_cards (
+        id INT AUTO_INCREMENT,
+         registration_id VARCHAR(255) NOT NULL,
+         customer_id VARCHAR(255) NOT NULL,
+         mode int (10) NOT NULL,
+         PRIMARY KEY (id)
+     )  ENGINE=INNODB;";
+
+    dbDelta($sql);
+}
+
+
 add_action('plugins_loaded', 'hyperpay_mada_init_gateway_class');
 
 function hyperpay_mada_init_gateway_class()
@@ -24,6 +43,8 @@ function hyperpay_mada_init_gateway_class()
     class WC_Hyperpay_Mada_Gateway extends WC_Payment_Gateway
     {
         protected $msg = array();
+        protected $is_registered_user = false; // If the user is not a registerd user then no need to store the card.
+
         public function __construct()
         {
             $this->id = 'hyperpay_mada';
@@ -59,6 +80,8 @@ function hyperpay_mada_init_gateway_class()
 
             $this->redirect_page_id = $this->settings['redirect_page_id'];
             //$this->description = ' ';
+
+            $this->tokenization = $this->settings['tokenization'];
 
             if ($lang == 'ar') {
                 $this->failed_message = 'تم رفض العملية ';
@@ -134,6 +157,12 @@ function hyperpay_mada_init_gateway_class()
                 'entityId' => array(
                     'title' => __('Entity ID'),
                     'type' => 'text',
+                    'description' => ''
+                ),
+                'tokenization' => array(
+                    'title' => __('Tokenization'),
+                    'type' => 'select',
+                    'options' => $this->get_hyperpay_mada_tokenization(),
                     'description' => ''
                 ),
                 'brands' => array(
@@ -278,6 +307,37 @@ function hyperpay_mada_init_gateway_class()
 
 
                                 $uniqueId = $resultJson['id'];
+
+                                if (isset($resultJson['registrationId'])) {
+
+                                    $registrationID = $resultJson['registrationId'];
+
+                                    $customerID = $order->get_customer_id();
+                                    global $wpdb;
+
+                                    $registrationIDs = $wpdb->get_results(
+                                        "
+                                                                         SELECT * 
+                                                                     FROM wp_woocommerce_hyperpay_mada_saving_cards
+                                                                         WHERE registration_id ='$registrationID'
+                                                                         and mode = '" . $this->testmode . "'
+                                                                         "
+                                    );
+
+                                    if (count($registrationIDs) == 0) {
+
+                                        $wpdb->insert(
+                                            'wp_woocommerce_hyperpay_mada_saving_cards',
+                                            array(
+                                                'customer_id' => $customerID,
+                                                'registration_id' => $registrationID,
+                                                'mode' => $this->testmode,
+                                            )
+
+                                        );
+                                    }
+                                }
+
                                 $order->add_order_note($this->success_message . 'Transaction ID: ' . $uniqueId);
                             }
 
@@ -345,12 +405,27 @@ function hyperpay_mada_init_gateway_class()
 
                 $postbackURL = $order->get_checkout_payment_url(true);
 
+                $registration = '';
+
+                if ($this->tokenization == 'enable') {
+
+                    $registration =  `var storeMsg = 'Store payment details?';
+                    var style = 'style="direction: ltr"';
+                    if (wpwlOptions.locale == "ar") {
+                        storeMsg = ' هل تريد حفظ معلومات البطاقة ؟';
+                        style = 'style="direction: rtl"';
+                    }
+                    var createRegistrationHtml = '<div class="customLabel style ="' + style + '">' + storeMsg +
+                        '</div><div class="customInput style ="' + style + '""><input type="checkbox" name="createRegistration" value="true" /></div>';
+                    $('form.wpwl-form-card').find('.wpwl-button').before(createRegistrationHtml);`;
+                }
+
                 echo '<script>
-                            var wpwlOptions = {          
+                            var wpwlOptions = {    
                                 style:"' . $this->payment_style . '",
                                 locale:"' . $this->lang . '",
                                 paymentTarget: "_top",
-
+                                onReady: function() {' . $registration . '},
                             }
 
                     </script>';
@@ -380,7 +455,13 @@ function hyperpay_mada_init_gateway_class()
             $this->console_log($this->get_return_url($order));
             $user = $order->get_user();
 
-
+            if ($user->ID) {
+                //Registered
+                $this->is_registered_user = true;
+            } else {
+                //Guest
+                $this->is_registered_user = false;
+            }
 
             if ($this->testmode == 0) {
                 $url = $this->token_url;
@@ -431,7 +512,19 @@ function hyperpay_mada_init_gateway_class()
                 $data .= "&billing.country=$country";
             }
 
+            if ($this->tokenization == 'enable' && $this->is_registered_user == true) {
 
+                //$data .=  "&createRegistration=true";
+                global $wpdb;
+                $customerID = $order->get_customer_id();
+                $registrationIDs = $wpdb->get_results("SELECT * FROM wp_woocommerce_hyperpay_mada_saving_cards WHERE customer_id =$customerID and mode = '" . $this->testmode . "'");
+                if ($registrationIDs) {
+
+                    foreach ($registrationIDs as $key => $id) {
+                        $data .= "&registrations[$key].id=" . $id->registration_id;
+                    }
+                }
+            }
 
 
             $customerID = $order->get_customer_id();
@@ -503,6 +596,16 @@ function hyperpay_mada_init_gateway_class()
                 $js_code = '<script>' . $js_code . '</script>';
             }
             echo $js_code;
+        }
+
+        function get_hyperpay_mada_tokenization()
+        {
+            $hyperpay_tokenization = array(
+                'enable' => 'Enable',
+                'disable' => 'Disable'
+            );
+
+            return $hyperpay_tokenization;
         }
     }
 }
