@@ -344,9 +344,7 @@ function hyperpay_init_gateway_class()
                                                                          "
                                     );
 
-                                    if (count($registrationIDs) > 0) {
-                                        # code...
-                                    } else {
+                                    if (count($registrationIDs) == 0) {
 
                                         $wpdb->insert(
                                             'wp_woocommerce_saving_cards',
