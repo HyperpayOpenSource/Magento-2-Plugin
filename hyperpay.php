@@ -39,7 +39,7 @@ add_action('plugins_loaded', 'hyperpay_init_gateway_class');
 
 function hyperpay_init_gateway_class()
 {
-    
+
     class WC_Hyperpay_Gateway extends WC_Payment_Gateway
     {
         protected $msg = array();
@@ -73,12 +73,11 @@ function hyperpay_init_gateway_class()
             $this->mailerrors = $this->settings['mailerrors'];
             $this->lang = $this->settings['lang'];
 
+            $lang = explode('-', get_bloginfo('language'));
+            $lang = $lang[0];
+            $this->lang  = $lang;
 
             $this->tokenization = $this->settings['tokenization'];
-            $lang = 'en';
-            if (strpos($this->lang, 'ar') !== false) {
-                $lang = 'ar';
-            }
 
             $this->redirect_page_id = $this->settings['redirect_page_id'];
 

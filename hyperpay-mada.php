@@ -52,10 +52,11 @@ function hyperpay_mada_init_gateway_class()
             $this->payment_style = $this->settings['payment_style'];
             $this->mailerrors = $this->settings['mailerrors'];
             $this->lang = $this->settings['lang'];
-            $lang = 'en';
-            if (strpos($this->lang, 'ar') !== false) {
-                $lang = 'ar';
-            }
+
+            $lang = explode('-', get_bloginfo('language'));
+            $lang = $lang[0];
+            $this->lang  = $lang;
+
             $this->redirect_page_id = $this->settings['redirect_page_id'];
             //$this->description = ' ';
 
