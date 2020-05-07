@@ -301,6 +301,7 @@ function hyperpay_mada_init_gateway_class()
                     $order_response = new WC_Order($orderid);
                     if ($order_response) {
                         if ($sccuess == 1) {
+                            WC()->session->set('hp_payment_retry', 0);
                             if ($order->status != 'completed') {
                                 $order->payment_complete();
                                 $woocommerce->cart->empty_cart();
@@ -383,6 +384,7 @@ function hyperpay_mada_init_gateway_class()
             }
 
             if ($error) {
+                WC()->session->set('hp_payment_retry', WC()->session->get('hp_payment_retry', 0) + 1);
                 $this->renderPaymentForm($order, $this->process_payment($order->get_id())['token']);
             }
         }
@@ -479,7 +481,7 @@ function hyperpay_mada_init_gateway_class()
             $type = $this->trans_type;
             $amount = number_format(round($orderAmount, 2), 2, '.', '');
             $currency = get_woocommerce_currency();
-            $transactionID = $orderid;
+            $transactionID = WC()->session->get('hp_payment_retry', 0) > 0 ? $orderid . '_' . WC()->session->get('hp_payment_retry', 0) : $orderid;
             $firstName = $order->billing_first_name;
             $family = $order->billing_last_name;
             $street = $order->billing_address_1;
