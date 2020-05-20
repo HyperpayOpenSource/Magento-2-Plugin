@@ -249,6 +249,7 @@ function hyperpay_mada_init_gateway_class()
         {
             global $woocommerce;
             $order = new WC_Order($order);
+            $error = false; // used to rerender the form in case of an error
 
             if (isset($_GET['g2p_token'])) {
                 $token = $_GET['g2p_token'];
@@ -280,7 +281,6 @@ function hyperpay_mada_init_gateway_class()
                 $failed_msg = '';
                 $orderid = '';
 
-                $error = false; // used to rerender the form in case of an error
 
                 if (isset($resultJson['result']['code'])) {
                     $successCodePattern = '/^(000\.000\.|000\.100\.1|000\.[36])/';
@@ -349,6 +349,8 @@ function hyperpay_mada_init_gateway_class()
                              */
                         } else {
                             $order->add_order_note($this->failed_message . $failed_msg);
+                            $order->update_status('failed');
+
                             if ($this->lang == 'ar') {
 
                                 wc_add_notice(__('حدث خطأ في عملية الدفع والسبب <br/>' . $failed_msg . '<br/>' . 'يرجى المحاولة مرة أخرى'), 'error');
@@ -455,9 +457,8 @@ function hyperpay_mada_init_gateway_class()
 
             $order = new WC_Order($order_id);
             $this->console_log($this->get_return_url($order));
-            $user = $order->get_user();
 
-            if ($user->ID) {
+            if ($order->get_customer_id() > 0 && get_current_user_id() == $order->get_customer_id()) {
                 //Registered
                 $this->is_registered_user = true;
             } else {
@@ -482,14 +483,14 @@ function hyperpay_mada_init_gateway_class()
             $amount = number_format(round($orderAmount, 2), 2, '.', '');
             $currency = get_woocommerce_currency();
             $transactionID = WC()->session->get('hp_payment_retry', 0) > 0 ? $orderid . '_' . WC()->session->get('hp_payment_retry', 0) : $orderid;
-            $firstName = $order->billing_first_name;
-            $family = $order->billing_last_name;
-            $street = $order->billing_address_1;
-            $zip = $order->billing_postcode;
-            $city = $order->billing_city;
-            $state = $order->billing_state;
-            $country = $order->billing_country;
-            $email = $order->billing_email;
+            $firstName = $order->get_billing_first_name();
+            $family = $order->get_billing_last_name();
+            $street = $order->get_billing_address_1();
+            $zip = $order->get_billing_postcode();
+            $city = $order->get_billing_city();
+            $state = $order->get_billing_state();
+            $country = $order->get_billing_country();
+            $email = $order->get_billing_email();
 
 
             if (empty($state)) {
