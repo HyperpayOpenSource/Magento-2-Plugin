@@ -34,4 +34,8 @@
 	}
 </script>
 <script src="<?php echo $block->getFormUrl(); ?>"></script>
+<?php if($block->getPaymentBrand() === 'APPLEPAY') {?>
+    <h1><?php echo __('Please note,ApplePay only works on IOS and Safari browsers') ?></h1>
+    <p><?php echo __('To proceed with the payment, please click on the below button') ?></p>
+<?php } ?>
 <form action="<?php echo $block->getShopperUrl(); ?>" class="paymentWidgets" data-brands="<?php echo $block->getPaymentBrand(); ?>"></form>
