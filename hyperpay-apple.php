@@ -52,6 +52,7 @@ function hyperpayapplepay_init_gateway_class()
             $this->payment_style = $this->settings['payment_style'];
             $this->mailerrors = $this->settings['mailerrors'];
             $this->lang = $this->settings['lang'];
+            $this->supportedNetworks = $this->settings['supportedNetworks'];
 
             $lang = explode('-', get_bloginfo('language'));
             $lang = $lang[0];
@@ -106,7 +107,7 @@ function hyperpayapplepay_init_gateway_class()
                     'title' => __('Title:'),
                     'type' => 'text',
                     'description' => ' ' . __('This controls the title which the user sees during checkout.'),
-                    'default' => __('Credit Cards')
+                    'default' => __('ApplePay')
                 ),
                 'trans_type' => array(
                     'title' => __('Transaction type'),
@@ -140,6 +141,12 @@ function hyperpayapplepay_init_gateway_class()
                     'title' => __('Brands'),
                     'type' => 'multiselect',
                     'options' => $this->get_hyperpayApplePay_payment_methods(),
+                    'description' => ''
+                ),
+                'supportedNetworks' => array(
+                    'title' => __('Supported Networks'),
+                    'type' => 'multiselect',
+                    'options' => $this->get_hyperpayApplePay_supported_networks(),
                     'description' => ''
                 ),
                 'payment_style' => array(
@@ -206,6 +213,18 @@ function hyperpayapplepay_init_gateway_class()
             );
 
             return $hyperpayApplePay_payments;
+        }
+
+        function get_hyperpayApplePay_supported_networks()
+        {
+            $hyperpayApplePay_supported_networks = array(
+                "amex" => "Amex",
+                "masterCard" => "MasterCard",
+                "visa" => "Visa",
+                "mada" => "Mada"
+            );
+
+            return $hyperpayApplePay_supported_networks;
         }
 
         function get_hyperpayApplePay_payment_style()
@@ -351,6 +370,7 @@ function hyperpayapplepay_init_gateway_class()
                 $scriptURL .= $token;
 
                 $payment_brands = implode(' ', $this->brands);
+                $supportedNetworks = json_encode($this->supportedNetworks);
 
                 $postbackURL = $order->get_checkout_payment_url(true);
 
@@ -365,7 +385,7 @@ function hyperpayapplepay_init_gateway_class()
                             }
 		wpwlOptions.applePay = {
 		merchantCapabilities:["supports3DS"],
-		supportedNetworks: ["amex", "masterCard", "visa", "mada"],
+		supportedNetworks: ' . $supportedNetworks . ',
         displayName: "' . get_bloginfo() . '",
         total: { label: "' . get_bloginfo() . ', INC." }
 	}
