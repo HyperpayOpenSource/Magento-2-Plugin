@@ -27,7 +27,18 @@ abstract class MethodAbstract extends \Magento\Payment\Model\Method\AbstractMeth
      * @var bool
      */
     protected $_canRefund = true;
-
+    /**
+     * Payment Method feature
+     *
+     * @var bool
+     */
+    protected $_canRefundInvoicePartial = true;
+    /**
+     * Payment Method feature
+     *
+     * @var bool
+     */
+    protected $_canCapturePartial = true;
      /**
      * Is a initalize needed
      *
