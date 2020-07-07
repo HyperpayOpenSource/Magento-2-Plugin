@@ -374,7 +374,7 @@ function hyperpay_init_gateway_class()
                              */
                         } else {
                             $order->add_order_note($this->failed_message . $failed_msg);
-                            $order->update_status('failed');
+                            $order->update_status('cancelled');
 
                             if ($this->lang == 'ar') {
                                 wc_add_notice(__('حدث خطأ في عملية الدفع والسبب <br/>' . $failed_msg . '<br/>' . 'يرجى المحاولة مرة أخرى'), 'error');
@@ -386,7 +386,7 @@ function hyperpay_init_gateway_class()
                         }
                     } else {
                         $order->add_order_note($this->failed_message);
-                        $order->update_status('failed');
+                        $order->update_status('cancelled');
                         if ($this->lang == 'ar') {
                             wc_add_notice(__('(حدث خطأ في عملية الدفع يرجى المحاولة مرة أخرى) '), 'error');
                         } else {
@@ -397,7 +397,7 @@ function hyperpay_init_gateway_class()
                     }
                 } else {
                     $order->add_order_note($this->failed_message);
-                    $order->update_status('failed');
+                    $order->update_status('cancelled');
 
                     if ($this->lang == 'ar') {
                         wc_add_notice(__('(حدث خطأ في عملية الدفع يرجى المحاولة مرة أخرى) '), 'error');
@@ -407,11 +407,6 @@ function hyperpay_init_gateway_class()
                     wc_print_notices();
                     $error = true;
                 }
-            }
-
-            if ($error) {
-                WC()->session->set('hp_payment_retry', WC()->session->get('hp_payment_retry', 0) + 1);
-                $this->renderPaymentForm($order, $this->process_payment($order->get_id())['token']);
             }
         }
 
@@ -531,7 +526,7 @@ function hyperpay_init_gateway_class()
             $type = $this->trans_type;
             $amount = number_format(round($orderAmount, 2), 2, '.', '');
             $currency = get_woocommerce_currency();
-            $transactionID = WC()->session->get('hp_payment_retry', 0) > 0 ? $orderid . '_' . WC()->session->get('hp_payment_retry', 0) : $orderid;
+            $transactionID = $orderid;
             $firstName = $order->get_billing_first_name();
             $family = $order->get_billing_last_name();
             $street = $order->get_billing_address_1();
