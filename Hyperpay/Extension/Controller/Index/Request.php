@@ -53,11 +53,6 @@ class Request extends \Magento\Framework\App\Action\Action
      *
      * @var string
      */
-    /**
-     *
-     * @var \Magento\Framework\Controller\Result\RedirectFactory
-     */
-    protected $_resultRedirectFactory;
     protected $_storeScope= \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
     /**
      * Constructor
@@ -71,7 +66,6 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\Locale\Resolver                    $resolver
      * @param \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement
      * @param \Hyperpay\Extension\Model\Adapter                       $adapter
-     * @param \Magento\Framework\Controller\Result\RedirectFactory
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
      */
     public function __construct(
@@ -84,7 +78,6 @@ class Request extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Locale\Resolver                    $resolver,
         \Hyperpay\Extension\Model\Adapter $adapter,
 	\Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
-        \Magento\Framework\Controller\Result\RedirectFactory $resultRedirectFactory,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
     ) 
     { 
@@ -98,7 +91,6 @@ class Request extends \Magento\Framework\App\Action\Action
         $this->_resolver = $resolver;
         $this->_remote=$remote;
         $this->_stockManagement = $stockManagement;
-        $this->_resultRedirectFactory = $resultRedirectFactory;
 
     }
     public function execute()
@@ -115,7 +107,7 @@ class Request extends \Magento\Framework\App\Action\Action
         }
         if(($order->getState() !== 'new') && ($order->getState() !== 'pending_payment')) {
             $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
-            $resultRedirect = $this->_resultRedirectFactory->create();
+            $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setPath('checkout/onepage/failure');
             return $resultRedirect;
         }
@@ -127,7 +119,7 @@ class Request extends \Magento\Framework\App\Action\Action
         catch (\Exception $e)
         {
             $this->messageManager->addError($e->getMessage());
-            $resultRedirect = $this->_resultRedirectFactory->create();
+            $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setPath('checkout/onepage/failure');
             return $resultRedirect;
         }

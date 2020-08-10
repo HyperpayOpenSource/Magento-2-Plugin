@@ -37,11 +37,6 @@ class Status extends \Magento\Framework\App\Action\Action
      */
     protected $_orderFactory;
     /**
-     *
-     * @var \Magento\Framework\Controller\Result\RedirectFactory
-     */
-    protected $_resultRedirectFactory;
-    /**
      * Constructor
      * 
      * @param \Magento\Framework\App\Action\Context      $context
@@ -51,7 +46,6 @@ class Status extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\View\Result\PageFactory $pageFactory
      * @param \Magento\Framework\App\Request\Http        $request
      * @param \Magento\Sales\Model\OrderFactory $orderFactory,
-     * @param \Magento\Framework\Controller\Result\RedirectFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -61,8 +55,8 @@ class Status extends \Magento\Framework\App\Action\Action
         \Hyperpay\Extension\Helper\Data $helper,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Magento\Framework\App\Request\Http $request,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Framework\Controller\Result\RedirectFactory $resultRedirectFactory
+        \Magento\Sales\Model\OrderFactory $orderFactory
+
     ) 
     { 
         parent::__construct($context);
@@ -72,7 +66,6 @@ class Status extends \Magento\Framework\App\Action\Action
         $this->_request = $request;
         $this->_helper=$helper;
         $this->_adapter=$adapter;
-        $this->_resultRedirectFactory = $resultRedirectFactory;
     }
     public function execute()
     {
@@ -85,7 +78,7 @@ class Status extends \Magento\Framework\App\Action\Action
         }catch (\Exception $exception)
         {
             $this->messageManager->addError($exception->getMessage());
-            $resultRedirect = $this->_resultRedirectFactory->create();
+            $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setPath('checkout/onepage/failure');
             return $resultRedirect;
         }
@@ -93,7 +86,7 @@ class Status extends \Magento\Framework\App\Action\Action
         try{
             if(($order->getState() !== 'new') && ($order->getState() !== 'pending_payment')) {
                 $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
-                $resultRedirect = $this->_resultRedirectFactory->create();
+                $resultRedirect = $this->resultRedirectFactory->create();
                 $resultRedirect->setPath('checkout/onepage/failure');
                 return $resultRedirect;
             }
@@ -112,7 +105,7 @@ class Status extends \Magento\Framework\App\Action\Action
         {
             $order->addStatusHistoryComment('Exception message: '.$e->getMessage(), false);
             $this->messageManager->addError($e->getMessage());
-            $resultRedirect = $this->_resultRedirectFactory->create();
+            $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setPath('checkout/onepage/failure');
             return $resultRedirect;
         }
