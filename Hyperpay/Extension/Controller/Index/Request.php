@@ -49,14 +49,15 @@ class Request extends \Magento\Framework\App\Action\Action
      * @var \Magento\Framework\Locale\Resolver
      */
     protected $_resolver;
-     /**
+    protected $_quoteFactory;
+    /**
      *
      * @var string
      */
     protected $_storeScope= \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
     /**
      * Constructor
-     * 
+     *
      * @param \Magento\Framework\App\Action\Context                $context
      * @param \Magento\Framework\Registry                          $coreRegistry
      * @param \Hyperpay\Extension\Helper\Data                         $helper
@@ -77,10 +78,11 @@ class Request extends \Magento\Framework\App\Action\Action
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Locale\Resolver                    $resolver,
         \Hyperpay\Extension\Model\Adapter $adapter,
+        \Magento\Quote\Model\QuoteFactory $quoteFactory,
 	\Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
-    ) 
-    { 
+    )
+    {
         $this->_coreRegistry=$coreRegistry;
         parent::__construct($context);
         $this->_checkoutSession = $checkoutSession;
@@ -91,6 +93,7 @@ class Request extends \Magento\Framework\App\Action\Action
         $this->_resolver = $resolver;
         $this->_remote=$remote;
         $this->_stockManagement = $stockManagement;
+        $this->_quoteFactory =$quoteFactory;
 
     }
     public function execute()
@@ -98,13 +101,17 @@ class Request extends \Magento\Framework\App\Action\Action
         try {
             if(!($this->_checkoutSession->getLastRealOrderId())) {
                 $this->_helper->doError(__('Order is not found'));
-            }   
-       
+            }
+
             $order=$this->_checkoutSession->getLastRealOrder();
         } catch (\Exception $e) {
             $this->messageManager->addError($e->getMessage());
             return $this->_pageFactory->create();
         }
+        $quote = $this->_quoteFactory->create()->load($order->getQuoteId());
+        $quote->setIsActive(true);
+        $quote->save();
+        $this->_checkoutSession->replaceQuote($quote);
         if(($order->getState() !== 'new') && ($order->getState() !== 'pending_payment')) {
             $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
             $resultRedirect = $this->resultRedirectFactory->create();
