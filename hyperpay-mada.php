@@ -432,7 +432,6 @@ function hyperpay_mada_init_gateway_class()
                 if ($this->lang == 'ar') {
                     echo '<style>
                             .wpwl-group{
-                            local: "ar",
                             direction:ltr !important;
                             }
                           </style>';
@@ -451,7 +450,6 @@ function hyperpay_mada_init_gateway_class()
 
 
             $order = new WC_Order($order_id);
-            $this->console_log($this->get_return_url($order));
 
             if ($order->get_customer_id() > 0 && get_current_user_id() == $order->get_customer_id()) {
                 //Registered
