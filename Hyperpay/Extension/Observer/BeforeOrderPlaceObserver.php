@@ -15,7 +15,7 @@ class BeforeOrderPlaceObserver implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
 	$order = $observer->getOrder();
-	$code = $order->getPayment()->getData('method');
+	$code = $order->getPayment()->getMethod();
 	if (strpos($code,'HyperPay') !== false)
 	{
         	$order->setCanSendNewEmailFlag(false);
