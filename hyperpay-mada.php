@@ -47,10 +47,16 @@ function hyperpay_mada_init_gateway_class()
 
         public function __construct()
         {
+
             $this->id = 'hyperpay_mada';
             $this->has_fields = false;
             $this->method_title = 'Hyperpay Mada Gateway';
             $this->method_description = 'Hyperpay Woocommerce plugin for Mada';
+
+            // adding icon next gateway name in the checkout
+            $this->icon = apply_filters( 'woocommerce_gateway_icon',plugins_url('images/mada-logo.png',__FILE__));
+            // making mada always on top by shifting the array using this function "woocommerce_add_WC_Hyperpay_Mada_Gateway"
+            add_filter( 'woocommerce_payment_gateways', 'woocommerce_add_WC_Hyperpay_Mada_Gateway' );
 
             $this->init_form_fields();
             $this->init_settings();
@@ -102,7 +108,6 @@ function hyperpay_mada_init_gateway_class()
 
         public function init_form_fields()
         {
-
             $postbackURL = get_option('siteurl');
             $successURL = $postbackURL . '?hyperpay_mada_callback=1&success=1';
             $failURL = $postbackURL . '?hyperpay_mada_callback=1&fail=1';
@@ -420,11 +425,24 @@ function hyperpay_mada_init_gateway_class()
                 }
 
                 echo '<script>
+
+                            function displayName(element) {
+                                jQuery(".wpwl-brand-card").each(function () {
+                                       jQuery(element).append(this);
+                                       console.log(this)
+                                });
+                              }
                             var wpwlOptions = {    
                                 style:"' . $this->payment_style . '",
                                 locale:"' . $this->lang . '",
                                 paymentTarget: "_top",
-                                onReady: function() {' . $registration . '},
+                                onReady: function() {
+                                    jQuery(".wpwl-wrapper-cardNumber").each(function () {
+                                  
+                                        displayName(this);
+                                    });
+                                    ' . $registration . '
+                                },
                             }
 
                     </script>';
@@ -435,7 +453,28 @@ function hyperpay_mada_init_gateway_class()
                             direction:ltr !important;
                             }
                           </style>';
-                };
+                }
+
+                echo '
+                       <style>
+                            .wpwl-brand-card{
+                                display:block ;
+                                visibility:visible ;
+                                position:absolute ;
+                                /*right:8px ;
+                                top:7px ;*/
+                                right:8px ;
+                                top:7px;
+                                width:65px ;
+                                z-index:10;
+                                float:right;
+                              }
+                            .wpwl-brand-MASTER{
+                                top:0px;
+                            }
+                    </style>
+                ';
+
                 // payment form
                 echo '<script  src="' . $scriptURL . '"></script>
                         <form action="' . $postbackURL . '" class="paymentWidgets">
@@ -602,6 +641,11 @@ function hyperpay_mada_init_gateway_class()
             );
 
             return $hyperpay_tokenization;
+        }
+
+        function woocommerce_add_WC_Hyperpay_Mada_Gateway($methods) {
+            array_unshift($methods, 'Hyperpay_Mada_Gateway' );
+            return $methods;
         }
     }
 }
