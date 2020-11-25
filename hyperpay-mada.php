@@ -429,7 +429,6 @@ function hyperpay_mada_init_gateway_class()
                             function displayName(element) {
                                 jQuery(".wpwl-brand-card").each(function () {
                                        jQuery(element).append(this);
-                                       console.log(this)
                                 });
                               }
                             var wpwlOptions = {    
@@ -446,25 +445,14 @@ function hyperpay_mada_init_gateway_class()
                             }
 
                     </script>';
-                //if the lang is Arabic change the direction to ltr
-                if ($this->lang == 'ar') {
-                    echo '<style>
-                            .wpwl-group{
-                            direction:ltr !important;
-                            }
-                          </style>';
-                }
-
                 echo '
                        <style>
                             .wpwl-brand-card{
                                 display:block ;
                                 visibility:visible ;
                                 position:absolute ;
-                                /*right:8px ;
-                                top:7px ;*/
                                 right:8px ;
-                                top:7px;
+                                top:13px;
                                 width:65px ;
                                 z-index:10;
                                 float:right;
@@ -474,6 +462,21 @@ function hyperpay_mada_init_gateway_class()
                             }
                     </style>
                 ';
+
+                //if the lang is Arabic change the direction to ltr
+                if ($this->lang == 'ar') {
+                    echo '<style>
+                            .wpwl-group{
+                            direction:ltr !important;
+                            }
+                            .wpwl-brand-card{
+                            left:8px  !important;
+                            right : auto !important;
+                            }
+                            
+                          </style>';
+                }
+
 
                 // payment form
                 echo '<script  src="' . $scriptURL . '"></script>
