@@ -89,7 +89,7 @@ function hyperpay_init_gateway_class()
             } else {
                 $this->failed_message = 'Your transaction has been declined.';
 
-                $this->success_message = 'Your payment has been procssed successfully.';
+                $this->success_message = 'Your payment has been processed successfully.';
             }
             $this->msg['message'] = "";
             $this->msg['class'] = "";
@@ -100,6 +100,9 @@ function hyperpay_init_gateway_class()
 
         public function init_form_fields()
         {
+            $lang = explode('-', get_bloginfo('language'));
+            $lang = $lang[0];
+
             $postbackURL = get_option('siteurl');
             $successURL = $postbackURL . '?hyperpay_callback=1&success=1';
             $failURL = $postbackURL . '?hyperpay_callback=1&fail=1';
@@ -128,7 +131,7 @@ function hyperpay_init_gateway_class()
                     'title' => __('Title:'),
                     'type' => 'text',
                     'description' => ' ' . __('This controls the title which the user sees during checkout.'),
-                    'default' => __('Credit Cards')
+                    'default' => $lang === 'ar' ? __('بطاقة ائتمانية') : __('Credit Card')
                 ),
                 'trans_type' => array(
                     'title' => __('Transaction type'),
@@ -641,6 +644,7 @@ function hyperpay_init_gateway_class()
                 // add to page list array array
                 $page_list[$page->ID] = $prefix . $page->post_title;
             }
+
             return $page_list;
         }
     }

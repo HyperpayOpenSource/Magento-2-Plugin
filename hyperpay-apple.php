@@ -68,7 +68,7 @@ function hyperpayapplepay_init_gateway_class()
             } else {
                 $this->failed_message = 'Your transaction has been declined.';
 
-                $this->success_message = 'Your payment has been procssed successfully.';
+                $this->success_message = 'Your payment has been processed successfully.';
             }
 
             $this->msg['message'] = "";
