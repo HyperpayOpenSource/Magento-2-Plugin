@@ -148,6 +148,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>2</sort_order>
             </hyperpay_visa>
             <hyperpay_stc>
                 <title>STCPAY</title>
@@ -160,6 +161,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>4</sort_order>
             </hyperpay_stc>
             <hyperpay_master>
                 <title>MASTERCARD</title>
@@ -172,6 +174,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>3</sort_order>
             </hyperpay_master>
             
             <hyperpay_amex>
@@ -185,6 +188,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>5</sort_order>
             </hyperpay_amex>
 			
             <hyperpay_sadadncb>
@@ -198,6 +202,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>8</sort_order>
             </hyperpay_sadadncb>
 
             <hyperpay_sadadpayware>
@@ -211,6 +216,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>9</sort_order>
             </hyperpay_sadadpayware>
 
             <hyperpay_paypal>
@@ -224,6 +230,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>6</sort_order>
             </hyperpay_paypal>
             
             <hyperpay_mada>
@@ -237,6 +244,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>1</sort_order>
             </hyperpay_mada>
             <hyperpay_apple>
                 <title>APPLEPAY</title>
@@ -249,6 +257,7 @@
                 <payment_action>authorize</payment_action>
                 <connector>migs</connector>
                 <server_mode>test</server_mode>
+                <sort_order>7</sort_order>
             </hyperpay_apple>
         </payment>
     </default>

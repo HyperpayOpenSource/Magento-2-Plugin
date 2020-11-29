@@ -52,7 +52,7 @@
                     jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-group-paymentMode').hide();
                     jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile .wpwl-control-radio-mobile').attr('checked',true);
                     jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile .wpwl-control-radio-mobile').trigger('click');
-        },
+        }
     
 
     };
@@ -69,7 +69,31 @@
         direction: ltr !important;
     }
     <?php } ?>
+    .wpwl-brand-card{
 
+        display:block;
+
+        visibility:visible;
+
+        position:absolute;
+
+        right:8px;
+
+        top:7px;
+
+        width:65px;
+
+        z-index:10;
+
+        float:right;
+
+    }
+
+    .wpwl-brand-MASTER{
+
+        top:0px;
+
+    }
     <?php echo Mage::getSingleton('customer/session')->getCss();?>
 </style>
 <form action="<?php echo Mage::getSingleton('customer/session')->getIframeFrontendResponse();?>" class="paymentWidgets" data-brands="<?php echo Mage::getSingleton('customer/session')->getIframeBrand();?>"></form>
