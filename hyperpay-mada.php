@@ -334,7 +334,7 @@ function hyperpay_mada_init_gateway_class()
 
                                     $registrationIDs = $wpdb->get_results(
                                         "
-                                                                         SELECT * 
+                                                                         SELECT *
                                                                      FROM wp_woocommerce_hyperpay_mada_saving_cards
                                                                          WHERE registration_id ='$registrationID'
                                                                          and mode = '" . $this->testmode . "'
@@ -442,13 +442,13 @@ function hyperpay_mada_init_gateway_class()
                                        jQuery(element).append(this);
                                 });
                               }
-                            var wpwlOptions = {    
+                            var wpwlOptions = {
                                 style:"' . $this->payment_style . '",
                                 locale:"' . $this->lang . '",
                                 paymentTarget: "_top",
                                 onReady: function() {
                                     jQuery(".wpwl-wrapper-cardNumber").each(function () {
-                                  
+
                                         displayName(this);
                                     });
                                     ' . $registration . '
@@ -471,6 +471,13 @@ function hyperpay_mada_init_gateway_class()
                             .wpwl-brand-MASTER{
                                 top:0px;
                             }
+
+                            .wpwl-label-brand{
+                              display: none !important;
+                            }
+                            .wpwl-control-brand{
+                              display: none !important;
+                            }
                     </style>
                 ';
 
@@ -484,15 +491,13 @@ function hyperpay_mada_init_gateway_class()
                             left:8px  !important;
                             right : auto !important;
                             }
-                            
+
                           </style>';
                 }
 
-
                 // payment form
-                echo '<script  src="' . $scriptURL . '"></script>
-                        <form action="' . $postbackURL . '" class="paymentWidgets">
-                          ' . $payment_brands . '
+                echo '<script  src="' . $scriptURL . '"></script>';
+                echo '<form action="' . $postbackURL . '" class="paymentWidgets" data-brands="'. $payment_brands .'">
                         </form>';
             }
         }
