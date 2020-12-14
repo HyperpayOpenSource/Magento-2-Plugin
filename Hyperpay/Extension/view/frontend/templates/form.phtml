@@ -1,8 +1,5 @@
 <style>
-    <?php if($block->getLang()=="ar"){ ?>
-    .wpwl-wrapper-cardNumber,wpwl-group{
-        direction: ltr !important;
-    }
+<?php if($block->getLang()=="ar"){ ?>
     .wpwl-group {
         direction: ltr !important;
     }
@@ -16,42 +13,42 @@
         left: 8px !important;
         right: unset  !important;
     }
-    <?php } ?>
-    .wpwl-brand-card {
-        display: block;
-        visibility: visible;
-        position: absolute;
-        right: -8px;
-        top: 5px;
-        width: 65px;
-        z-index: 10;
-        float: right;
-    }
-    .wpwl-label-brand{
-        display: none !important;
-    }
-    .wpwl-control-brand{
-        display: none !important;
-    }
-    .wpwl-brand-MASTER{
+<?php } ?>
+.wpwl-brand-card {
+    display: block;
+    visibility: visible;
+    position: absolute;
+    right: -8px;
+    top: 5px;
+    width: 65px;
+    z-index: 10;
+    float: right;
+}
+.wpwl-label-brand{
+    display: none !important;
+}
+.wpwl-control-brand{
+    display: none !important;
+}
+.wpwl-brand-MASTER{
 
-        top:0px;
+    top:0px;
 
-    }
-    <?php echo $block->getCss();?>
+}
+<?php echo $block->getCss();?>
 </style>
 <script
-        src="https://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-        crossorigin="anonymous"></script>
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
 <script>
+    jq331 = jQuery.noConflict( true );
     function displayName(element) {
-        $('.wpwl-brand-card').each(function () {
-            $(element).append(this);
+        jq331('.wpwl-brand-card').each(function () {
+            jq331(element).append(this);
         });
     }
-    jq331 = jQuery.noConflict( true );
-    var wpwlOptions = {
+	var wpwlOptions = {
         locale: "<?php echo $block->getLang();?>",
         paymentTarget: "_top",
         style: "<?php echo $block->getStyle();?>",
