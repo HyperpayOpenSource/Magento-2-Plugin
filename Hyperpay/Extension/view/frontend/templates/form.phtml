@@ -1,61 +1,72 @@
 <style>
-<?php if($block->getLang()=="ar"){ ?>
-	.wpwl-wrapper-cardNumber,wpwl-group{
-            direction: ltr !important;
-        }
-<?php } ?>
-.wpwl-brand-card{
+    <?php if($block->getLang()=="ar"){ ?>
+    .wpwl-wrapper-cardNumber,wpwl-group{
+        direction: ltr !important;
+    }
+    .wpwl-group {
+        direction: ltr !important;
+    }
 
-    display:block;
+    .wpwl-control-cardNumber {
+        direction: ltr !important;
+        text-align: right;
+    }
 
-    visibility:visible;
+    .wpwl-brand-card {
+        left: 8px !important;
+        right: unset  !important;
+    }
+    <?php } ?>
+    .wpwl-brand-card {
+        display: block;
+        visibility: visible;
+        position: absolute;
+        right: -8px;
+        top: 5px;
+        width: 65px;
+        z-index: 10;
+        float: right;
+    }
+    .wpwl-label-brand{
+        display: none !important;
+    }
+    .wpwl-control-brand{
+        display: none !important;
+    }
+    .wpwl-brand-MASTER{
 
-    position:absolute;
+        top:0px;
 
-    right:8px;
-
-    top:7px;
-
-    width:65px;
-
-    z-index:10;
-
-    float:right;
-
-}
-
-.wpwl-brand-MASTER{
-
-    top:0px;
-
-}
-<?php echo $block->getCss();?>
+    }
+    <?php echo $block->getCss();?>
 </style>
 <script
-	src="https://code.jquery.com/jquery-3.3.1.min.js"
-	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-	crossorigin="anonymous"></script>
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
 <script>
-	jq331 = jQuery.noConflict( true );
-	var wpwlOptions = {
-		locale: "<?php echo $block->getLang();?>",
-		paymentTarget: "_top",
-		style: "<?php echo $block->getStyle();?>",
-		onReady: function(){
-			jq331('[name="form_key"]').remove();
-            jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-qrcode').hide();
-            jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile').hide();
-            jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-group-paymentMode').hide();
-			jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-group-mobilePhone').show();
-            jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile .wpwl-control-radio-mobile').attr('checked',true);
-            jq331('.wpwl-form-virtualAccount-STC_PAY .wpwl-wrapper-radio-mobile .wpwl-control-radio-mobile').trigger('click'); 
-        }
+    function displayName(element) {
+        $('.wpwl-brand-card').each(function () {
+            $(element).append(this);
+        });
+    }
+    jq331 = jQuery.noConflict( true );
+    var wpwlOptions = {
+        locale: "<?php echo $block->getLang();?>",
+        paymentTarget: "_top",
+        style: "<?php echo $block->getStyle();?>",
+        onReady: function () {
+            jq331('.wpwl-wrapper-cardNumber').each(function () {
+                displayName(this);
+            });
+            jq331('[name="form_key"]').remove();
 
-	}
-	wpwlOptions.applePay = {
-		merchantCapabilities:["supports3DS"],
-		supportedNetworks: ["amex", "masterCard", "visa", "mada"]
-	}
+        },
+        applePay : {
+            merchantCapabilities:["supports3DS"],
+            supportedNetworks: ["amex", "masterCard", "visa", "mada"]
+        }
+    }
 </script>
 <script src="<?php echo $block->getFormUrl(); ?>"></script>
 <?php if($block->getPaymentBrand() === 'APPLEPAY') {?>
