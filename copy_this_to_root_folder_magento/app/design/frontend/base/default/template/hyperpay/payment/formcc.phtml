@@ -41,12 +41,12 @@
         crossorigin="anonymous"></script>
 
 <script>
+    jq331 = jQuery.noConflict( true );
     function displayName(element) {
-        $('.wpwl-brand-card').each(function () {
-            $(element).append(this);
+        jq331('.wpwl-brand-card').each(function () {
+            jq331(element).append(this);
         });
     }
-    jq331 = jQuery.noConflict( true );
     var wpwlOptions = {
         locale: "<?php echo $lang;?>",
         paymentTarget: "_top",
