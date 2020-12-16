@@ -14,6 +14,12 @@
                 <value id="oppwalive" type="host">oppwa.com</value>
             </values>
         </policy>
+        <policy id="form-action">
+            <values>
+                <value id="oppwa" type="host">*.oppwa.com</value>
+                <value id="oppwalive" type="host">oppwa.com</value>
+            </values>
+        </policy>
         <policy id="style-src">
             <values>
                 <value id="oppwa" type="host">*.oppwa.com</value>
