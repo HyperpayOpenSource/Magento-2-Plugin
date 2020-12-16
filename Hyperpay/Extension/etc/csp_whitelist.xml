@@ -26,5 +26,17 @@
                 <value id="oppwalive" type="host">oppwa.com</value>
             </values>
         </policy>
+        <policy id="img-src">
+            <values>
+                <value id="oppwa" type="host">*.oppwa.com</value>
+                <value id="oppwalive" type="host">oppwa.com</value>
+            </values>
+        </policy>
+        <policy id="connect-src">
+            <values>
+                <value id="oppwa" type="host">*.oppwa.com</value>
+                <value id="oppwalive" type="host">oppwa.com</value>
+            </values>
+        </policy>
     </policies>
 </csp_whitelist>
