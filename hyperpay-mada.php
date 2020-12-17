@@ -114,6 +114,18 @@ function hyperpay_mada_init_gateway_class()
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             add_action('woocommerce_receipt_hyperpay_mada', array(&$this, 'receipt_page'));
+            // hard-code mada title
+            add_action( 'admin_print_footer_scripts', function () use ($lang) {
+              ?>
+              <script type="text/javascript">
+              jQuery(function ($) {
+                var lang = '<?php echo $lang; ?>';
+                var title = ( lang === 'ar' ? "بطاقة مدى البنكية" :'mada card');
+                $("#woocommerce_hyperpay_mada_title").val(title);
+              });
+              </script>`;
+              <?php
+          }, 50 );
         }
 
         public function init_form_fields()
@@ -147,7 +159,8 @@ function hyperpay_mada_init_gateway_class()
                     'title' => __('Title:'),
                     'type' => 'text',
                     'description' => ' ' . __('This controls the title which the user sees during checkout.'),
-                    'default' => $lang === 'ar' ? __('بطاقة مدى') : __('Mada Card')
+                    'default' => $lang === 'ar' ? __("بطاقة مدى البنكية") : __('mada card'),
+                    'custom_attributes' => array('readonly' => 'readonly'),
                 ),
                 'trans_type' => array(
                     'title' => __('Transaction type'),
