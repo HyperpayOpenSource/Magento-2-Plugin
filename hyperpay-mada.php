@@ -120,7 +120,7 @@ function hyperpay_mada_init_gateway_class()
               <script type="text/javascript">
               jQuery(function ($) {
                 var lang = '<?php echo $lang; ?>';
-                var title = ( lang === 'ar' ? "بطاقة مدى البنكية" :'mada card');
+                var title = ( lang === 'ar' ? "بطاقة مدى البنكية" :'mada debit card');
                 $("#woocommerce_hyperpay_mada_title").val(title);
               });
               </script>`;
@@ -159,7 +159,7 @@ function hyperpay_mada_init_gateway_class()
                     'title' => __('Title:'),
                     'type' => 'text',
                     'description' => ' ' . __('This controls the title which the user sees during checkout.'),
-                    'default' => $lang === 'ar' ? __("بطاقة مدى البنكية") : __('mada card'),
+                    'default' => $lang === 'ar' ? __("بطاقة مدى البنكية") : __('mada debit card'),
                     'custom_attributes' => array('readonly' => 'readonly'),
                 ),
                 'trans_type' => array(
