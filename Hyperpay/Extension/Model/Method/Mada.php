@@ -15,7 +15,10 @@ class Mada extends \Hyperpay\Extension\Model\Method\MethodAbstract
      * @var string
      */
     protected $_code = 'HyperPay_Mada';
-
+    public function getTitle()
+    {
+        return __("mada");
+    }
 
 
 
