@@ -69,5 +69,8 @@ class Hyperpay_Model_Method_Mada extends Hyperpay_Model_Method_Abstract
 
         return Mage::getStoreConfig('payment/' . $this->getCode() . '/transaction_mode', $this->getOrder()->getStoreId());
     }
-
+    public function getTitle()
+    {
+        return __("mada debit card");
+    }
 }
