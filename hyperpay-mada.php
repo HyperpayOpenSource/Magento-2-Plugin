@@ -577,6 +577,9 @@ function hyperpay_mada_init_gateway_class()
                 $data .= "&billing.city=$city";
                 $data .= "&billing.state=$state";
                 $data .= "&billing.country=$country";
+
+                $data .= "&customer.givenName=$firstName";
+                $data .= "&customer.surname=$family";
             }
 
             if ($this->tokenization == 'enable' && $this->is_registered_user == true) {
