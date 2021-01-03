@@ -305,6 +305,20 @@ function hyperpay_init_gateway_class()
                     } else {
                         //fail case
                         $failed_msg = $resultJson['result']['description'];
+
+                        if (isset($resultJson['card']['bin'])) {
+                          $blackBins = require_once('includes/blackBins.php');
+                          $searchBin = $resultJson['card']['bin'];
+                          if (in_array($searchBin,$blackBins)) {
+                            if ($this->lang == 'ar') {
+                              $failed_msg = 'عذرا! يرجى اختيار خيار الدفع "مدى" لإتمام عملية الشراء بنجاح.';
+                            }else{
+                              $failed_msg = 'Sorry! Please select "mada" payment option in order to be able to complete your purchase successfully.';
+                            }
+
+                          }
+                        }
+
                     }
                     $orderid = '';
 
@@ -340,7 +354,7 @@ function hyperpay_init_gateway_class()
 
                                     $registrationIDs = $wpdb->get_results(
                                         "
-                                                                         SELECT * 
+                                                                         SELECT *
                                                                      FROM wp_woocommerce_saving_cards
                                                                          WHERE registration_id ='$registrationID'
                                                                          and mode = '" . $this->testmode . "'
@@ -484,7 +498,7 @@ function hyperpay_init_gateway_class()
 				.wpwl-group{
 				direction:ltr !important;
                 }
-                
+
 			  </style>';
                 };
 
