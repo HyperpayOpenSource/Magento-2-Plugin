@@ -113,6 +113,10 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @var \Magento\Catalog\Model\ProductRepository
      */
     protected $_productRepository;
+    /**
+     * @var  \Hyperpay\Extension\Model\Source\BlackBins
+     */
+    protected $blackBins;
 
     /**
      * Constructor
@@ -129,6 +133,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\ObjectManagerInterface                          $objectManager
      * @param \Magento\Sales\Api\OrderManagementInterface                        $orderManagement
      * @param \Magento\Catalog\Model\ProductRepository                           $productRepository
+     * @param \Hyperpay\Extension\Model\Source\BlackBins                         $blackBins
      * @param  \Magento\CatalogInventory\Api\StockRegistryInterface              $stockRegistry
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource            $resource 
      * @param \Magento\Framework\Data\Collection\AbstractDb                      $resourceCollection
@@ -145,7 +150,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Sales\Api\OrderManagementInterface $orderManagement,
-	\Magento\Catalog\Model\ProductRepository $productRepository,
+	    \Magento\Catalog\Model\ProductRepository $productRepository,
+        \Hyperpay\Extension\Model\Source\BlackBins $blackBins,
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
@@ -154,6 +160,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     { 
         $this->_scopeConfig = $scopeConfig;
         $this->_storeManager=$storeManager;
+        $this->blackBins=$blackBins;
         $this->_request = $request;
         $this->_objectManager = $objectManager;
         $this->_orderManagement = $orderManagement;
@@ -429,7 +436,15 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             if($order->getPayment()->getData('method')=='SadadNcb') {
                 $this->_status = $decodedData['resultDetails']['ErrorMessage'];
             } else {
-                $this->_status = 'fail';
+                $this->_status = $decodedData['result']['description'];
+            }
+            if (isset($decodedData['card']['bin'])) {
+                $blackBins =$this->blackBins->bins();
+                $searchBin = $decodedData['card']['bin'];
+                if (in_array($searchBin,$blackBins)) {
+                    $this->_status =__('Sorry! Please select mada payment option in order to be able to complete your purchase successfully.');
+
+                }
             }
         }
 
