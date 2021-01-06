@@ -144,6 +144,14 @@ class Hyperpay_ResponseController extends Mage_Core_Controller_Front_Action
             $order->addStatusHistoryComment($resultJson['result']['description']);
             $returnMessage .=" ( transaction id : " . $order->getIncrementId() . " )";
             $order->cancel()->save();
+            if (isset($resultJson['card']['bin'])) {
+                $blackBins = Mage::getModel('hyperpay/source_blackBins')->bins();
+                $searchBin = $resultJson['card']['bin'];
+                if (in_array($searchBin,$blackBins)) {
+                    $returnMessage =Mage::helper('hyperpay')->__('Sorry! Please select mada payment option in order to be able to complete your purchase successfully.');
+
+                }
+            }
             $pageName = 'hyperpay/response/addErrorAndRedirect/';
                 $params = array('message' => $returnMessage);
 
