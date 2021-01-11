@@ -372,7 +372,7 @@ function hyperpayapplepay_init_gateway_class()
                 echo '<script>
                             var wpwlOptions = {
 
-                            
+
                                 style:"' . $this->payment_style . '",
                                 locale:"' . $this->lang . '",
                                 paymentTarget: "_top",
@@ -395,9 +395,8 @@ function hyperpayapplepay_init_gateway_class()
                           </style>';
                 };
                 // payment form
-                echo '<script  src="' . $scriptURL . '"></script>
-                        <form action="' . $postbackURL . '" class="paymentWidgets">
-                          ' . $payment_brands . '
+                echo '<script  src="' . $scriptURL . '"></script>';
+                echo '<form action="' . $postbackURL . '" class="paymentWidgets" data-brands="'. $payment_brands .'">
                         </form>';
             }
         }

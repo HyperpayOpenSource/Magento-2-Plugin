@@ -502,10 +502,9 @@ function hyperpay_init_gateway_class()
 			  </style>';
                 };
 
-                echo '<script  src="' . $scriptURL . '"></script>
-		        <form action="' . $postbackURL . '" class="paymentWidgets">
-		          ' . $payment_brands . '
-		        </form>';
+                echo '<script  src="' . $scriptURL . '"></script>';
+                echo '<form action="' . $postbackURL . '" class="paymentWidgets" data-brands="'. $payment_brands .'">
+                        </form>';
             }
         }
 
