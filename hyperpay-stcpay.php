@@ -346,7 +346,7 @@ function hyperpay_stcpay_init_gateway_class()
                 echo '<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>';
 
                 echo '<script>
-                            var wpwlOptions = {          
+                            var wpwlOptions = {
                                 style:"' . $this->payment_style . '",
                                 locale:"' . $this->lang . '",
                                 paymentTarget: "_top",
@@ -373,9 +373,8 @@ function hyperpay_stcpay_init_gateway_class()
                           </style>';
                 };
                 // payment form
-                echo '<script  src="' . $scriptURL . '"></script>
-                        <form action="' . $postbackURL . '" class="paymentWidgets">
-                          ' . $payment_brands . '
+                echo '<script  src="' . $scriptURL . '"></script>';
+                echo '<form action="' . $postbackURL . '" class="paymentWidgets" data-brands="'. $payment_brands .'">
                         </form>';
             }
         }
