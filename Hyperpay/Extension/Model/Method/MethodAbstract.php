@@ -1,5 +1,5 @@
 <?php
- 
+
 namespace Hyperpay\Extension\Model\Method;
 
  use \Magento\Sales\Model\Order as OrderStatus;
@@ -70,7 +70,7 @@ abstract class MethodAbstract extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param array                                                   $data
-     */  
+     */
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
@@ -84,8 +84,8 @@ abstract class MethodAbstract extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = array()
-    ) 
-    { 
+    )
+    {
         parent::__construct(
             $context,
             $registry,
@@ -113,15 +113,15 @@ abstract class MethodAbstract extends \Magento\Payment\Model\Method\AbstractMeth
             if($this->_adapter->getEnv()) {
                 $grandTotal = (int) $amountVal;
             }else {
-                $grandTotal=$amountVal;
+                $grandTotal=number_format($amountVal, 2, '.', '');
             }
 
             $currency = $payment->getAdditionalInformation('currency');
  	    $auth = array('Authorization'=>'Bearer '.$this->_adapter->getAccessToken());
             $this->_helper->setHeaders($auth);
             $data = $this->_adapter->buildCaptureOrRefundRequest($payment,$currency, $grandTotal,"CP");
-            
-            try 
+
+            try
             {
                 $result=$this->_helper->getCurlReqData($url, $data);
             }
@@ -132,11 +132,11 @@ abstract class MethodAbstract extends \Magento\Payment\Model\Method\AbstractMeth
             throw $e;
             }
             $payment->setAdditionalInformation('CAPTURE', $result['result']['description']);
-            
+
             if (preg_match('/^(000\.400\.0|000\.400\.100)/', $result['result']['code'])
                 || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $result['result']['code'])) {
                 $order->setState(OrderStatus::STATE_COMPLETE);
-                $order->addStatusHistoryComment($result['result']['description'],OrderStatus::STATE_COMPLETE); 
+                $order->addStatusHistoryComment($result['result']['description'],OrderStatus::STATE_COMPLETE);
                 $payment->setStatus(self::STATUS_APPROVED)
                     ->setTransactionId($payment->getAdditionalInformation('checkoutId'))
                     ->setIsTransactionClosed(1)->save();
@@ -154,7 +154,7 @@ abstract class MethodAbstract extends \Magento\Payment\Model\Method\AbstractMeth
                 ->setIsTransactionClosed(1)->save();
             $order->setState(OrderStatus::STATE_COMPLETE);
             $order->setStatus(OrderStatus::STATE_COMPLETE);
-            $order->save(); 
+            $order->save();
         }
 
         return $this;
@@ -168,13 +168,13 @@ abstract class MethodAbstract extends \Magento\Payment\Model\Method\AbstractMeth
         if($this->_adapter->getEnv()) {
             $grandTotal = (int) $amountVal;
         }else {
-            $grandTotal=$amountVal;
+            $grandTotal=number_format($amountVal, 2, '.', '');
         }
         $currency = $payment->getAdditionalInformation('currency');
 	$auth = array('Authorization'=>'Bearer '.$this->_adapter->getAccessToken());
         $this->_helper->setHeaders($auth);
-        $data = $this->_adapter->buildCaptureOrRefundRequest($payment,$currency, $grandTotal,"RF");    
-        try 
+        $data = $this->_adapter->buildCaptureOrRefundRequest($payment,$currency, $grandTotal,"RF");
+        try
         {
             $result=$this->_helper->getCurlReqData($url, $data);
         }
@@ -185,13 +185,13 @@ abstract class MethodAbstract extends \Magento\Payment\Model\Method\AbstractMeth
             throw $e;
         }
             $payment->setAdditionalInformation('Refund', $result['result']['description']);
-            
+
             if (preg_match('/^(000\.400\.0|000\.400\.100)/', $result['result']['code'])
                 || preg_match('/^(000\.000\.|000\.100\.1|000\.[36])/', $result['result']['code'])) {
                 $order->setState(OrderStatus::STATE_CLOSED);
                 $order->addStatusHistoryComment($result['result']['description'],OrderStatus::STATE_CLOSED);
-                
-                    
+
+
                 $order->save();
             } else {
                 $order->addStatusHistoryComment($result['result']['description'], false);
