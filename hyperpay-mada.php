@@ -101,14 +101,25 @@ function hyperpay_mada_init_gateway_class()
             $this->msg['message'] = "";
             $this->msg['class'] = "";
 
-            // adding icon next gateway name in the checkout
-            // $this->icon = apply_filters( 'woocommerce_gateway_icon',plugins_url('images/mada-logo.png',__FILE__));
+            // adding icon next gateway name in the checkout and change name based on lang using jQuery
             add_filter( 'woocommerce_gateway_icon',  function ( $icon, $id ){
+                $icon_path = plugins_url('images/mada-logo.png', __FILE__);
+                $margin_style = ($this->lang === 'ar' ? 'margin-left: 50%;' : 'margin-right: 50%;');
+                    
                 if($id === 'hyperpay_mada') {
-                    $icon_path = plugins_url('images/mada-logo.png', __FILE__);
-                    $margin_style = ($this->lang === 'ar' ? 'margin-left: 50%;' : 'margin-right: 50%;');
-                    return '<img src="' . $icon_path . '" alt="Mada" style="'. $margin_style .'width: 60px;height: 25px" width="60" height="25">';
+                    $icon = '<img id="woocommerce_gateway_icon_mada_hp" src="' . $icon_path . '" alt="Mada" style="'. $margin_style .'width: 60px;height: 25px" width="60" height="25">';
                 }
+                
+                $icon .= '<script> 
+                var lang = "'. $this->lang .'";
+                var title = "mada debit card";
+                if(lang == "ar"){
+                    title = "بطاقة مدى البنكية"
+                }
+                var $img = jQuery("#woocommerce_gateway_icon_mada_hp").clone();
+                jQuery(".payment_method_hyperpay_mada").find("label").text(title).append($img);
+                jQuery(".payment_method_hyperpay_mada").prependTo(".wc_payment_methods");
+                </script>';
                 return $icon;
             }, 10, 2 );
 
