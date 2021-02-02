@@ -31,7 +31,6 @@
                 "&amount=".$dataCust['amount'].
                 "&currency=".$dataCust['currency'].
                 "&paymentType=".$dataTransaction['payment_type'].
-                "&customer.ip=".$dataCust['ip'].
                 "&customer.email=".$dataCust['email'].
                 "&shipping.customer.email=".$dataCust['email'].
                 "&merchantTransactionId=". $dataTransaction['orderId'];
