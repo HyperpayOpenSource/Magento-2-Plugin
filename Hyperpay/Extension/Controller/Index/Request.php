@@ -12,7 +12,7 @@ class Request extends \Magento\Framework\App\Action\Action
     protected $_storeManager;
     /**
      *
-     * @var \Magento\Framework\View\Result\PageFactory 
+     * @var \Magento\Framework\View\Result\PageFactory
      */
     protected $_pageFactory;
     /**
@@ -118,7 +118,7 @@ class Request extends \Magento\Framework\App\Action\Action
             $resultRedirect->setPath('checkout/onepage/failure');
             return $resultRedirect;
         }
-        try 
+        try
         {
                 $urlReq = $this->prepareTheCheckout($order);
 
@@ -140,11 +140,11 @@ class Request extends \Magento\Framework\App\Action\Action
     }
     /**
      * Build data and make a request to hyperpay payment gateway
-     * and return url of form 
+     * and return url of form
      *
      * @param $order
      * @return string
-     */ 
+     */
     public function prepareTheCheckout($order)
     {
 
@@ -167,14 +167,12 @@ class Request extends \Magento\Framework\App\Action\Action
         $paymentType =$this->_adapter->getPaymentType($method);
         $this->_adapter->setPaymentTypeAndCurrency($order, $paymentType, $currency);
         $entityId = $this->_adapter->getEntity($method);
-        $ip = $this->_remote->getRemoteAddress();
         $baseUrl = $this->_adapter->getUrl();
         $url = $baseUrl.'checkouts';
         $data = "entityId=".$entityId.
         "&amount=".$grandTotal.
         "&currency=".$currency.
-        "&paymentType=".$paymentType. 
-        "&customer.ip=".$ip.
+        "&paymentType=".$paymentType.
         "&customer.email=".$email.
         "&shipping.customer.email=".$email.
         "&merchantTransactionId=".$orderId;
@@ -183,14 +181,14 @@ class Request extends \Magento\Framework\App\Action\Action
         $this->_helper->setHeaders($auth);
         $data .= $this->_helper->getBillingAndShippingAddress($order);
         if(!empty($this->_adapter->getRiskChannelId())) {
-            $data .= "&risk.channelId=".$this->_adapter->getRiskChannelId(). 
+            $data .= "&risk.channelId=".$this->_adapter->getRiskChannelId().
                     "&risk.serviceId=I".
                     "&risk.amount=".$grandTotal.
                     "&risk.parameters[USER_DATA1]=Mobile";
         }
         $data .= $this->_adapter->getModeHyperpay();
         if($method=='HyperPay_SadadNcb') {
-            $data .="&bankAccount.country=SA"; 
+            $data .="&bankAccount.country=SA";
         }
         if ($method=='HyperPay_stc') {
             $data .= '&customParameters[branch_id]=1';
@@ -213,7 +211,7 @@ class Request extends \Magento\Framework\App\Action\Action
         }
         return $this->_adapter->getUrl()."paymentWidgets.js?checkoutId=".$decodedData['id'];
 
-        
+
     }
     private function checkIfExist($entityId,$auth,$id,$baseUrl)
     {
