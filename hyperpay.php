@@ -552,6 +552,12 @@ function hyperpay_init_gateway_class()
             $country = $order->get_billing_country();
             $email = $order->get_billing_email();
 
+            $firstName = preg_replace('/\s/', '', str_replace("&", "", $firstName));
+            $family = preg_replace('/\s/', '', str_replace("&", "", $family));
+            $street = preg_replace('/\s/', '', str_replace("&", "", $street));
+            $city = preg_replace('/\s/', '', str_replace("&", "", $city));
+            $state = preg_replace('/\s/', '', str_replace("&", "", $state));          
+            $country = preg_replace('/\s/', '', str_replace("&", "", $country));          
 
             if (empty($state)) {
                 $state = $city;
@@ -568,15 +574,30 @@ function hyperpay_init_gateway_class()
                 $data .= "&testMode=EXTERNAL";
             }
 
-            if ($this->connector_type == 'VISA_ACP') {
-
-                $data .= "&customer.givenName=$firstName";
-                $data .= "&customer.surname=$family";
-                $data .= "&billing.street1=$street";
-                $data .= "&billing.city=$city";
-                $data .= "&billing.state=$state";
-                $data .= "&billing.country=$country";
+            if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($firstName) == false)) {
+                $data .= "&customer.givenName=" . $firstName;
             }
+    
+            if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($family) == false)) {
+                $data .= "&customer.surname=" . $family;
+            }
+    
+            if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($street) == false)) {
+                $data .= "&billing.street1=" . $street;
+            }
+    
+            if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($city) == false)) {
+                $data .= "&billing.city=" . $city;
+            }
+    
+            if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($state) == false)) {
+                $data .= "&billing.state=" . $state;
+            }
+
+            if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($country) == false)) {
+                $data .= "&billing.country=" . $country;
+            }
+
             $data .= "&customParameters[branch_id]=1";
             $data .= "&customParameters[teller_id]=1";
             $data .= "&customParameters[device_id]=1";
@@ -659,6 +680,11 @@ function hyperpay_init_gateway_class()
             }
 
             return $page_list;
+        }
+
+        function isThisEnglishText($text)
+        {
+            return preg_match("/\p{Latin}+/u", $text);
         }
     }
 }
