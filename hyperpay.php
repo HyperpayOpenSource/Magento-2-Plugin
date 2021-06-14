@@ -261,7 +261,6 @@ function hyperpay_init_gateway_class()
                 'VISA' => 'Visa',
                 'MASTER' => 'Master Card',
                 'AMEX' => 'American Express',
-                'MADA' => 'Mada',
                 'STC_PAY' => 'STCPay',
 
             );
