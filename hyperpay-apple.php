@@ -50,6 +50,7 @@ function hyperpayapplepay_init_gateway_class()
             $this->brands = $this->settings['brands'];
             $this->connector_type = $this->settings['connector_type'];
             $this->payment_style = $this->settings['payment_style'];
+            $this->country_code = $this->settings['country_code'];
             $this->mailerrors = $this->settings['mailerrors'];
             $this->lang = $this->settings['lang'];
             $this->supportedNetworks = $this->settings['supportedNetworks'];
@@ -155,6 +156,12 @@ function hyperpayapplepay_init_gateway_class()
                     'options' => $this->get_hyperpayApplePay_payment_style(),
                     'description' => ''
                 ),
+                'country_code' => array(
+                    'title' => __('Country Code'),
+                    'type' => 'select',
+                    'options' => $this->get_hyperpayApplePay_country_code(),
+                    'description' => 'Select your country'
+                ),
                 'mailerrors' => array(
                     'title' => __('Enable error logging by email?'),
                     'type' => 'checkbox',
@@ -237,7 +244,21 @@ function hyperpayapplepay_init_gateway_class()
             return $hyperpayApplePay_payment_style;
         }
 
+        function get_hyperpayApplePay_country_code()
+        {
+            $hyperpayApplePay_country_code = array
+            (
+                'SA' => 'Saudi Arabia',
+                'AE' => 'United Arab Emirates',
+                'JO' => 'Jordan',
+                'BH' => 'Bahrain',
+                'US' => 'United States',
+                'EG' => 'Egypt',
+                '' => 'Others',
+            ); 
 
+            return $hyperpayApplePay_country_code;
+        }
 
         function receipt_page($order)
         {
@@ -275,8 +296,7 @@ function hyperpayapplepay_init_gateway_class()
                 $sccuess = 0;
                 $failed_msg = '';
                 $orderid = '';
-
-
+                
                 if (isset($resultJson['result']['code'])) {
                     $successCodePattern = '/^(000\.000\.|000\.100\.1|000\.[36])/';
                     $successManualReviewCodePattern = '/^(000\.400\.0|000\.400\.100)/';
@@ -369,21 +389,24 @@ function hyperpayapplepay_init_gateway_class()
 
                 $postbackURL = $order->get_checkout_payment_url(true);
 
+                $country_code = '';
+                if(isset($this->country_code) && !empty($this->country_code != '')){
+                    $country_code = ' countryCode: "'.$this->country_code . '",';
+                }
+
                 echo '<script>
                             var wpwlOptions = {
-
-
                                 style:"' . $this->payment_style . '",
                                 locale:"' . $this->lang . '",
                                 paymentTarget: "_top",
-
                             }
-		wpwlOptions.applePay = {
-		merchantCapabilities:["supports3DS"],
-		supportedNetworks: ' . $supportedNetworks . ',
-        displayName: "' . get_bloginfo() . '",
-        total: { label: "' . get_bloginfo() . ', INC." }
-	}
+                            wpwlOptions.applePay = {
+                                merchantCapabilities:["supports3DS"],
+                                supportedNetworks: ' . $supportedNetworks . ',
+                                displayName: "' . get_bloginfo() . '",
+                                total: { label: "' . get_bloginfo() . ', INC." },
+                                '.$country_code.'
+                            }
                     </script>';
                 //if the lang is Arabic change the direction to ltr
                 if ($this->lang == 'ar') {
