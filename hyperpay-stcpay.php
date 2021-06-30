@@ -75,6 +75,27 @@ function hyperpay_stcpay_init_gateway_class()
 
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             add_action('woocommerce_receipt_hyperpay_stcpay', array(&$this, 'receipt_page'));
+
+
+            // adding icon next gateway name in the checkout and change name based on lang using jQuery
+            add_filter( 'woocommerce_gateway_icon',  function ( $icon, $id ){
+                $icon_path = plugins_url('images/stcpay-logo.png', __FILE__);
+
+                $margin_style = ''; // css style
+
+                if($id === 'hyperpay_stcpay') { // stcpay etc ....
+                    $icon = '<img id="woocommerce_gateway_icon_stcpay_hp" src="' . $icon_path . '" alt="stcpay" style="'. $margin_style .'width: 100px;height: 30px" width="100" height="30">';
+                }
+            
+                $icon .= '<script> 
+                    if(jQuery("#woocommerce_gateway_icon_stcpay_hp").length == 0) {
+                        var $img = jQuery("#woocommerce_gateway_icon_stcpay_hp").clone();
+                        jQuery(".payment_method_hyperpay").find("label").append($img);
+                    }
+            
+                </script>';
+                return $icon;
+            }, 10, 2 );
         }
 
         public function init_form_fields()
