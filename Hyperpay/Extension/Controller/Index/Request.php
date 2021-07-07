@@ -120,7 +120,9 @@ class Request extends \Magento\Framework\App\Action\Action
         }
         try
         {
-                $urlReq = $this->prepareTheCheckout($order);
+                $base = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+                $statusUrl= $base."hyperpay/index/status/?method=".$order->getPayment()->getData('method');
+                $urlReq = $this->prepareTheCheckout($order,$statusUrl);
 
         }
         catch (\Exception $e)
@@ -132,9 +134,7 @@ class Request extends \Magento\Framework\App\Action\Action
         }
 
         $this->_coreRegistry->register('formurl', $urlReq);
-        $base = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
-        $status= $base."hyperpay/index/status/?method=".$order->getPayment()->getData('method');
-        $this->_coreRegistry->register('status', $status);
+        $this->_coreRegistry->register('status', $statusUrl);
 
         return $this->_pageFactory->create();
     }
@@ -145,7 +145,7 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param $order
      * @return string
      */
-    public function prepareTheCheckout($order)
+    public function prepareTheCheckout($order,$statusUrl)
     {
 
         $payment= $order->getPayment();
@@ -170,6 +170,7 @@ class Request extends \Magento\Framework\App\Action\Action
         $baseUrl = $this->_adapter->getUrl();
         $url = $baseUrl.'checkouts';
         $data = "entityId=".$entityId.
+        "&notificationUrl=".$statusUrl.
         "&amount=".$grandTotal.
         "&currency=".$currency.
         "&paymentType=".$paymentType.
