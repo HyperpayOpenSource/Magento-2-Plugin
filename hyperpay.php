@@ -44,6 +44,7 @@ function hyperpay_init_gateway_class()
     {
         protected $msg = array();
         protected $is_registered_user = false; // If the user is not a registerd user then no need to store the card.
+
         public function __construct()
         {
             $this->id = 'hyperpay';
@@ -75,7 +76,7 @@ function hyperpay_init_gateway_class()
 
             $lang = explode('-', get_bloginfo('language'));
             $lang = $lang[0];
-            $this->lang  = $lang;
+            $this->lang = $lang;
 
             $this->tokenization = $this->settings['tokenization'];
 
@@ -98,24 +99,26 @@ function hyperpay_init_gateway_class()
             add_action('woocommerce_receipt_hyperpay', array(&$this, 'receipt_page'));
 
             // adding icon next gateway name in the checkout and change name based on lang using jQuery
-            add_filter( 'woocommerce_gateway_icon',  function ( $icon, $id ){
-                $icon_path = plugins_url('images/visa-mastercard-logo.png', __FILE__);
-                
-                $margin_style = ''; // css style
-                
-                if($id === 'hyperpay') { // VISA MASTER etc ....
-                    $icon = '<img id="woocommerce_gateway_icon_visa_hp" src="' . $icon_path . '" alt="VISA" style="'. $margin_style .'width: 100px;height: 30px" width="100" height="30">';
-                }
+            add_filter('woocommerce_gateway_icon', function ($icon, $id) {
+                if ($id === 'hyperpay') { // VISA MASTER etc ....
+                    foreach ($this->brands as $brand) {
+                        $icon_path = plugins_url('images/' . $brand . '-logo.png', __FILE__);
+                        $margin_style = ''; // css style
+                        $logoID = 'woocommerce_gateway_icon_' . $brand . '_hp';
+                        $icon .= '<img id="' . $logoID . '" src="' . $icon_path . '" alt="' . $brand . '" style="' . $margin_style . 'width: 70px;height: 85px">';
 
-                $icon .= '<script> 
-                    if(jQuery("#woocommerce_gateway_icon_visa_hp").length == 0) {
-                        var $img = jQuery("#woocommerce_gateway_icon_visa_hp").clone();
+                        $icon .= '<script> 
+                    if(jQuery("#' . $logoID . '").length == 0) {
+                        var $img = jQuery("#' . $logoID . '").clone();
                         jQuery(".payment_method_hyperpay").find("label").append($img);
                     }
 
                 </script>';
+                    }
+                }
+
                 return $icon;
-            }, 10, 2 );
+            }, 10, 2);
         }
 
         public function init_form_fields()
@@ -224,6 +227,7 @@ function hyperpay_init_gateway_class()
 
             return $hyperpay_tokenization;
         }
+
         function get_hyperpay_trans_type()
         {
             $hyperpay_trans_type = array(
@@ -326,16 +330,16 @@ function hyperpay_init_gateway_class()
                         $failed_msg = $resultJson['result']['description'];
 
                         if (isset($resultJson['card']['bin'])) {
-                          $blackBins = require_once('includes/blackBins.php');
-                          $searchBin = $resultJson['card']['bin'];
-                          if (in_array($searchBin,$blackBins)) {
-                            if ($this->lang == 'ar') {
-                              $failed_msg = 'عذرا! يرجى اختيار خيار الدفع "مدى" لإتمام عملية الشراء بنجاح.';
-                            }else{
-                              $failed_msg = 'Sorry! Please select "mada" payment option in order to be able to complete your purchase successfully.';
-                            }
+                            $blackBins = require_once('includes/blackBins.php');
+                            $searchBin = $resultJson['card']['bin'];
+                            if (in_array($searchBin, $blackBins)) {
+                                if ($this->lang == 'ar') {
+                                    $failed_msg = 'عذرا! يرجى اختيار خيار الدفع "مدى" لإتمام عملية الشراء بنجاح.';
+                                } else {
+                                    $failed_msg = 'Sorry! Please select "mada" payment option in order to be able to complete your purchase successfully.';
+                                }
 
-                          }
+                            }
                         }
 
                     }
@@ -347,7 +351,7 @@ function hyperpay_init_gateway_class()
 
                     $order_response = new WC_Order($orderid);
                     if ($this->lang == 'ar') {
-                        echo  " <style>
+                        echo " <style>
                             .woocommerce-error {
                             text-align: right;
                             }
@@ -393,7 +397,6 @@ function hyperpay_init_gateway_class()
                                         );
                                     }
                                 }
-
 
 
                                 $order->add_order_note($this->success_message . 'Transaction ID: ' . $uniqueId);
@@ -467,24 +470,24 @@ function hyperpay_init_gateway_class()
 
 
                 echo '<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>';
-?>
+                ?>
                 <script>
                     var wpwlOptions = {
 
-                        onReady: function() {
+                        onReady: function () {
                             <?php
                             if ($this->tokenization == 'enable') {
                             ?>
 
-                                var storeMsg = 'Store payment details?';
-                                var style = 'style="direction: ltr"';
-                                if (wpwlOptions.locale == "ar") {
-                                    storeMsg = ' هل تريد حفظ معلومات البطاقة ؟';
-                                    style = 'style="direction: rtl"';
-                                }
-                                var createRegistrationHtml = '<div class="customLabel style ="' + style + '">' + storeMsg +
-                                    '</div><div class="customInput style ="' + style + '""><input type="checkbox" name="createRegistration" value="true" /></div>';
-                                $('form.wpwl-form-card').find('.wpwl-button').before(createRegistrationHtml);
+                            var storeMsg = 'Store payment details?';
+                            var style = 'style="direction: ltr"';
+                            if (wpwlOptions.locale == "ar") {
+                                storeMsg = ' هل تريد حفظ معلومات البطاقة ؟';
+                                style = 'style="direction: rtl"';
+                            }
+                            var createRegistrationHtml = '<div class="customLabel style ="' + style + '">' + storeMsg +
+                                '</div><div class="customInput style ="' + style + '""><input type="checkbox" name="createRegistration" value="true" /></div>';
+                            $('form.wpwl-form-card').find('.wpwl-button').before(createRegistrationHtml);
                             <?php } ?>
 
 
@@ -498,7 +501,7 @@ function hyperpay_init_gateway_class()
 
                         },
                         "style": "<?php echo $this->payment_style  ?>",
-                        "locale": "<?php echo  $this->lang ?>",
+                        "locale": "<?php echo $this->lang ?>",
                         "paymentTarget": "_top",
                         "registrations": {
                             "hideInitialPaymentForms": "true",
@@ -506,12 +509,10 @@ function hyperpay_init_gateway_class()
                         }
 
 
-
-
                     }
                 </script>
 
-<?php
+                <?php
                 if ($this->lang == 'ar') {
                     echo '<style>
 				.wpwl-group{
@@ -522,7 +523,7 @@ function hyperpay_init_gateway_class()
                 };
 
                 echo '<script  src="' . $scriptURL . '"></script>';
-                echo '<form action="' . $postbackURL . '" class="paymentWidgets" data-brands="'. $payment_brands .'">
+                echo '<form action="' . $postbackURL . '" class="paymentWidgets" data-brands="' . $payment_brands . '">
                         </form>';
             }
         }
@@ -575,8 +576,8 @@ function hyperpay_init_gateway_class()
             $family = preg_replace('/\s/', '', str_replace("&", "", $family));
             $street = preg_replace('/\s/', '', str_replace("&", "", $street));
             $city = preg_replace('/\s/', '', str_replace("&", "", $city));
-            $state = preg_replace('/\s/', '', str_replace("&", "", $state));          
-            $country = preg_replace('/\s/', '', str_replace("&", "", $country));          
+            $state = preg_replace('/\s/', '', str_replace("&", "", $state));
+            $country = preg_replace('/\s/', '', str_replace("&", "", $country));
 
             if (empty($state)) {
                 $state = $city;
@@ -589,6 +590,8 @@ function hyperpay_init_gateway_class()
                 "&merchantTransactionId=$transactionID" .
                 "&customer.email=$email";
 
+            $data .= '&notificationUrl=' . $order->get_checkout_payment_url(true);
+
             if ($mode == 'CONNECTOR_TEST') {
                 $data .= "&testMode=EXTERNAL";
             }
@@ -596,19 +599,19 @@ function hyperpay_init_gateway_class()
             if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($firstName) == false)) {
                 $data .= "&customer.givenName=" . $firstName;
             }
-    
+
             if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($family) == false)) {
                 $data .= "&customer.surname=" . $family;
             }
-    
+
             if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($street) == false)) {
                 $data .= "&billing.street1=" . $street;
             }
-    
+
             if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($city) == false)) {
                 $data .= "&billing.city=" . $city;
             }
-    
+
             if (!($this->connector_type == 'MPGS' && $this->isThisEnglishText($state) == false)) {
                 $data .= "&billing.state=" . $state;
             }
@@ -707,4 +710,5 @@ function hyperpay_init_gateway_class()
         }
     }
 }
+
 ?>
