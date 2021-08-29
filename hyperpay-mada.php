@@ -579,6 +579,8 @@ function hyperpay_mada_init_gateway_class()
                 "&merchantTransactionId=$transactionID" .
                 "&customer.email=$email";
 
+            $data .= '&notificationUrl=' . $order->get_checkout_payment_url(true);
+
             if ($mode == 'CONNECTOR_TEST') {
                 $data .= "&testMode=EXTERNAL";
             }
