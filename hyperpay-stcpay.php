@@ -3,7 +3,7 @@
   Plugin Name: STCPay for Hyperpay Payment Gateway for WooCommerce
   Plugin URI:
   Description: Adds STCPay payment option into WooCommerce. Hyperpay is the first one stop-shop service company for online merchants in MENA Region.<strong>If you have any question, please <a href="http://www.hyperpay.com/" target="_new">contact Hyperpay</a>.</strong>
-  Version: 1.0
+  Version: 1.5.9
   Author: Hyperpay Team
   Ported to Oppwa By : Hyperpay Team
 
