@@ -15,29 +15,43 @@ class CancelOrderPending
 {
 
     protected $_orderCollectionFactory;
-
+    /**
+     *
+     * @var \Hyperpay\Extension\Model\Adapter
+     */
+    protected $_adapter;
     private $logger;
     protected  $_scopeConfig;
     protected $_storeScope= \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
     protected $_stdTimezone;
-
+    /**
+     *
+     * @var \Magento\Framework\Json\Helper\Data
+     */
+    protected $_jsonHelper;
     /**
      * CancelOrderPending constructor.
      *
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param  \Psr\Log\LoggerInterface $logger
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Hyperpay\Extension\Model\Adapter     $adapter
+     * @param \Magento\Framework\Json\Helper\Data         $jsonHelper
      */
     public function __construct(
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Hyperpay\Extension\Model\Adapter $adapter,
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Magento\Framework\Stdlib\DateTime\Timezone $stdTimezone
     ) {
        $this->_orderCollectionFactory = $orderCollectionFactory;
         $this->logger = $logger;
+        $this->_adapter=$adapter;
         $this->_scopeConfig = $scopeConfig;
         $this->_stdTimezone = $stdTimezone;
+        $this->_jsonHelper = $jsonHelper;
 
     }
     /**
@@ -87,12 +101,42 @@ class CancelOrderPending
 
 
             $order_ids = [];
-
+            $baseUrl = $this->_adapter->getUrl();
             foreach ($orders as $order) {
-                $order_ids[] = $order->getId();
-                $order->addStatusHistoryComment('Order has been canceled automatically', \Magento\Sales\Model\Order::STATE_CANCELED);
-                $order->cancel();
-                $order->save();
+
+                $payment= $order->getPayment();
+                $method = $payment->getData('method');
+                $accesstoken = $this->_adapter->getAccessToken();
+                $entityId = $this->_adapter->getEntity($method);
+                $orderId=$order->getIncrementId();
+                $url = $baseUrl."query";
+                $url .= "?entityId=".$entityId;
+                $url .=	"&merchantTransactionId=".$orderId;
+                $this->logger->info($url);
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_HTTPHEADER,array('Authorization:Bearer '.$accesstoken));
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);// this should be set to true in production
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $responseData = curl_exec($ch);
+                if(curl_errno($ch)) {
+                    continue;
+                }
+                curl_close($ch);
+                $this->logger->info($responseData);
+                $decodedData = $this->_jsonHelper->jsonDecode($responseData);
+                $order_ids[] = $order->getIncrementId();
+                if ($decodedData['result']['code']==="700.400.580")
+                {
+                    $order->addStatusHistoryComment('Order has been canceled automatically, ', \Magento\Sales\Model\Order::STATE_CANCELED);
+                    $order->cancel();
+                    $order->save();
+                }else {
+                    $status = $this->_adapter->orderStatus($decodedData['payments'][0], $order);
+                    $this->_adapter->setInfo($order, $decodedData['payments'][0]['id']);
+                    $order->addStatusHistoryComment('Order has been updated automatically,status: '.$status , \Magento\Sales\Model\Order::STATE_CANCELED);
+                }
             }
             $this->logger->info('cancelled orders ' . implode(' , ', $order_ids));
         } catch (\Exception $exception) {
