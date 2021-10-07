@@ -111,7 +111,7 @@ class Request extends \Magento\Framework\App\Action\Action
         $quote = $this->_quoteFactory->create()->load($order->getQuoteId());
         $quote->setIsActive(true);
         $quote->save();
-        $this->_checkoutSession->replaceQuote($quote);
+	$this->_checkoutSession->replaceQuote($quote);
         if(($order->getState() !== 'new') && ($order->getState() !== 'pending_payment')) {
             $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
             $resultRedirect = $this->resultRedirectFactory->create();
@@ -145,7 +145,7 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param $order
      * @return string
      */
-    public function prepareTheCheckout($order,$statusUrl)
+    public function prepareTheCheckout($order,$status)
     {
 
         $payment= $order->getPayment();
@@ -170,7 +170,7 @@ class Request extends \Magento\Framework\App\Action\Action
         $baseUrl = $this->_adapter->getUrl();
         $url = $baseUrl.'checkouts';
         $data = "entityId=".$entityId.
-        "&notificationUrl=".$statusUrl.
+        "&notificationUrl=".$status.
         "&amount=".$grandTotal.
         "&currency=".$currency.
         "&paymentType=".$paymentType.
@@ -203,7 +203,7 @@ class Request extends \Magento\Framework\App\Action\Action
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";
         }
 
-        if ($this->checkIfExist($entityId,$accesstoken,$orderId,$baseUrl)) {
+        if ($this->checkIfExist($order,$entityId,$accesstoken,$orderId,$baseUrl)) {
             throw new \Exception(__("This order has already been processed,Please place a new order"));
         }
         $decodedData = $this->_helper->getCurlReqData($url, $data);
@@ -214,7 +214,7 @@ class Request extends \Magento\Framework\App\Action\Action
 
 
     }
-    private function checkIfExist($entityId,$auth,$id,$baseUrl)
+    private function checkIfExist($order,$entityId,$auth,$id,$baseUrl)
     {
         $url = $baseUrl."query";
         $url .= "?entityId=".$entityId;
@@ -230,11 +230,27 @@ class Request extends \Magento\Framework\App\Action\Action
             return curl_error($ch);
         }
         curl_close($ch);
-        $response = json_decode($responseData);
+	$response = json_decode($responseData);
         if ($response->result->code==="700.400.580")
         {
             return false;
-        }
-        return true;
+	}
+	if(count($response->payments)==0)
+	{
+	 return false;
+	}
+	$orderTime =  new \DateTime($order->getCreatedAt());
+	foreach ($response->payments as $payment) {
+	     $paymentTime = new \DateTime($payment->timestamp);
+	     $interval = date_diff($paymentTime,$orderTime);
+         $diffDays = $interval->format('%a');
+	     if($diffDays <= 1)
+	     {
+	         return true;
+	     }
+
+	}
+	return false;
+
     }
 }
