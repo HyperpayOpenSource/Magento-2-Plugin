@@ -11,6 +11,9 @@
                  <field id="auth" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
                      <label>Token</label>
                  </field>
+                 <field id="webhook_key" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                     <label>Webhook Key</label>
+                 </field>
                 <field id="style" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Style</label>
                     <source_model>Hyperpay\Extension\Model\Source\Style</source_model>
@@ -36,7 +39,7 @@
                  <field id="cancel_order" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
                      <label>Pending Payment Order Lifetime (minutes)</label>
                  </field>
-            </group> 
+            </group>
              <group id="HyperPay_Visa" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>HyperPay Visa</label>
                 <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
@@ -251,7 +254,7 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="payment_action" translate="label" type="hidden" sortOrder="3" showInDefault="0" showInWebsite="0" showInStore="0" >     
+                <field id="payment_action" translate="label" type="hidden" sortOrder="3" showInDefault="0" showInWebsite="0" showInStore="0" >
                 </field>
                 <field id="entityId" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Entity Id</label>
@@ -299,7 +302,7 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                 <field id="payment_action" translate="label" type="hidden" sortOrder="3" showInDefault="0" showInWebsite="0" showInStore="0" >     
+                 <field id="payment_action" translate="label" type="hidden" sortOrder="3" showInDefault="0" showInWebsite="0" showInStore="0" >
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sort Order</label>
