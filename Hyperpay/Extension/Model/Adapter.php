@@ -24,8 +24,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     const MERCHANT_ID = 'merchant_id';
     const RISK_CHANNEL_ID = 'riskChannelId';
     const ACCESS_TOKEN = 'auth';
+    const WEBHOOK_KEY = 'webhook_key';
     /**
-     *  
+     *
      * @var string
      */
     protected $_sadadStatusTestUrl='https://stg.sadad.hyperpay.com/PayWareHub/api/PayWare/GetCheckoutStatus';
@@ -135,10 +136,10 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Catalog\Model\ProductRepository                           $productRepository
      * @param \Hyperpay\Extension\Model\Source\BlackBins                         $blackBins
      * @param  \Magento\CatalogInventory\Api\StockRegistryInterface              $stockRegistry
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource            $resource 
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource            $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb                      $resourceCollection
      * @param array                                                              $data
-     */ 
+     */
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
@@ -156,8 +157,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = array()
-    ) 
-    { 
+    )
+    {
         $this->_scopeConfig = $scopeConfig;
         $this->_storeManager=$storeManager;
         $this->blackBins=$blackBins;
@@ -185,10 +186,19 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * Retrieve the server mode from configuration
      *
      * @return string
-     */ 
+     */
     public function getMode()
     {
         return $this->getConfigData(self::MODE);
+    }
+    /**
+     * Retrieve Webhook key from configuration
+     *
+     * @return string
+     */
+    public function getWebhookKey()
+    {
+        return $this->getConfigData(self::WEBHOOK_KEY);
     }
     /**
      * Retrieve Access token from configuration
@@ -203,7 +213,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * Retrieve risk channel id from configuration
      *
      * @return string
-     */ 
+     */
     public function getRiskChannelId()
     {
         return $this->getConfigData(self::RISK_CHANNEL_ID);
@@ -214,7 +224,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      *  card , none, plain
      *
      * @return string
-     */ 
+     */
     public function getStyle()
     {
         return $this->getConfigData(self::STYLE);
@@ -223,7 +233,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * Retrieve the CSS tags and attributes of payment form from configuration
      *
      * @return string
-     */ 
+     */
     public function getCss()
     {
         return $this->getConfigData(self::CSS);
@@ -236,7 +246,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * Integrator Test , Connector Test, Live
      *
      * @return string
-     */ 
+     */
     public function getUrl()
     {
 
@@ -339,18 +349,18 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     public function getModeHyperpay()
     {
         if ($this->getMode() == "test") {
-            return "&testMode=EXTERNAL"; 
-        } 
+            return "&testMode=EXTERNAL";
+        }
     }
     /**
-     * Retrieve false on live mode and false otherwise 
+     * Retrieve false on live mode and false otherwise
      *
      * @return boolean
      */
     public function getEnv()
     {
         if($this->getMode()=="live") {
-            return false; 
+            return false;
         }
 
         return true;
@@ -363,7 +373,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     public function getSadadReqUrl()
     {
         if($this->getEnv()) {
-            return $this->_sadadRequestTestUrl; 
+            return $this->_sadadRequestTestUrl;
         }
 
           return $this->_sadadRequestLivetUrl;
@@ -377,7 +387,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     public function getSadadRedirectUrl()
     {
         if($this->getEnv()) {
-            return $this->_sadadTestRedirectUrl; 
+            return $this->_sadadTestRedirectUrl;
         }
 
           return $this->_sadadLiveRedirectUrl;
@@ -385,14 +395,14 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     /**
      * Retrieve sadad Status url depending on server mode
      *
-     *  *on both successful and failed transaction  
+     *  *on both successful and failed transaction
      *
      * @return string
      */
     public function getSadadStatusUrl()
     {
         if($this->getEnv()) {
-            return $this->_sadadStatusTestUrl; 
+            return $this->_sadadStatusTestUrl;
         }
 
           return $this->_sadadStatusLiveUrl;
@@ -411,8 +421,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         return $base."hyperpay/index/sstatus";
     }
     /**
-     * Set status and state to database after transaction complete 
-     * and return sucess or fail to view 
+     * Set status and state to database after transaction complete
+     * and return sucess or fail to view
      *
      * @param  $$decodedData
      * @param  $order
@@ -451,7 +461,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         return $this->_status;
     }
     /**
-     * Set status and state to database after transaction complete 
+     * Set status and state to database after transaction complete
      * and return sucess or fail to view (Sadad payment method)
      *
      * @param  $$decodedData
@@ -467,11 +477,11 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $order->save();
             $this->createInvoice($order);
             $this->_status = 'success';
-        } 
-        else 
+        }
+        else
         {
             $errorMessage = $this->_request->getParam('ErrorDescription');
-            $order->addStatusHistoryComment($errorMessage, 
+            $order->addStatusHistoryComment($errorMessage,
                 OrderStatus::STATE_CANCELED);
             $order->setState(OrderStatus::STATE_CANCELED);
             $orderCommentSender = $this->_objectManager
@@ -487,31 +497,31 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
      * Set checkoutId to additionalInformation column in sales_order_payment table
      *
      * @param $order
-     * @param $checkOutId  
+     * @param $checkOutId
      */
     public function setInfo($order, $checkOutId)
-    {    
+    {
         $payment = $order->getPayment();
         $payment->setAdditionalInformation('checkoutId', $checkOutId);
         $order->save();
 
     }
     /**
-     * Get checkoutId from additionalInformation column in sales_order_payment table 
+     * Get checkoutId from additionalInformation column in sales_order_payment table
      *
      * @param  $payment
-     * @return string 
+     * @return string
      */
     public function getCheckoutId($payment)
     {
         return $payment->getAdditionalInformation('checkoutId');
     }
     /**
-     * Set payment type and currency to additionalInformation column in sales_order_payment table 
+     * Set payment type and currency to additionalInformation column in sales_order_payment table
      *
      * @param $order
      * @param $paymentType
-     * @param $currency 
+     * @param $currency
      */
     public function setPaymentTypeAndCurrency($order, $paymentType,$currency)
     {
@@ -519,12 +529,12 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         $payment->setAdditionalInformation('payment_type', $paymentType);
         $payment->setAdditionalInformation('currency', $currency);
         $order->save();
-   
+
     }
     /**
      * Retrieve configuration from admin panel for hyperpay group
      *
-     * @param  $field 
+     * @param  $field
      * @return string
      */
     public function getConfigData($field)
@@ -535,8 +545,8 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     /**
      * Retrieve configuration from admin panel for specific payment method group
      *
-     * @param  $payment 
-     * @param  $field 
+     * @param  $payment
+     * @param  $field
      * @return string
      */
     public function getConfigDataForSpecificMethod($method,$field)
@@ -545,11 +555,11 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
 
     }
     /**
-     * Bulid data for capture curl request 
+     * Bulid data for capture curl request
      *
      * @param  $payment
-     * @param  $currency 
-     * @param  $grandTotal 
+     * @param  $currency
+     * @param  $grandTotal
      * @return string
      */
     public function buildCaptureOrRefundRequest($payment,$currency,$grandTotal,$op)
@@ -563,9 +573,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     }
     /**
      * Create invoice automatically
-     * **status will be set to processing 
-     * 
-     * @param $$order 
+     * **status will be set to processing
+     *
+     * @param $$order
      */
     public function createInvoice($order)
     {

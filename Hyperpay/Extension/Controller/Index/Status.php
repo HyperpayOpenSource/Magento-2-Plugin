@@ -13,7 +13,7 @@ class Status extends \Magento\Framework\App\Action\Action
     protected $_pageFactory;
     /**
      *
-     * @var \Hyperpay\Extension\Model\Adapter 
+     * @var \Hyperpay\Extension\Model\Adapter
      */
     protected $_adapter;
     /**
@@ -38,7 +38,7 @@ class Status extends \Magento\Framework\App\Action\Action
     protected $_orderFactory;
     /**
      * Constructor
-     * 
+     *
      * @param \Magento\Framework\App\Action\Context      $context
      * @param \Hyperpay\Extension\Model\Adapter             $adapter
      * @param \Magento\Framework\Registry                $coreRegistry
@@ -57,8 +57,8 @@ class Status extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Request\Http $request,
         \Magento\Sales\Model\OrderFactory $orderFactory
 
-    ) 
-    { 
+    )
+    {
         parent::__construct($context);
         $this->_pageFactory = $pageFactory;
         $this->_coreRegistry=$coreRegistry;
@@ -82,13 +82,10 @@ class Status extends \Magento\Framework\App\Action\Action
             $resultRedirect->setPath('checkout/onepage/failure');
             return $resultRedirect;
         }
-        
+
         try{
-            if(($order->getState() !== 'new') && ($order->getState() !== 'pending_payment')) {
-                $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
-                $resultRedirect = $this->resultRedirectFactory->create();
-                $resultRedirect->setPath('checkout/onepage/failure');
-                return $resultRedirect;
+            if($order->getState() == 'processing') {
+                $this->_redirect('checkout/onepage/success');
             }
             $this->_adapter->setInfo($order, $data['id']);
             $status = $this->_adapter->orderStatus($data, $order);
@@ -96,7 +93,7 @@ class Status extends \Magento\Framework\App\Action\Action
             if ($status !== 'success')
 	    {
         	$order->cancel();
-                $order->save();	    
+                $order->save();
                 $this->messageManager->addError($status);
                 $this->_redirect('checkout/onepage/failure');
 
@@ -118,7 +115,7 @@ class Status extends \Magento\Framework\App\Action\Action
      *
      * @param $order
      * @return string
-     */ 
+     */
     public function getHyperpayStatus()
     {
         if(empty($this->_request->getParam('id'))) {
@@ -131,7 +128,7 @@ class Status extends \Magento\Framework\App\Action\Action
         $auth = array('Authorization'=>'Bearer '.$this->_adapter->getAccessToken());
         $this->_helper->setHeaders($auth);
         $decodedData = $this->_helper->getCurlRespData($url);
-        
+
         if (!isset($decodedData)) {
             $this->_helper->doError(__('No response data found'));
         }
@@ -139,7 +136,7 @@ class Status extends \Magento\Framework\App\Action\Action
             $this->_helper->doError(__('Failed to get response from the payment gateway'));
         }
         return $decodedData;
-        
+
     }
 
 
