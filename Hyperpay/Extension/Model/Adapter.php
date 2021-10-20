@@ -439,9 +439,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         } else {
             $order->addStatusHistoryComment($decodedData['result']['description'], OrderStatus::STATE_CANCELED);
             $order->setState(OrderStatus::STATE_CANCELED);
-            //$orderCommentSender = $this->_objectManager
-              //  ->create('Magento\Sales\Model\Order\Email\Sender\OrderCommentSender');
-            //$orderCommentSender->send($order, true, '');
+            $orderCommentSender = $this->_objectManager
+                ->create('Magento\Sales\Model\Order\Email\Sender\OrderCommentSender');
+            $orderCommentSender->send($order, true, '');
             $this->_orderManagement->cancel($order->getEntityId());
             $order->save();
             if($order->getPayment()->getData('method')=='SadadNcb') {
