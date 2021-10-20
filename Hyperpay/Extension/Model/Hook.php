@@ -11,24 +11,31 @@ class Hook implements \Hyperpay\Extension\Api\HookInterface
     protected $_orderFactory;
     protected $request;
     protected $_adapter;
+    /**
+     * @var \Magento\Sales\Api\OrderManagementInterface
+     */
+    protected $_orderManagement;
 
     /**
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Hyperpay\Extension\Model\Adapter $_adapter
      * @param \Magento\Framework\App\Request\Http $request
+     * @param \Magento\Sales\Api\OrderManagementInterface   $orderManagement
      */
     public function __construct(
         \Psr\Log\LoggerInterface               $logger,
         \Magento\Sales\Model\OrderFactory      $orderFactory,
         \Hyperpay\Extension\Model\Adapter      $_adapter,
-        \Magento\Framework\Webapi\Rest\Request $request
+        \Magento\Framework\Webapi\Rest\Request $request,
+        \Magento\Sales\Api\OrderManagementInterface $orderManagement
     )
     {
         $this->request = $request;
         $this->_orderFactory = $orderFactory;
         $this->logger = $logger;
         $this->_adapter = $_adapter;
+        $this->_orderManagement = $orderManagement;
 
     }
 
@@ -91,8 +98,7 @@ class Hook implements \Hyperpay\Extension\Api\HookInterface
             $this->_adapter->setInfo($order, $result->payload->id);
             $status = $this->_adapter->orderStatus(json_decode(json_encode($result->payload), true), $order);
             if ($status !== 'success') {
-                $order->cancel();
-                $order->save();
+                $this->_orderManagement->cancel($order->getEntityId());
             }
             return "ok";
         } catch (\Exception $exception) {

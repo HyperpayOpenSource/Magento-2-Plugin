@@ -92,8 +92,6 @@ class Status extends \Magento\Framework\App\Action\Action
             $this->_coreRegistry->register('status', $status);
             if ($status !== 'success')
 	    {
-        	$order->cancel();
-                $order->save();
                 $this->messageManager->addError($status);
                 $this->_redirect('checkout/onepage/failure');
 
