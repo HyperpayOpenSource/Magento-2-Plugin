@@ -26,6 +26,10 @@ class CancelOrderPending
     protected $_storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
     protected $_stdTimezone;
     /**
+     * @var \Magento\Sales\Api\OrderManagementInterface
+     */
+    protected $_orderManagement;
+    /**
      *
      * @var \Magento\Framework\Json\Helper\Data
      */
@@ -46,6 +50,7 @@ class CancelOrderPending
         \Magento\Framework\App\Config\ScopeConfigInterface         $scopeConfig,
         \Hyperpay\Extension\Model\Adapter                          $adapter,
         \Magento\Framework\Json\Helper\Data                        $jsonHelper,
+        \Magento\Sales\Api\OrderManagementInterface                $orderManagement,
         \Magento\Framework\Stdlib\DateTime\Timezone                $stdTimezone
     )
     {
@@ -55,6 +60,7 @@ class CancelOrderPending
         $this->_scopeConfig = $scopeConfig;
         $this->_stdTimezone = $stdTimezone;
         $this->_jsonHelper = $jsonHelper;
+        $this->_orderManagement = $orderManagement;
 
     }
 
@@ -130,8 +136,7 @@ class CancelOrderPending
                     $order_ids[] = $order->getIncrementId();
                     if ($decodedData['result']['code'] === "700.400.580") {
                         $order->addStatusHistoryComment('Order has been canceled automatically, ', \Magento\Sales\Model\Order::STATE_CANCELED);
-                        $order->cancel();
-                        $order->save();
+                        $this->_orderManagement->cancel($order->getEntityId());
                     } else {
                         $orderTime = new \DateTime($order->getCreatedAt());
                         $status = false;
@@ -154,8 +159,7 @@ class CancelOrderPending
                         if (!$status) {
                             $order->addStatusHistoryComment('Order has been canceled automatically, ', \Magento\Sales\Model\Order::STATE_CANCELED);
                             $order->setState(OrderStatus::STATE_CANCELED);
-                            $order->cancel();
-                            $order->save();
+                            $this->_orderManagement->cancel($order->getEntityId());
                         }
                     }
                 }
