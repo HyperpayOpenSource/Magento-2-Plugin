@@ -137,6 +137,8 @@ class CancelOrderPending
                     if ($decodedData['result']['code'] === "700.400.580") {
                         $order->addStatusHistoryComment('Order has been canceled automatically, ', \Magento\Sales\Model\Order::STATE_CANCELED);
                         $this->_orderManagement->cancel($order->getEntityId());
+                        $order->setState(OrderStatus::STATE_CANCELED);
+                        $order->save();
                     } else {
                         $orderTime = new \DateTime($order->getCreatedAt());
                         $status = false;
@@ -160,6 +162,7 @@ class CancelOrderPending
                             $order->addStatusHistoryComment('Order has been canceled automatically, ', \Magento\Sales\Model\Order::STATE_CANCELED);
                             $order->setState(OrderStatus::STATE_CANCELED);
                             $this->_orderManagement->cancel($order->getEntityId());
+                            $order->save();
                         }
                     }
                 }
