@@ -4,6 +4,8 @@ namespace Hyperpay\Extension\Model;
 
 
 
+use Magento\Sales\Model\Order as OrderStatus;
+
 class Hook implements \Hyperpay\Extension\Api\HookInterface
 {
 
@@ -98,7 +100,10 @@ class Hook implements \Hyperpay\Extension\Api\HookInterface
             $this->_adapter->setInfo($order, $result->payload->id);
             $status = $this->_adapter->orderStatus(json_decode(json_encode($result->payload), true), $order);
             if ($status !== 'success') {
+                $order->addStatusHistoryComment('Order has been canceled by the webhook, ', \Magento\Sales\Model\Order::STATE_CANCELED);
+                $order->setState(OrderStatus::STATE_CANCELED);
                 $this->_orderManagement->cancel($order->getEntityId());
+                $order->save();
             }
             return "ok";
         } catch (\Exception $exception) {
