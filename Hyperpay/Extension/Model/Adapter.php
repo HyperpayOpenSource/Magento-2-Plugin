@@ -444,12 +444,13 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
             $orderCommentSender->send($order, true, '');
             $this->_orderManagement->cancel($order->getEntityId());
             $order->save();
-            if($order->getPayment()->getData('method')=='SadadNcb') {
+            $method = $order->getPayment()->getData('method');
+            if($method=='SadadNcb') {
                 $this->_status = $decodedData['resultDetails']['ErrorMessage'];
             } else {
                 $this->_status = $decodedData['result']['description'];
             }
-            if (isset($decodedData['card']['bin'])) {
+            if ((isset($decodedData['card']['bin'])) && ($method != 'HyperPay_Mada') ) {
                 $blackBins =$this->blackBins->bins();
                 $searchBin = $decodedData['card']['bin'];
                 if (in_array($searchBin,$blackBins)) {
