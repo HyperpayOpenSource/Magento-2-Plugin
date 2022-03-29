@@ -1,104 +1,116 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <payment>
-                <HyperPay_Visa>
-                    <title>VISA</title>
-                    <model>Hyperpay\Extension\Model\Method\Visa</model> 
-                    <active>0</active>
-                    <payment_action>DB</payment_action>              
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <cron_cancel>0</cron_cancel>
-                    <sort_order>2</sort_order>
-                </HyperPay_Visa>
-                <HyperPay_stc>
-                    <title>STCPAY</title>
-                    <model>Hyperpay\Extension\Model\Method\Stc</model> 
-                    <active>0</active>
-                    <payment_action>DB</payment_action>              
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <cron_cancel>0</cron_cancel>
-                    <sort_order>4</sort_order>
-                </HyperPay_stc>
-                <HyperPay_ApplePay>
-                    <title>ApplePay</title>
-                    <model>Hyperpay\Extension\Model\Method\Applepay</model>
-                    <active>0</active>
-                    <payment_action>DB</payment_action>
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <cron_cancel>0</cron_cancel>
-                    <sort_order>5</sort_order>
-                </HyperPay_ApplePay>
-                <HyperPay_Mada>
-                    <title>Mada</title>
-                    <model>Hyperpay\Extension\Model\Method\Mada</model>
-                    <active>0</active>
-                    <payment_action>DB</payment_action>
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <cron_cancel>0</cron_cancel>
-                    <sort_order>1</sort_order>
-                </HyperPay_Mada>
-                <HyperPay_Master>
-                    <title>MASTERCARD</title>
-                    <model>Hyperpay\Extension\Model\Method\Master</model> 
-                    <active>0</active>
-                    <payment_action>DB</payment_action>              
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <cron_cancel>0</cron_cancel>
-                    <sort_order>3</sort_order>
-                </HyperPay_Master>
-                <HyperPay_SadadNcb>
-                    <title>SADAD</title>
-                    <model>Hyperpay\Extension\Model\Method\SadadNcb</model> 
-                    <active>0</active>
-                    <payment_action>DB</payment_action>              
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <sort_order>8</sort_order>
-                </HyperPay_SadadNcb>
-                <HyperPay_SadadPayware>
-                    <title>SADAD</title>
-                    <model>Hyperpay\Extension\Model\Method\SadadPayware</model> 
-                    <active>0</active>
-                    <payment_action>DB</payment_action>              
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <sort_order>9</sort_order>
-                </HyperPay_SadadPayware>
-                <HyperPay_Amex>
-                    <title>AMEX</title>
-                    <model>Hyperpay\Extension\Model\Method\Amex</model> 
-                    <active>0</active>
-                    <payment_action>DB</payment_action>              
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <cron_cancel>0</cron_cancel>
-                    <sort_order>6</sort_order>
-                </HyperPay_Amex>
-                <HyperPay_PayPal>
-                    <title>PayPal</title>
-                    <model>Hyperpay\Extension\Model\Method\PayPal</model> 
-                    <active>0</active>
-                    <payment_action>DB</payment_action>              
-                    <currencycode>SAR</currencycode>
-                    <entityId>Enter your Entity Id</entityId>
-                    <connector>migs</connector>
-                    <cron_cancel>0</cron_cancel>
-                    <sort_order>7</sort_order>
-                </HyperPay_PayPal>
+            <HyperPay_Visa>
+                <title>VISA</title>
+                <model>Hyperpay\Extension\Model\Method\Visa</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>2</sort_order>
+            </HyperPay_Visa>
+            <HyperPay_Zoodpay>
+                <title>Zoodpay</title>
+                <model>Hyperpay\Extension\Model\Method\Zoodpay</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>2</sort_order>
+            </HyperPay_Zoodpay>
+            <HyperPay_stc>
+                <title>STCPAY</title>
+                <model>Hyperpay\Extension\Model\Method\Stc</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>4</sort_order>
+            </HyperPay_stc>
+            <HyperPay_ApplePay>
+                <title>ApplePay</title>
+                <model>Hyperpay\Extension\Model\Method\Applepay</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>5</sort_order>
+            </HyperPay_ApplePay>
+            <HyperPay_Mada>
+                <title>Mada</title>
+                <model>Hyperpay\Extension\Model\Method\Mada</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>1</sort_order>
+            </HyperPay_Mada>
+            <HyperPay_Master>
+                <title>MASTERCARD</title>
+                <model>Hyperpay\Extension\Model\Method\Master</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>3</sort_order>
+            </HyperPay_Master>
+            <HyperPay_SadadNcb>
+                <title>SADAD</title>
+                <model>Hyperpay\Extension\Model\Method\SadadNcb</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <sort_order>8</sort_order>
+            </HyperPay_SadadNcb>
+            <HyperPay_SadadPayware>
+                <title>SADAD</title>
+                <model>Hyperpay\Extension\Model\Method\SadadPayware</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <sort_order>9</sort_order>
+            </HyperPay_SadadPayware>
+            <HyperPay_Amex>
+                <title>AMEX</title>
+                <model>Hyperpay\Extension\Model\Method\Amex</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>6</sort_order>
+            </HyperPay_Amex>
+            <HyperPay_PayPal>
+                <title>PayPal</title>
+                <model>Hyperpay\Extension\Model\Method\PayPal</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>7</sort_order>
+            </HyperPay_PayPal>
         </payment>
     </default>
 </config>
