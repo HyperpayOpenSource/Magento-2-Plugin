@@ -476,6 +476,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             case 'HyperPay_Zoodpay':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/zoodpay.png");
                 break;
+            case 'HyperPay_Tabby':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/tabby.png");
+                break;
         }
         return $paymentImage;
     }

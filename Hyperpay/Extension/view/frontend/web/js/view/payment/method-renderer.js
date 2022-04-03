@@ -47,7 +47,11 @@ define(
             },
             {
                 type: 'HyperPay_Zoodpay',
-                component: 'Hyperpay_Extension/js/view/payment/method-renderer/Zoodpay'
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/ServerToServer'
+            },
+            {
+                type: 'HyperPay_Tabby',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/ServerToServer'
             }
         );
         return Component.extend({});

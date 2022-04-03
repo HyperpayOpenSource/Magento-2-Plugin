@@ -19,12 +19,23 @@
                 <model>Hyperpay\Extension\Model\Method\Zoodpay</model>
                 <active>0</active>
                 <payment_action>DB</payment_action>
-                <currencycode>SAR</currencycode>
+                <currencycode>JOD</currencycode>
                 <entityId>Enter your Entity Id</entityId>
                 <connector>migs</connector>
                 <cron_cancel>0</cron_cancel>
                 <sort_order>2</sort_order>
             </HyperPay_Zoodpay>
+            <HyperPay_Tabby>
+                <title>Tabby</title>
+                <model>Hyperpay\Extension\Model\Method\Tabby</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>2</sort_order>
+            </HyperPay_Tabby>
             <HyperPay_stc>
                 <title>STCPAY</title>
                 <model>Hyperpay\Extension\Model\Method\Stc</model>

@@ -152,6 +152,9 @@ class ServerToServer extends \Magento\Framework\App\Action\Action
     {
         $payment = $order->getPayment();
         $method = $payment->getData('method');
+
+        $paymentBrand = $this->getPaymentBrand($method);
+
         $email = $order->getBillingAddress()->getEmail();
         //order#
         $orderId = $order->getIncrementId();
@@ -173,32 +176,37 @@ class ServerToServer extends \Magento\Framework\App\Action\Action
             "&notificationUrl=" . $status .
             "&shopperResultUrl=" . $status .
             "&amount=" . $grandTotal .
-            "&paymentBrand=ZOODPAY" .
+            "&paymentBrand=$paymentBrand" .
             "&currency=" . $currency .
             "&paymentType=" . $paymentType .
             "&customer.email=" . $email .
-            "&testMode=EXTERNAL" .
-            "&merchantTransactionId=" . $orderId .
-            "&customParameters[service_code]=ZPI"; // fixed
+            "&merchantTransactionId=" . $orderId;
+
+        if ($method == 'HyperPay_Zoodpay') {
+            $data .= "&customParameters[service_code]=ZPI"; // fixed
+        }
+        $data .= $this->_adapter->getModeHyperpay();
+
 
         $accesstoken = $this->_adapter->getAccessToken();
         $auth = array('Authorization' => 'Bearer ' . $accesstoken);
         $this->_helper->setHeaders($auth);
 
         $data .= $this->_helper->getBillingAndShippingAddress($order);
-        $data .= $this->buildCartItems();
+        $data .= $this->buildCartItems($method);
 
         $decodedData = $this->_helper->getCurlServerToServer($baseUrl, $data);
+
         if (!isset($decodedData['id'])) {
             $this->_helper->doError(__('Request id is not found'));
             return;
         }
 
         if (!isset($decodedData['result']['code']) || $decodedData['result']['code'] != '000.200.000') {
-            $desc = \Safe\json_decode($decodedData['resultDetails']['ExtendedDescription'],true);
+            $desc = \Safe\json_decode($decodedData['resultDetails']['ExtendedDescription'], true);
             $errors = '';
             if (isset($desc['details'])) {
-                foreach ($desc['details'] as $detail){
+                foreach ($desc['details'] as $detail) {
                     $errors .= $detail['error'] . ' - ';
                 }
             }
@@ -215,7 +223,7 @@ class ServerToServer extends \Magento\Framework\App\Action\Action
         echo $redirectForm;
     }
 
-    private function buildCartItems()
+    private function buildCartItems($method)
     {
         $objectManager = ObjectManager::getInstance();
         $cart = $objectManager->get('\Magento\Checkout\Model\Cart');
@@ -228,13 +236,17 @@ class ServerToServer extends \Magento\Framework\App\Action\Action
             $cartData .= "&cart.items[" . $key . "].name=" . $item->getName() .
                 "&cart.items[" . $key . "].price=" . number_format($item->getPrice(), 2, '.', '') .
                 "&cart.items[" . $key . "].quantity=" . $item->getQty();
-//                "&cart.items[" . $key . "].description=" . $item->getName() .
-//                "&cart.items[" . $key . "].giftMessage=" . $item->getName();
+
+            if ($method == 'HyperPay_Tabby') {
+                $cartData .= "&cart.items[" . $key . "].sku=" . $item->getSku();
+            }
 
             $categories[] = [["test"]];
         }
-        $cartData .= "&customParameters['categories']=" . (json_encode($categories));
 
+        if ($method == 'HyperPay_Zoodpay') {
+            $cartData .= "&customParameters['categories']=" . (json_encode($categories));
+        }
         return $cartData;
     }
 
@@ -251,5 +263,17 @@ class ServerToServer extends \Magento\Framework\App\Action\Action
         $form .= '</form>';
         $form .= '<script> document.getElementById("redForm").submit();  </script>';
         return $form;
+    }
+
+    private function getPaymentBrand($method)
+    {
+        switch ($method) {
+            case 'HyperPay_Zoodpay':
+                return 'ZOODPAY';
+            case 'HyperPay_Tabby':
+                return 'TABBY';
+        }
+
+        return false;
     }
 }

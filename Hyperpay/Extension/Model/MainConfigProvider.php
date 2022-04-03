@@ -26,6 +26,7 @@ class MainConfigProvider implements ConfigProviderInterface
         'HyperPay_ApplePay',
         'HyperPay_stc',
         'HyperPay_Zoodpay',
+        'HyperPay_Tabby',
     ];
     /**
      * @var \Magento\Payment\Model\Method\AbstractMethod[]
