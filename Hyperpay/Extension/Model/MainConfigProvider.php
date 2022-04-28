@@ -26,6 +26,7 @@ class MainConfigProvider implements ConfigProviderInterface
         'HyperPay_ApplePay',
         'HyperPay_stc',
         'HyperPay_Zoodpay',
+        'HyperPay_Tabby',
     ];
     /**
      * @var \Magento\Payment\Model\Method\AbstractMethod[]
@@ -63,7 +64,8 @@ class MainConfigProvider implements ConfigProviderInterface
     {
         $config = ['payment' => []];
         foreach ($this->methodCodes as $code) {
-                $config['payment'][$code]['paymentAcceptanceMarkSrc'] = $this->_helper->getPaymentMarkImageUrl($code);
+            $config['payment'][$code]['paymentAcceptanceMarkSrc'] = $this->_helper->getPaymentMarkImageUrl($code);
+            $config['payment'][$code]['termsAndConditions'] = $this->_helper->getTermsAndConditions($code);
         }
 
         return $config;

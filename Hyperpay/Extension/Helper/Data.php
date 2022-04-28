@@ -476,7 +476,58 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             case 'HyperPay_Zoodpay':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/zoodpay.png");
                 break;
+            case 'HyperPay_Tabby':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/tabby.png");
+                break;
         }
         return $paymentImage;
     }
+
+    public function getTermsAndConditions($code)
+    {
+        $terms = '';
+        switch ($code) {
+            case 'HyperPay_Zoodpay':
+                $terms = $this->getZoodpayTermsAPI($code);
+                break;
+        }
+        return $terms;
+    }
+
+
+    public function getZoodpayTermsAPI($method)
+    {
+        $entityId = $this->_adapter->getEntity($method);
+
+        $url = $this->_adapter->getZoodpayUrl() . '/api/getTerms';
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'entity_id=' . $entityId,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $res = json_decode($response, true);
+
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $cart = $objectManager->get('\Magento\Checkout\Model\Cart');
+        $total = $cart->getQuote()->getGrandTotal() / $res['instalments'];
+
+        $installmentsText = number_format((float)$total, 2, '.', '');
+
+        return $res['instalments'] . ' Installments of <b>' . $installmentsText . '</b>/mo' . '<br><br><b>Terms : </b>' . $res['description'] . '<br>';
+
+    }
+
 }

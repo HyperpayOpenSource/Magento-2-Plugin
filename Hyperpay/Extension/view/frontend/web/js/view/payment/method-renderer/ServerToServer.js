@@ -15,14 +15,14 @@ define(
                     redirectAfterPlaceOrder: false
                 },
                 afterPlaceOrder: function () {
-                    window.location.replace(url.build('hyperpay/index/request'));
+                    window.location.replace(url.build('hyperpay/index/servertoserver'));
                 },
-                /** Returns payment acceptance mark image path */
                 getPaymentAcceptanceMarkSrc: function () {
                     return window.checkoutConfig.payment[this.getCode()].paymentAcceptanceMarkSrc;
                 },
-
-
+                getTermsAndConditions: function () {
+                    return window.checkoutConfig.payment[this.getCode()].termsAndConditions;
+                }
 
             }
         );

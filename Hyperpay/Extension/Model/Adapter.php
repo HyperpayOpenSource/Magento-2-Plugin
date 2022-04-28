@@ -30,6 +30,10 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     protected $testServerToServerUrl = 'https://test.oppwa.com/v1/payments';
     protected $liveServerToServerUrl = 'https://oppwa.com/v1/payments';
 
+
+    private $zoodpaySandbox = 'https://zoodpay-sandbox.hyperpay.com';
+    private $zoodpayLive = 'https://zoodpay.hyperpay.com';
+
     /**
      *
      * @var string
@@ -398,6 +402,15 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         }
 
         return true;
+    }
+
+    public function getZoodpayUrl()
+    {
+        if ($this->getMode() == "live") {
+            return $this->zoodpayLive;
+        } else {
+            return $this->zoodpaySandbox;
+        }
     }
 
     /**
