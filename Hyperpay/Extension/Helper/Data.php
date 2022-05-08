@@ -522,7 +522,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $cart = $objectManager->get('\Magento\Checkout\Model\Cart');
-        $total = $cart->getQuote()->getGrandTotal() / $res['instalments'];
+        $subTotal = $cart->getQuote()->getSubtotal();
+        $shippingAmount = $cart->getQuote()->getShippingAddress()->getShippingAmount();
+        $total = ($subTotal + $shippingAmount) / $res['instalments'];
 
         $installmentsText = number_format((float)$total, 2, '.', '');
 
