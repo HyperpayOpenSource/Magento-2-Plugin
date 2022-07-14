@@ -510,6 +510,13 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
 
                 }
             }
+
+            if($method == 'HyperPay_Zoodpay' && $decodedData['result']['code'] == '800.400.500'){
+                $order->addStatusHistoryComment($decodedData['result']['description'] , OrderStatus::STATE_HOLDED);
+                $order->setState(OrderStatus::STATE_HOLDED);
+                $this->_status = 'hold';
+                $order->save();
+            }
         }
 
         return $this->_status;
