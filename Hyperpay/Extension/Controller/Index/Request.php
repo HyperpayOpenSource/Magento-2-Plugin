@@ -176,8 +176,7 @@ class Request extends \Magento\Framework\App\Action\Action
             "&paymentType=" . $paymentType .
             "&customer.email=" . $email .
             "&customParameters[plugin]=magento" .
-            "&shipping.customer.email=" . $email .
-            "&merchantTransactionId=" . $orderId;
+            "&shipping.customer.email=" . $email;
         $accesstoken = $this->_adapter->getAccessToken();
         $auth = array('Authorization' => 'Bearer ' . $accesstoken);
         $this->_helper->setHeaders($auth);
@@ -205,8 +204,13 @@ class Request extends \Magento\Framework\App\Action\Action
         }
 
         if ($this->checkIfExist($order, $entityId, $accesstoken, $orderId, $baseUrl)) {
-            throw new \Exception(__("This order has already been processed,Please place a new order"));
+            $count = $this->_checkoutSession->getNumerOfTries();
+            $orderId .= "_$count";
+            $count = $count++;
+            $this->_checkoutSession->setNumerOfTries($count);
         }
+
+        $data .= "&merchantTransactionId=" . $orderId;
         $decodedData = $this->_helper->getCurlReqData($url, $data);
         if (!isset($decodedData['id'])) {
             $this->_helper->doError(__('Request id is not found'));
