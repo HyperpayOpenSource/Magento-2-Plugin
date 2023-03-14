@@ -1,6 +1,6 @@
 <?php
-namespace Hyperpay\Extension\Controller\Index;
 
+namespace Hyperpay\Extension\Controller\Index;
 
 
 class Request extends \Magento\Framework\App\Action\Action
@@ -30,21 +30,21 @@ class Request extends \Magento\Framework\App\Action\Action
      * @var \Magento\Checkout\Model\Session
      */
     protected $_checkoutSession;
-     /**
+    /**
      *
      * @var \Hyperpay\Extension\Model\Adapter
      */
     protected $_adapter;
-     /**
+    /**
      *
      * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
      */
     protected $_remote;
-     /**
+    /**
      * @var \Magento\CatalogInventory\Api\StockManagementInterface
      */
     protected $_stockManagement;
-     /**
+    /**
      *
      * @var \Magento\Framework\Locale\Resolver
      */
@@ -54,56 +54,58 @@ class Request extends \Magento\Framework\App\Action\Action
      *
      * @var string
      */
-    protected $_storeScope= \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+    protected $_storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+
     /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Action\Context                $context
-     * @param \Magento\Framework\Registry                          $coreRegistry
-     * @param \Hyperpay\Extension\Helper\Data                         $helper
-     * @param \Magento\Checkout\Model\Session                      $checkoutSession
-     * @param \Magento\Framework\View\Result\PageFactory           $pageFactory
-     * @param \Magento\Store\Model\StoreManagerInterface            $storeManager
-     * @param \Magento\Framework\Locale\Resolver                    $resolver
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Hyperpay\Extension\Helper\Data $helper
+     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Framework\View\Result\PageFactory $pageFactory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\Locale\Resolver $resolver
      * @param \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement
-     * @param \Hyperpay\Extension\Model\Adapter                       $adapter
+     * @param \Hyperpay\Extension\Model\Adapter $adapter
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Registry $coreRegistry,
-        \Hyperpay\Extension\Helper\Data $helper,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Framework\View\Result\PageFactory $pageFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\Locale\Resolver                    $resolver,
-        \Hyperpay\Extension\Model\Adapter $adapter,
-        \Magento\Quote\Model\QuoteFactory $quoteFactory,
-	\Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remote
+        \Magento\Framework\App\Action\Context                  $context,
+        \Magento\Framework\Registry                            $coreRegistry,
+        \Hyperpay\Extension\Helper\Data                        $helper,
+        \Magento\Checkout\Model\Session                        $checkoutSession,
+        \Magento\Framework\View\Result\PageFactory             $pageFactory,
+        \Magento\Store\Model\StoreManagerInterface             $storeManager,
+        \Magento\Framework\Locale\Resolver                     $resolver,
+        \Hyperpay\Extension\Model\Adapter                      $adapter,
+        \Magento\Quote\Model\QuoteFactory                      $quoteFactory,
+        \Magento\CatalogInventory\Api\StockManagementInterface $stockManagement,
+        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress   $remote
     )
     {
-        $this->_coreRegistry=$coreRegistry;
+        $this->_coreRegistry = $coreRegistry;
         parent::__construct($context);
         $this->_checkoutSession = $checkoutSession;
-        $this->_helper=$helper;
+        $this->_helper = $helper;
         $this->_pageFactory = $pageFactory;
-        $this->_adapter=$adapter;
+        $this->_adapter = $adapter;
         $this->_storeManager = $storeManager;
         $this->_resolver = $resolver;
-        $this->_remote=$remote;
+        $this->_remote = $remote;
         $this->_stockManagement = $stockManagement;
-        $this->_quoteFactory =$quoteFactory;
+        $this->_quoteFactory = $quoteFactory;
 
     }
+
     public function execute()
     {
         try {
-            if(!($this->_checkoutSession->getLastRealOrderId())) {
+            if (!($this->_checkoutSession->getLastRealOrderId())) {
                 $this->_helper->doError(__('Order is not found'));
             }
 
-            $order=$this->_checkoutSession->getLastRealOrder();
+            $order = $this->_checkoutSession->getLastRealOrder();
         } catch (\Exception $e) {
             $this->messageManager->addError($e->getMessage());
             return $this->_pageFactory->create();
@@ -111,22 +113,19 @@ class Request extends \Magento\Framework\App\Action\Action
         $quote = $this->_quoteFactory->create()->load($order->getQuoteId());
         $quote->setIsActive(true);
         $quote->save();
-	$this->_checkoutSession->replaceQuote($quote);
-        if(($order->getState() !== 'new') && ($order->getState() !== 'pending_payment')) {
+        $this->_checkoutSession->replaceQuote($quote);
+        if (($order->getState() !== 'new') && ($order->getState() !== 'pending_payment')) {
             $this->messageManager->addError(__("This order has already been processed,Please place a new order"));
             $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setPath('checkout/onepage/failure');
             return $resultRedirect;
         }
-        try
-        {
-                $base = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
-                $statusUrl= $base."hyperpay/index/status/?method=".$order->getPayment()->getData('method');
-                $urlReq = $this->prepareTheCheckout($order,$statusUrl);
+        try {
+            $base = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+            $statusUrl = $base . "hyperpay/index/status/?method=" . $order->getPayment()->getData('method');
+            $urlReq = $this->prepareTheCheckout($order, $statusUrl);
 
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->messageManager->addError($e->getMessage());
             $resultRedirect = $this->resultRedirectFactory->create();
             $resultRedirect->setPath('checkout/onepage/failure');
@@ -138,6 +137,7 @@ class Request extends \Magento\Framework\App\Action\Action
 
         return $this->_pageFactory->create();
     }
+
     /**
      * Build data and make a request to hyperpay payment gateway
      * and return url of form
@@ -145,112 +145,115 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param $order
      * @return string
      */
-    public function prepareTheCheckout($order,$status)
+    public function prepareTheCheckout($order, $status)
     {
 
-        $payment= $order->getPayment();
+        $payment = $order->getPayment();
         $method = $payment->getData('method');
         $email = $order->getBillingAddress()->getEmail();
         //order#
-        $orderId=$order->getIncrementId();
-        $amount=$order->getBaseGrandTotal();
-        $total=$this->_helper->convertPrice($payment, $amount);
+        $orderId = $order->getIncrementId();
+        $amount = $order->getBaseGrandTotal();
+        $total = $this->_helper->convertPrice($payment, $amount);
 
-        if($this->_adapter->getEnv()) {
-            $grandTotal = (int) $total;
+        if ($this->_adapter->getEnv()) {
+            $grandTotal = (int)$total;
 
-        }else {
-            $grandTotal=number_format($total, 2, '.', '');
+        } else {
+            $grandTotal = number_format($total, 2, '.', '');
         }
 
-        $currency=$this->_adapter->getSupportedCurrencyCode($method);
-        $paymentType =$this->_adapter->getPaymentType($method);
+        $currency = $this->_adapter->getSupportedCurrencyCode($method);
+        $paymentType = $this->_adapter->getPaymentType($method);
         $this->_adapter->setPaymentTypeAndCurrency($order, $paymentType, $currency);
         $entityId = $this->_adapter->getEntity($method);
         $baseUrl = $this->_adapter->getUrl();
-        $url = $baseUrl.'checkouts';
-        $data = "entityId=".$entityId.
-        "&notificationUrl=".$status.
-        "&amount=".$grandTotal.
-        "&currency=".$currency.
-        "&paymentType=".$paymentType.
-        "&customer.email=".$email.
-        "&shipping.customer.email=".$email.
-        "&merchantTransactionId=".$orderId;
+        $url = $baseUrl . 'checkouts';
+        $data = "entityId=" . $entityId .
+            "&notificationUrl=" . $status .
+            "&amount=" . $grandTotal .
+            "&currency=" . $currency .
+            "&paymentType=" . $paymentType .
+            "&customer.email=" . $email .
+            "&customParameters[plugin]=magento" .
+            "&shipping.customer.email=" . $email;
         $accesstoken = $this->_adapter->getAccessToken();
-        $auth = array('Authorization'=>'Bearer '.$accesstoken);
+        $auth = array('Authorization' => 'Bearer ' . $accesstoken);
         $this->_helper->setHeaders($auth);
         $data .= $this->_helper->getBillingAndShippingAddress($order);
-        if(!empty($this->_adapter->getRiskChannelId())) {
-            $data .= "&risk.channelId=".$this->_adapter->getRiskChannelId().
-                    "&risk.serviceId=I".
-                    "&risk.amount=".$grandTotal.
-                    "&risk.parameters[USER_DATA1]=Mobile";
+        if (!empty($this->_adapter->getRiskChannelId())) {
+            $data .= "&risk.channelId=" . $this->_adapter->getRiskChannelId() .
+                "&risk.serviceId=I" .
+                "&risk.amount=" . $grandTotal .
+                "&risk.parameters[USER_DATA1]=Mobile";
         }
         $data .= $this->_adapter->getModeHyperpay();
-        if($method=='HyperPay_SadadNcb') {
-            $data .="&bankAccount.country=SA";
+        if ($method == 'HyperPay_SadadNcb') {
+            $data .= "&bankAccount.country=SA";
         }
-        if ($method=='HyperPay_stc') {
+        if ($method == 'HyperPay_stc') {
             $data .= '&customParameters[branch_id]=1';
             $data .= '&customParameters[teller_id]=1';
             $data .= '&customParameters[device_id]=1';
-            $data .= '&customParameters[locale]='. substr($this->_resolver->getLocale(),0,-3);
+            $data .= '&customParameters[locale]=' . substr($this->_resolver->getLocale(), 0, -3);
             $data .= '&customParameters[bill_number]=' . $orderId;
 
         }
-        if($this->_adapter->getEnv() && $method=='HyperPay_ApplePay') {
+        if ($this->_adapter->getEnv() && $method == 'HyperPay_ApplePay') {
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";
         }
 
-        if ($this->checkIfExist($order,$entityId,$accesstoken,$orderId,$baseUrl)) {
-            throw new \Exception(__("This order has already been processed,Please place a new order"));
+        if ($this->checkIfExist($order, $entityId, $accesstoken, $orderId, $baseUrl)) {
+            $count = $this->_checkoutSession->getNumerOfTries();
+            $orderId .= "_$count";
+            $count = $count++;
+            $this->_checkoutSession->setNumerOfTries($count);
         }
+
+        $data .= "&merchantTransactionId=" . $orderId;
         $decodedData = $this->_helper->getCurlReqData($url, $data);
         if (!isset($decodedData['id'])) {
             $this->_helper->doError(__('Request id is not found'));
         }
-        return $this->_adapter->getUrl()."paymentWidgets.js?checkoutId=".$decodedData['id'];
+        return $this->_adapter->getUrl() . "paymentWidgets.js?checkoutId=" . $decodedData['id'];
 
 
     }
-    private function checkIfExist($order,$entityId,$auth,$id,$baseUrl)
+
+    private function checkIfExist($order, $entityId, $auth, $id, $baseUrl)
     {
-        $url = $baseUrl."query";
-        $url .= "?entityId=".$entityId;
-        $url .=	"&merchantTransactionId=".$id;
+        $url = $baseUrl . "query";
+        $url .= "?entityId=" . $entityId;
+        $url .= "&merchantTransactionId=" . $id;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Authorization:Bearer '.$auth));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization:Bearer ' . $auth));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);// this should be set to true in production
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $responseData = curl_exec($ch);
-        if(curl_errno($ch)) {
+        if (curl_errno($ch)) {
             return curl_error($ch);
         }
         curl_close($ch);
-	$response = json_decode($responseData);
-        if ($response->result->code==="700.400.580")
-        {
+        $response = json_decode($responseData);
+        if ($response->result->code === "700.400.580") {
             return false;
-	}
-	if(count($response->payments)==0)
-	{
-	 return false;
-	}
-	$orderTime =  new \DateTime($order->getCreatedAt());
-	foreach ($response->payments as $payment) {
-	     $paymentTime = new \DateTime($payment->timestamp);
-	     $interval = date_diff($paymentTime,$orderTime);
-         $diffDays = $interval->format('%a');
-	     if($diffDays <= 1)
-	     {
-	         return true;
-	     }
+        }
+        if (count($response->payments) == 0) {
+            return false;
+        }
+        $orderTime = new \DateTime($order->getCreatedAt());
+        foreach ($response->payments as $payment) {
+            $paymentTime = new \DateTime($payment->timestamp);
+            $interval = date_diff($paymentTime, $orderTime);
+            $diffDays = $interval->format('%a');
+            if ($diffDays <= 1) {
+                return true;
+            }
 
-	}
-	return false;
+        }
+        return false;
 
     }
 }
