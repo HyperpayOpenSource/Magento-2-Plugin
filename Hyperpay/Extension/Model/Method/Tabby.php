@@ -1,17 +1,19 @@
 <?php
- 
+
 namespace Hyperpay\Extension\Model\Method;
+
+
 /**
  * Pay In Store payment method model
  */
-class SadadNcb extends \Hyperpay\Extension\Model\Method\MethodAbstract
+class Tabby extends MethodAbstract
 {
- 
+
     /**
      * Payment code
      *
      * @var string
      */
-    protected $_code = 'HyperPay_SadadNcb';
-    
+    protected $_code = 'HyperPay_Tabby';
+
 }

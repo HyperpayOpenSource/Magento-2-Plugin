@@ -3,7 +3,9 @@
 namespace Hyperpay\Extension\Controller\Index;
 
 
-class Request extends \Magento\Framework\App\Action\Action
+use Magento\Framework\App\ObjectManager;
+
+class ServerToServer extends \Magento\Framework\App\Action\Action
 {
     /**
      *
@@ -50,6 +52,7 @@ class Request extends \Magento\Framework\App\Action\Action
      */
     protected $_resolver;
     protected $_quoteFactory;
+
     /**
      *
      * @var string
@@ -122,8 +125,8 @@ class Request extends \Magento\Framework\App\Action\Action
         }
         try {
             $base = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
-            $statusUrl = $base . "hyperpay/index/status/?method=" . $order->getPayment()->getData('method');
-            $urlReq = $this->prepareTheCheckout($order, $statusUrl);
+            $statusUrl = $base . "hyperpay/index/servertoserverstatus/?method=" . $order->getPayment()->getData('method');
+            $urlReq = $this->serverToServer($order, $statusUrl);
 
         } catch (\Exception $e) {
             $this->messageManager->addError($e->getMessage());
@@ -145,11 +148,13 @@ class Request extends \Magento\Framework\App\Action\Action
      * @param $order
      * @return string
      */
-    public function prepareTheCheckout($order, $status)
+    public function serverToServer($order, $status)
     {
-
         $payment = $order->getPayment();
         $method = $payment->getData('method');
+
+        $paymentBrand = $this->getPaymentBrand($method);
+
         $email = $order->getBillingAddress()->getEmail();
         //order#
         $orderId = $order->getIncrementId();
@@ -158,7 +163,6 @@ class Request extends \Magento\Framework\App\Action\Action
 
         if ($this->_adapter->getEnv()) {
             $grandTotal = (int)$total;
-
         } else {
             $grandTotal = number_format($total, 2, '.', '');
         }
@@ -167,93 +171,109 @@ class Request extends \Magento\Framework\App\Action\Action
         $paymentType = $this->_adapter->getPaymentType($method);
         $this->_adapter->setPaymentTypeAndCurrency($order, $paymentType, $currency);
         $entityId = $this->_adapter->getEntity($method);
-        $baseUrl = $this->_adapter->getUrl();
-        $url = $baseUrl . 'checkouts';
+        $baseUrl = $this->_adapter->getServerToServerUrl();
         $data = "entityId=" . $entityId .
             "&notificationUrl=" . $status .
+            "&shopperResultUrl=" . $status .
             "&amount=" . $grandTotal .
+            "&paymentBrand=$paymentBrand" .
             "&currency=" . $currency .
             "&paymentType=" . $paymentType .
             "&customer.email=" . $email .
-            "&customParameters[plugin]=magento" .
-            "&shipping.customer.email=" . $email;
+            "&merchantTransactionId=" . $orderId;
+
+        if ($method == 'HyperPay_Zoodpay') {
+            $data .= "&customParameters[service_code]=ZPI"; // fixed
+        }
+        $data .= $this->_adapter->getModeHyperpay();
+
+
         $accesstoken = $this->_adapter->getAccessToken();
         $auth = array('Authorization' => 'Bearer ' . $accesstoken);
         $this->_helper->setHeaders($auth);
+
         $data .= $this->_helper->getBillingAndShippingAddress($order);
-        if (!empty($this->_adapter->getRiskChannelId())) {
-            $data .= "&risk.channelId=" . $this->_adapter->getRiskChannelId() .
-                "&risk.serviceId=I" .
-                "&risk.amount=" . $grandTotal .
-                "&risk.parameters[USER_DATA1]=Mobile";
-        }
-        $data .= $this->_adapter->getModeHyperpay();
-        if ($method == 'HyperPay_SadadNcb') {
-            $data .= "&bankAccount.country=SA";
-        }
-        if ($method == 'HyperPay_stc') {
-            $data .= '&customParameters[branch_id]=1';
-            $data .= '&customParameters[teller_id]=1';
-            $data .= '&customParameters[device_id]=1';
-            $data .= '&customParameters[locale]=' . substr($this->_resolver->getLocale(), 0, -3);
-            $data .= '&customParameters[bill_number]=' . $orderId;
+        $data .= $this->buildCartItems($method);
 
-        }
-        if ($this->_adapter->getEnv() && $method == 'HyperPay_ApplePay') {
-            $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";
-        }
+        $decodedData = $this->_helper->getCurlServerToServer($baseUrl, $data);
 
-        if ($this->checkIfExist($order, $entityId, $accesstoken, $orderId, $baseUrl)) {
-            $count = $this->_checkoutSession->getNumerOfTries();
-            $orderId .= "_$count";
-            $count = $count++;
-            $this->_checkoutSession->setNumerOfTries($count);
-        }
-
-        $data .= "&merchantTransactionId=" . $orderId;
-        $decodedData = $this->_helper->getCurlReqData($url, $data);
         if (!isset($decodedData['id'])) {
             $this->_helper->doError(__('Request id is not found'));
+            return;
         }
-        return $this->_adapter->getUrl() . "paymentWidgets.js?checkoutId=" . $decodedData['id'];
 
+        if (!isset($decodedData['result']['code']) || $decodedData['result']['code'] != '000.200.000') {
+            $desc = \Safe\json_decode($decodedData['resultDetails']['ExtendedDescription'], true);
+            $errors = '';
+            if (isset($desc['details'])) {
+                foreach ($desc['details'] as $detail) {
+                    $errors .= $detail['error'] . ' - ';
+                }
+            }
+            $this->_helper->doError(__($errors));
+            return;
+        }
 
+        $redirectForm = $this->buildRedirectForm($decodedData);
+        if (!$redirectForm) {
+            $this->_helper->doError(__($decodedData['result']['description']));
+            return;
+        }
+
+        echo $redirectForm;
     }
 
-    private function checkIfExist($order, $entityId, $auth, $id, $baseUrl)
+    private function buildCartItems($method)
     {
-        $url = $baseUrl . "query";
-        $url .= "?entityId=" . $entityId;
-        $url .= "&merchantTransactionId=" . $id;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization:Bearer ' . $auth));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);// this should be set to true in production
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $responseData = curl_exec($ch);
-        if (curl_errno($ch)) {
-            return curl_error($ch);
-        }
-        curl_close($ch);
-        $response = json_decode($responseData);
-        if ($response->result->code === "700.400.580") {
-            return false;
-        }
-        if (count($response->payments) == 0) {
-            return false;
-        }
-        $orderTime = new \DateTime($order->getCreatedAt());
-        foreach ($response->payments as $payment) {
-            $paymentTime = new \DateTime($payment->timestamp);
-            $interval = date_diff($paymentTime, $orderTime);
-            $diffDays = $interval->format('%a');
-            if ($diffDays <= 1) {
-                return true;
+        $objectManager = ObjectManager::getInstance();
+        $cart = $objectManager->get('\Magento\Checkout\Model\Cart');
+        // retrieve quote items array
+        $items = $cart->getQuote()->getAllItems();
+        $cartData = '';
+        $categories = [];
+
+        foreach ($items as $key => $item) {
+            $cartData .= "&cart.items[" . $key . "].name=" . $item->getName() .
+                "&cart.items[" . $key . "].price=" . number_format($item->getPrice(), 2, '.', '') .
+                "&cart.items[" . $key . "].quantity=" . $item->getQty();
+
+            if ($method == 'HyperPay_Tabby') {
+                $cartData .= "&cart.items[" . $key . "].sku=" . $item->getSku();
             }
 
+            $categories[] = [["test"]];
         }
-        return false;
 
+        if ($method == 'HyperPay_Zoodpay') {
+            $cartData .= "&customParameters['categories']=" . (json_encode($categories));
+        }
+        return $cartData;
+    }
+
+    private function buildRedirectForm($data)
+    {
+        if (!isset($data['redirect'])) {
+            return false;
+        }
+
+        $form = '<form id="redForm" action="' . $data['redirect']['url'] . '" method="POST">';
+        foreach ($data['redirect']['parameters'] as $param) {
+            $form .= '<input hidden name="' . $param['name'] . '" value="' . $param['value'] . '"/>';
+        }
+        $form .= '</form>';
+        $form .= '<script> document.getElementById("redForm").submit();  </script>';
+        return $form;
+    }
+
+    private function getPaymentBrand($method)
+    {
+        switch ($method) {
+            case 'HyperPay_Zoodpay':
+                return 'ZOODPAY';
+            case 'HyperPay_Tabby':
+                return 'TABBY';
+        }
+
+        return false;
     }
 }
