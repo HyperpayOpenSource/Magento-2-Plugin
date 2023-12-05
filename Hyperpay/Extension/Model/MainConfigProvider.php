@@ -13,6 +13,10 @@ class MainConfigProvider implements ConfigProviderInterface
      */
     protected $currentCustomer;
     /**
+     * @var \Magento\Payment\Model\Method\AbstractMethod[]
+     */
+    protected $methods = [];
+    /**
      * @var string[]
      */
     protected $methodCodes = [
@@ -24,12 +28,9 @@ class MainConfigProvider implements ConfigProviderInterface
         'HyperPay_SadadPayware',
         'HyperPay_Visa',
         'HyperPay_ApplePay',
-        'HyperPay_stc'
+        'HyperPay_stc',
+        'HyperPay_Jcb'
     ];
-    /**
-     * @var \Magento\Payment\Model\Method\AbstractMethod[]
-     */
-    protected $methods = [];
     /**
      * @var PaymentHelper
      */

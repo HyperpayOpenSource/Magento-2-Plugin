@@ -2,7 +2,7 @@
   "name": "hyperpay/extension",
   "description": "Hyperpay: A Magento 2 payment extension",
   "type": "magento2-module",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "license": [
     "OSL-3.0",
     "AFL-3.0"
@@ -18,8 +18,8 @@
   },
   "authors":[
         {
-            "name": "Husam aldean Almomani",
-            "email": "husamaldean.almomani@hyperpay.com"
+            "name": "Hyperpay Development Team",
+            "email": "info@hyperpay.com"
         }
 ],
   "autoload": {

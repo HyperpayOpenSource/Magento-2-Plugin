@@ -41,10 +41,14 @@ define(
                 type: 'HyperPay_SadadPayware',
                 component: 'Hyperpay_Extension/js/view/payment/method-renderer/SadadPayware'
             },
-	    {
+            {
                 type: 'HyperPay_stc',
                 component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
-            }
+            },
+            {
+                type: 'HyperPay_Jcb',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
+            },
         );
         return Component.extend({});
     }
