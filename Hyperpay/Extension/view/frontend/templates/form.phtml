@@ -71,10 +71,13 @@
             jq331('[name="form_key"]').remove();
 
         },
-        applePay: {
-            merchantCapabilities: ["supports3DS"],
-            supportedNetworks: ["amex", "masterCard", "visa", "mada", "jcb"]
-        }
+        applePay : {
+            merchantCapabilities:["supports3DS"],
+            supportedNetworks: ["amex", "masterCard", "visa", "mada","jcb"]
+        },
+        browser: {
+           threeDChallengeWindow: 5
+       }
     }
 </script>
 
