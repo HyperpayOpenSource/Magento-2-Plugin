@@ -62,7 +62,10 @@
         applePay : {
             merchantCapabilities:["supports3DS"],
             supportedNetworks: ["amex", "masterCard", "visa", "mada","jcb"]
-        }
+        },
+        browser: {
+           threeDChallengeWindow: 5
+       }
     }
 </script>
 <script src="<?php echo $block->getFormUrl(); ?>"></script>
