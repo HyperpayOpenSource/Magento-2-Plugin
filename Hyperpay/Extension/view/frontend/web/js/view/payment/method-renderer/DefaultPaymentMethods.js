@@ -7,7 +7,7 @@ define(
     ],
     function ($,Component,url,placeOrderAction) {
         'use strict';
- 
+
         return Component.extend(
             {
                 defaults: {

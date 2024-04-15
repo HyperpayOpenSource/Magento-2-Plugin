@@ -12,36 +12,60 @@
                 <value id="jquery" type="host">*.jquery.com</value>
                 <value id="oppwa" type="host">*.oppwa.com</value>
                 <value id="oppwalive" type="host">oppwa.com</value>
+                <value id="click2payMC" type="host">*.mastercard.com</value>
+                <value id="click2payVISA" type="host">*.visa.com</value>
+                <value id="click2payiesnare" type="host">*.iesnare.com</value>
+                <value id="click2payiesnhfare" type="host">*.requirejs.org</value>
             </values>
         </policy>
         <policy id="form-action">
             <values>
                 <value id="oppwa" type="host">*.oppwa.com</value>
                 <value id="oppwalive" type="host">oppwa.com</value>
+                <value id="click2payMC" type="host">*.mastercard.com</value>
+                <value id="click2payiesnare" type="host">*.iesnare.com</value>
+                <value id="click2payiesnhfare" type="host">*.requirejs.org</value>
+                <value id="click2payVISA" type="host">*.visa.com</value>
             </values>
         </policy>
         <policy id="style-src">
             <values>
                 <value id="oppwa" type="host">*.oppwa.com</value>
                 <value id="oppwalive" type="host">oppwa.com</value>
+                <value id="click2payMC" type="host">*.mastercard.com</value>
+                <value id="click2payiesnare" type="host">*.iesnare.com</value>
+                <value id="click2payiesnhfare" type="host">*.requirejs.org</value>
+                <value id="click2payVISA" type="host">*.visa.com</value>
             </values>
         </policy>
         <policy id="frame-src">
             <values>
                 <value id="oppwa" type="host">*.oppwa.com</value>
                 <value id="oppwalive" type="host">oppwa.com</value>
+                <value id="click2payMC" type="host">*.mastercard.com</value>
+                <value id="click2payiesnare" type="host">*.iesnare.com</value>
+                <value id="click2payiesnhfare" type="host">*.requirejs.org</value>
+                <value id="click2payVISA" type="host">*.visa.com</value>
             </values>
         </policy>
         <policy id="img-src">
             <values>
                 <value id="oppwa" type="host">*.oppwa.com</value>
                 <value id="oppwalive" type="host">oppwa.com</value>
+                <value id="click2payMCIMG" type="host">*.mastercard.com</value>
+                <value id="click2payiesnareIMG" type="host">*.iesnare.com</value>
+                <value id="click2payiesnhfare" type="host">*.requirejs.org</value>
+                <value id="click2payVISA" type="host">*.visa.com</value>
             </values>
         </policy>
         <policy id="connect-src">
             <values>
                 <value id="oppwa" type="host">*.oppwa.com</value>
                 <value id="oppwalive" type="host">oppwa.com</value>
+                <value id="click2payMC" type="host">*.mastercard.com</value>
+                <value id="click2payiesnare" type="host">*.iesnare.com</value>
+                <value id="click2payiesnhfare" type="host">*.requirejs.org</value>
+                <value id="click2payVISA" type="host">*.visa.com</value>
             </values>
         </policy>
     </policies>

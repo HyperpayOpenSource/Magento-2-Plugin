@@ -111,6 +111,17 @@
                 <cron_cancel>0</cron_cancel>
                 <sort_order>2</sort_order>
             </HyperPay_Jcb>
+            <HyperPay_Click_to_pay>
+                <title>Click To Pay</title>
+                <model>Hyperpay\Extension\Model\Method\ClickToPay</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>2</sort_order>
+            </HyperPay_Click_to_pay>
         </payment>
     </default>
 </config>
