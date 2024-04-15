@@ -1,5 +1,5 @@
 <style>
-<?php if($block->getLang()=="ar"){ ?>
+    <?php if($block->getLang()=="ar"){ ?>
     .wpwl-group {
         direction: ltr !important;
     }
@@ -11,44 +11,56 @@
 
     .wpwl-brand-card {
         left: 8px !important;
-        right: unset  !important;
+        right: unset !important;
     }
-<?php } ?>
-.wpwl-brand-card {
-    display: block;
-    visibility: visible;
-    position: absolute;
-    right: -8px;
-    top: 5px;
-    width: 65px;
-    z-index: 10;
-    float: right;
-}
-.wpwl-label-brand{
-    display: none !important;
-}
-.wpwl-control-brand{
-    display: none !important;
-}
-.wpwl-brand-MASTER{
 
-    top:0px;
+    <?php } ?>
+    .wpwl-brand-card {
+        display: block;
+        visibility: visible;
+        position: absolute;
+        right: -8px;
+        top: 5px;
+        width: 65px;
+        z-index: 10;
+        float: right;
+    }
 
-}
-<?php echo $block->getCss();?>
+    .wpwl-label-brand {
+        display: none !important;
+    }
+
+    .wpwl-control-brand {
+        display: none !important;
+    }
+
+    .wpwl-brand-MASTER {
+
+        top: 0px;
+
+    }
+
+    <?php echo $block->getCss();?>
 </style>
 <script
-	src="https://code.jquery.com/jquery-3.3.1.min.js"
-	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-	crossorigin="anonymous"></script>
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+<script src="<?php echo $block->getFormUrl(); ?>"></script>
+<form action="<?php echo $block->getShopperUrl(); ?>" class="paymentWidgets"
+      data-brands="<?php echo $block->getPaymentBrand(); ?>"></form>
+
 <script>
-    jq331 = jQuery.noConflict( true );
+    /*global define */
+    jq331 = jQuery.noConflict(true);
+
     function displayName(element) {
         jq331('.wpwl-brand-card').each(function () {
             jq331(element).append(this);
         });
     }
-	var wpwlOptions = {
+
+    let wpwlOptions = {
         locale: "<?php echo $block->getLang();?>",
         paymentTarget: "_top",
         style: "<?php echo $block->getStyle();?>",
@@ -68,9 +80,63 @@
        }
     }
 </script>
-<script src="<?php echo $block->getFormUrl(); ?>"></script>
-<?php if($block->getPaymentBrand() === 'APPLEPAY') {?>
+
+<?php if ($block->getPaymentBrand() === 'CLICK_TO_PAY VISA MASTER') { ?>
+    <style>
+        .wpwl-form-card {
+            display: none;
+        }
+    </style>
+    <script>
+        wpwlOptions = {
+            ...wpwlOptions,
+            paymentTarget: "_top",
+            style: "card",
+            onError: function (e) {
+                console.log(e);
+                if (['not_enrolled', "add_new_card", "otp_channel_invalid"].includes(e.event)) {
+                    jq331('.wpwl-form-card').show()
+
+                    window.location.href = `#${jq331('.wpwl-container-card')[0].id}`
+                }
+            },
+            clickToPay: {
+                "cardList": {
+                    "displayCardListByDefault": true,
+                    "displayCancelOption": true,
+                    "displayAddCard": true,
+                    "displayPreferredCard": false,
+                    "displaySignOut": true,
+                    "displayHeader": false,
+                    "cardSelectionType": 'gridView',
+                    "unacceptedCard": '',
+                },
+                "otpScreen": {
+                    "displayOtpScreenByDefault": false,
+                    "displayCancelOption": true,
+                    "displayHeader": true,
+                    "autoSubmit": false,
+                    "hideLoader": false,
+
+                    "displayRememberMe": false,
+                    "otpResendLoading": false,
+                    "displayPayAnotherWay": true
+                },
+                "srcMark": {
+                    "height": '40',
+                    "width": '200',
+                    "darkTheme": false
+                },
+                "learnMore": {
+                    "displayCloseButton": true,
+                    "displayOkButton": true,
+                }
+            },
+        }
+    </script>
+<?php } ?>
+
+<?php if ($block->getPaymentBrand() === 'APPLEPAY') { ?>
     <h1><?php echo __('Please note,ApplePay only works on IOS and Safari browsers') ?></h1>
     <p><?php echo __('To proceed with the payment, please click on the below button') ?></p>
 <?php } ?>
-<form action="<?php echo $block->getShopperUrl(); ?>" class="paymentWidgets" data-brands="<?php echo $block->getPaymentBrand(); ?>"></form>

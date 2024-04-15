@@ -151,6 +151,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'HyperPay_Jcb':
                     $paymentMethod = 'JCB';
                     break;
+                case 'HyperPay_Click_to_pay':
+                    $paymentMethod = 'CLICK_TO_PAY VISA MASTER';
+                    break;
             }
 
             return $paymentMethod;
@@ -455,6 +458,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             case 'HyperPay_Jcb':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/jcb.png");
                 break;
+            case 'HyperPay_Click_to_pay':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/click_to_pay.png");
+                break;
+
 
         }
         return $paymentImage;

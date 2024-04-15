@@ -199,19 +199,24 @@ class Request extends \Magento\Framework\App\Action\Action
             $data .= '&customParameters[bill_number]=' . $orderId;
 
         }
+
+        if($method == 'HyperPay_Click_to_pay'){
+            $data .= '&customParameters[3DS2_enrolled]=true';
+        }
+
         if ($this->_adapter->getEnv() && $method == 'HyperPay_ApplePay') {
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";
         }
 
-        if ($this->checkIfExist($order, $entityId, $accesstoken, $orderId, $baseUrl)) {
-            $count = $this->_checkoutSession->getNumerOfTries();
-            $orderId .= "_$count";
-            $count = $count++;
-            $this->_checkoutSession->setNumerOfTries($count);
-        }
-
+//        if ($this->checkIfExist($order, $entityId, $accesstoken, $orderId, $baseUrl)) {
+//            $count = $this->_checkoutSession->getNumerOfTries();
+//            $orderId .= "_$count";
+//            $count = $count++;
+//            $this->_checkoutSession->setNumerOfTries($count);
+//        }
         $data .= "&merchantTransactionId=" . $orderId;
         $decodedData = $this->_helper->getCurlReqData($url, $data);
+
         if (!isset($decodedData['id'])) {
             $this->_helper->doError(__('Request id is not found'));
         }
