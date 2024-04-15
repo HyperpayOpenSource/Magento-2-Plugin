@@ -180,9 +180,7 @@ class Request extends \Magento\Framework\App\Action\Action
         $accesstoken = $this->_adapter->getAccessToken();
         $auth = array('Authorization' => 'Bearer ' . $accesstoken);
         $this->_helper->setHeaders($auth);
-//        $data .= $this->_helper->getBillingAndShippingAddress($order);
-        $data .="&billing.country=SA";
-        $data .="&billing.city=jeddah";
+        $data .= $this->_helper->getBillingAndShippingAddress($order);
         if (!empty($this->_adapter->getRiskChannelId())) {
             $data .= "&risk.channelId=" . $this->_adapter->getRiskChannelId() .
                 "&risk.serviceId=I" .
