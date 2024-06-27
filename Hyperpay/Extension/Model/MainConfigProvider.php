@@ -28,6 +28,7 @@ class MainConfigProvider implements ConfigProviderInterface
         'HyperPay_SadadPayware',
         'HyperPay_Visa',
         'HyperPay_ApplePay',
+        'HyperPay_ApplePayTKN',
         'HyperPay_stc',
         'HyperPay_Jcb',
         'HyperPay_Click_to_pay'

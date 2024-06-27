@@ -18,6 +18,10 @@ define(
                 component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
             },
             {
+                type: 'HyperPay_ApplePayTKN',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
+            },
+            {
                 type: 'HyperPay_Mada',
                 component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
             },
