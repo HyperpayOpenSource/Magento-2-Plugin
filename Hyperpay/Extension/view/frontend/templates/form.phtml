@@ -136,7 +136,7 @@
     </script>
 <?php } ?>
 
-<?php if ($block->getPaymentBrand() === 'APPLEPAY') { ?>
+<?php if ($block->getPaymentBrand() === 'APPLEPAY' || $block->getPaymentBrand() === 'APPLEPAYTKN') { ?>
     <h1><?php echo __('Please note,ApplePay only works on IOS and Safari browsers') ?></h1>
     <p><?php echo __('To proceed with the payment, please click on the below button') ?></p>
 <?php } ?>

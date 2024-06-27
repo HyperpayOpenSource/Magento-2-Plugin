@@ -80,6 +80,7 @@ class CancelOrderPending
             'HyperPay_PayPal',
             'HyperPay_Visa',
             'HyperPay_ApplePay',
+            'HyperPay_ApplePayTKN',
             'HyperPay_stc'
         ];
         $activeMethods = [];

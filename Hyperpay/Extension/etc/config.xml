@@ -36,6 +36,17 @@
                 <cron_cancel>0</cron_cancel>
                 <sort_order>5</sort_order>
             </HyperPay_ApplePay>
+            <HyperPay_ApplePayTKN>
+                <title>ApplePay TKN</title>
+                <model>Hyperpay\Extension\Model\Method\ApplepayTKN</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>5</sort_order>
+            </HyperPay_ApplePayTKN>
             <HyperPay_Mada>
                 <title>Mada</title>
                 <model>Hyperpay\Extension\Model\Method\Mada</model>
