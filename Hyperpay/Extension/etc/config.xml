@@ -3,6 +3,17 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <payment>
+            <HyperPay_CreditCard>
+                <title>Credit Cards</title>
+                <model>Hyperpay\Extension\Model\Method\CreditCard</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>2</sort_order>
+            </HyperPay_CreditCard>
             <HyperPay_Visa>
                 <title>VISA</title>
                 <model>Hyperpay\Extension\Model\Method\Visa</model>

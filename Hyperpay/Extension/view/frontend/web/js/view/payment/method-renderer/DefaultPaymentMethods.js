@@ -20,7 +20,10 @@ define(
                 /** Returns payment acceptance mark image path */
                 getPaymentAcceptanceMarkSrc: function () {
                     return window.checkoutConfig.payment[this.getCode()].paymentAcceptanceMarkSrc;
-                }
+                },
+                getMultiplePaymentAcceptanceMarkSrc: function () {
+                    return window.checkoutConfig.payment[this.getCode()].multiplePaymentAcceptanceMarkSrc;
+                },
 
 
             }
