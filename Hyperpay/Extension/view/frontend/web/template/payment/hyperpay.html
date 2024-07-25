@@ -1,3 +1,18 @@
+<style>
+    /* Style for the container to make images appear in a line */
+    .image-container {
+        display: flex;
+        justify-content: right;
+        flex-wrap: wrap;
+    }
+
+    /* Style for the images */
+    .payment-icon {
+        width: 60px; /* Set the width to a smaller size */
+        margin: 0.5rem; /* Add some margin around each image */
+    }
+</style>
+
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
         <input type="radio"
@@ -7,8 +22,20 @@
         <label class="label" data-bind="attr: {'for': getCode()}">
             <span data-bind="text: getTitle()"></span>
 
+            <!-- ko if: getCode() == 'HyperPay_CreditCard' -->
+                <div id="imageContainer" class="image-container">
+                    <!-- ko foreach: getMultiplePaymentAcceptanceMarkSrc() -->
+                    <img data-bind="attr: {src: $data, alt: 'Acceptance Mark', class: 'payment-icon'}" />
+                    <!-- /ko -->
+                </div>
+            <!-- /ko -->
 
-            <img width="20%" style="margin-left:80%;" data-bind="attr: {src: getPaymentAcceptanceMarkSrc(), alt: 'Acceptance Mark'}" class="payment-icon"/>
+            <!-- ko ifnot: getCode() == 'HyperPay_CreditCard' -->
+            <img width="20%" style="margin-left:80%;"
+                 data-bind="attr: {src: getPaymentAcceptanceMarkSrc(), alt: 'Acceptance Mark'}" class="payment-icon"/>
+
+            <!-- /ko -->
+
 
         </label>
     </div>

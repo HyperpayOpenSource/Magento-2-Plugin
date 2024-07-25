@@ -33,6 +33,11 @@
                                                                                   xsi:type="boolean">true
                                                                             </item>
                                                                         </item>
+                                                                        <item name="HyperPay_CreditCard" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired"
+                                                                                  xsi:type="boolean">true
+                                                                            </item>
+                                                                        </item>
                                                                         <item name="HyperPay_ApplePay" xsi:type="array">
                                                                             <item name="isBillingAddressRequired"
                                                                                   xsi:type="boolean">true

@@ -57,6 +57,10 @@ define(
                 type: 'HyperPay_Click_to_pay',
                 component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
             },
+            {
+                type: 'HyperPay_CreditCard',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
+            },
         );
         return Component.extend({});
     }

@@ -69,7 +69,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Hyperpay\Extension\Model\Adapter           $adapter,
         \Magento\Framework\App\ResponseFactory      $responseFactory,
         \Magento\Checkout\Model\Session             $checkoutSession,
-        \Magento\Framework\View\Asset\Repository    $assetRepo
+        \Magento\Framework\View\Asset\Repository    $assetRepo,
     )
     {
         $this->_checkoutSession = $checkoutSession;
@@ -122,10 +122,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $order = $this->_checkoutSession->getLastRealOrder();
             $payment = $order->getPayment();
             $code = $payment->getData('method');
+
             $paymentMethod = '';
             switch ($code) {
                 case 'HyperPay_Visa':
                     $paymentMethod = 'VISA';
+                    break;
+                case 'HyperPay_CreditCard':
+                    $creditCardOptions  = $this->_adapter->getConfigDataForSpecificMethod($code,'creditCardOptions');
+                    $paymentMethod = str_replace(",", " ", $creditCardOptions) . ' ';
                     break;
                 case 'HyperPay_Mada':
                     $paymentMethod = 'MADA';
@@ -427,11 +432,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $decodedData;
     }
 
+    public function getPaymentMarkImageUrlFromMultipleBrands($code)
+    {
+        $paymentImage = null;
+        if ($code == 'HyperPay_CreditCard'){
+            $creditCardOptions  = $this->_adapter->getConfigDataForSpecificMethod($code,'creditCardOptions');
+            $brands = explode(',', $creditCardOptions);
+            foreach ($brands as $brand){
+                $lowerCasedBrand = strtolower($brand);
+                $paymentImage[] = $this->_assetRepo->getUrl("Hyperpay_Extension::images/$lowerCasedBrand.svg");
+
+            }
+        }
+        return ($paymentImage);
+
+    }
     public function getPaymentMarkImageUrl($code)
     {
         $paymentImage = '';
+        $creditCardOptions  = $this->_adapter->getConfigDataForSpecificMethod($code,'creditCardOptions');
         switch ($code) {
             case 'HyperPay_Visa':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/visa.svg");
+                break;
+             case 'HyperPay_CreditCard':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/visa.svg");
                 break;
             case 'HyperPay_Mada':
@@ -460,7 +484,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/stc.png");;
                 break;
             case 'HyperPay_Jcb':
-                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/jcb.png");
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/jcb.svg");
                 break;
             case 'HyperPay_Click_to_pay':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/click_to_pay.png");
@@ -469,5 +493,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         }
         return $paymentImage;
+    }
+
+    private function getCreditCardBrandOptions()
+    {
+
     }
 }

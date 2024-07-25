@@ -31,7 +31,8 @@ class MainConfigProvider implements ConfigProviderInterface
         'HyperPay_ApplePayTKN',
         'HyperPay_stc',
         'HyperPay_Jcb',
-        'HyperPay_Click_to_pay'
+        'HyperPay_Click_to_pay',
+        'HyperPay_CreditCard'
     ];
     /**
      * @var PaymentHelper
@@ -65,7 +66,8 @@ class MainConfigProvider implements ConfigProviderInterface
     {
         $config = ['payment' => []];
         foreach ($this->methodCodes as $code) {
-                $config['payment'][$code]['paymentAcceptanceMarkSrc'] = $this->_helper->getPaymentMarkImageUrl($code);
+            $config['payment'][$code]['paymentAcceptanceMarkSrc'] = $this->_helper->getPaymentMarkImageUrl($code);
+            $config['payment'][$code]['multiplePaymentAcceptanceMarkSrc'] = $this->_helper->getPaymentMarkImageUrlFromMultipleBrands($code);
         }
 
         return $config;
