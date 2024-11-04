@@ -437,7 +437,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $paymentImage = null;
         if ($code == 'HyperPay_CreditCard'){
             $creditCardOptions  = $this->_adapter->getConfigDataForSpecificMethod($code,'creditCardOptions');
-            $brands = explode(',', $creditCardOptions);
+            $brands = [];
+            if (!empty($creditCardOptions)) {
+                $brands = explode(',', $creditCardOptions);
+            }
             foreach ($brands as $brand){
                 $lowerCasedBrand = strtolower($brand);
                 $paymentImage[] = $this->_assetRepo->getUrl("Hyperpay_Extension::images/$lowerCasedBrand.svg");

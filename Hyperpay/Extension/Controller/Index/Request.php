@@ -3,6 +3,8 @@
 namespace Hyperpay\Extension\Controller\Index;
 
 
+use Hyperpay\Extension\Logger\HyperpayLogger;
+
 class Request extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -147,6 +149,7 @@ class Request extends \Magento\Framework\App\Action\Action
      */
     public function prepareTheCheckout($order, $status)
     {
+        $hyperpayLogger = new HyperpayLogger();
 
         $payment = $order->getPayment();
         $method = $payment->getData('method');
@@ -208,14 +211,19 @@ class Request extends \Magento\Framework\App\Action\Action
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";
         }
 
-//        if ($this->checkIfExist($order, $entityId, $accesstoken, $orderId, $baseUrl)) {
-//            $count = $this->_checkoutSession->getNumerOfTries();
-//            $orderId .= "_$count";
-//            $count = $count++;
-//            $this->_checkoutSession->setNumerOfTries($count);
-//        }
         $data .= "&merchantTransactionId=" . $orderId;
+
+        $loggerEnabled = (bool)$this->_adapter->getHyperpayLoggerState();
+
+        if ($loggerEnabled) {
+            $hyperpayLogger->log($data);
+        }
+
         $decodedData = $this->_helper->getCurlReqData($url, $data);
+
+        if ($loggerEnabled) {
+            $hyperpayLogger->log(json_encode($decodedData));
+        }
 
         if (!isset($decodedData['id'])) {
             $this->_helper->doError(__('Request id is not found'));

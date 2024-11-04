@@ -25,6 +25,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     const RISK_CHANNEL_ID = 'riskChannelId';
     const ACCESS_TOKEN = 'auth';
     const WEBHOOK_KEY = 'webhook_key';
+    const HYPERPAY_LOGGER = 'logger';
     /**
      *
      * @var string
@@ -200,6 +201,18 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     {
         return $this->getConfigData(self::WEBHOOK_KEY);
     }
+
+    /**
+     * Retrieve Hyperpay Logger if enabled
+     *
+     * @return bool|null
+     */
+    public function getHyperpayLoggerState()
+    {
+        return $this->getConfigData(self::HYPERPAY_LOGGER);
+    }
+
+
     /**
      * Retrieve Access token from configuration
      *
