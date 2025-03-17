@@ -176,6 +176,7 @@ class Request extends \Magento\Framework\App\Action\Action
             "&paymentType=" . $paymentType .
             "&customer.email=" . $email .
             "&customParameters[plugin]=magento" .
+            "&integrity=true" .
             "&shipping.customer.email=" . $email;
         $accesstoken = $this->_adapter->getAccessToken();
         $auth = array('Authorization' => 'Bearer ' . $accesstoken);
@@ -208,18 +209,24 @@ class Request extends \Magento\Framework\App\Action\Action
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";
         }
 
-//        if ($this->checkIfExist($order, $entityId, $accesstoken, $orderId, $baseUrl)) {
-//            $count = $this->_checkoutSession->getNumerOfTries();
-//            $orderId .= "_$count";
-//            $count = $count++;
-//            $this->_checkoutSession->setNumerOfTries($count);
-//        }
+
         $data .= "&merchantTransactionId=" . $orderId;
         $decodedData = $this->_helper->getCurlReqData($url, $data);
 
         if (!isset($decodedData['id'])) {
             $this->_helper->doError(__('Request id is not found'));
         }
+
+        if (!isset($decodedData['integrity'])) {
+            $this->_helper->doError(__('Integrity index not found'));
+        }
+
+        $integrity = $decodedData['integrity'];
+        $nonceId = md5($integrity . $decodedData['id']);
+
+        $this->_coreRegistry->register('integrity', $integrity);
+        $this->_coreRegistry->register('nonceId', $nonceId);
+
         return $this->_adapter->getUrl() . "paymentWidgets.js?checkoutId=" . $decodedData['id'];
 
 

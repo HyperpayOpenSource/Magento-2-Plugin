@@ -1,6 +1,34 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Existing preference -->
     <preference for="Hyperpay\Extension\Api\HookInterface"
                 type="Hyperpay\Extension\Model\Hook" />
+
+    <!-- Add CSP policy modification -->
+    <type name="Magento\Csp\Model\PolicyCollector">
+        <arguments>
+            <argument name="policies" xsi:type="array">
+                <!-- Allow scripts from 'self' and specific external URLs -->
+                <item name="script-src" xsi:type="array">
+                    <item name="value" xsi:type="string">'self' https://p11.techlab-cdn.com https://eu-test.oppwa.com</item>
+                </item>
+
+                <!-- Allow worker scripts from 'blob:' and specific external URLs -->
+                <item name="worker-src" xsi:type="array">
+                    <item name="value" xsi:type="string">'self' blob: https://eu-test.oppwa.com</item>
+                </item>
+
+                <!-- Allow network connections to specific external URLs -->
+                <item name="connect-src" xsi:type="array">
+                    <item name="value" xsi:type="string">'self' https://p11.techlab-cdn.com https://eu-test.oppwa.com</item>
+                </item>
+
+                <!-- Allow loading of specific scripts from p11.techlab-cdn.com -->
+                <item name="script-src-elem" xsi:type="array">
+                    <item name="value" xsi:type="string">'self' https://p11.techlab-cdn.com</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
 </config>

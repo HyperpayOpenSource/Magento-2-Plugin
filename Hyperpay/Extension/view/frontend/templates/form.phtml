@@ -41,11 +41,13 @@
     src="https://code.jquery.com/jquery-3.3.1.min.js"
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
     crossorigin="anonymous"></script>
-<script src="<?php echo $block->getFormUrl(); ?>"></script>
+<script src="<?php echo $block->getFormUrl(); ?>" integrity="<?php echo $block->getIntegrity(); ?>"
+        crossorigin="anonymous"></script>
 <form action="<?php echo $block->getShopperUrl(); ?>" class="paymentWidgets"
       data-brands="<?php echo $block->getPaymentBrand(); ?>"></form>
 
 <script>
+    addCSPMetaTag()
     /*global define */
     jq331 = jQuery.noConflict(true);
 
@@ -66,13 +68,140 @@
             jq331('[name="form_key"]').remove();
 
         },
-        applePay : {
-            merchantCapabilities:["supports3DS"],
-            supportedNetworks: ["amex", "masterCard", "visa", "mada","jcb"]
+        applePay: {
+            merchantCapabilities: ["supports3DS"],
+            supportedNetworks: ["amex", "masterCard", "visa", "mada", "jcb"]
         },
         browser: {
-           threeDChallengeWindow: 5
-       }
+            threeDChallengeWindow: 5
+        }
+    }
+
+
+    // Function to determine the domain (prod or test)
+    function getDomain() {
+        const mode = "<?php echo $block->getMode(); ?>";
+        return mode === 'live' ? 'eu-prod.oppwa.com' : 'eu-test.oppwa.com';
+    }
+
+    // Function to generate a nonce
+    function generateNonce() {
+        return "<?php echo $block->getNonceId(); ?>";
+    }
+
+    // Function to add the CSP meta tag to the header
+    function addCSPMetaTag() {
+        const domain = getDomain(); // Get the domain (prod or test)
+        const nonce = generateNonce(); // Generate a nonce
+
+        // Create the CSP content
+        const cspContent = `
+         style-src 'self' https://${domain} 'unsafe-inline';
+        frame-src 'self'
+            https://${domain}
+            https://mtf.gateway.mastercard.com
+            https://*.iovation.com
+            https://*.klarnacdn.net
+            https://*.paypal.com
+            https://*.affirm.com
+            https://*.payments-amazon.com
+            https://*.oney.io
+            https://*.afterpay.com
+            https://src.mastercard.com
+            https://d.ratepay.com
+            https://d3rpjm0wf8u2co.cloudfront.net
+            https://d35p4vvdul393k.cloudfront.net
+            https://d16i99j5zwwv51.cloudfront.net
+            https://checkout-sdk.sezzle.com
+            https://yookassa.ru
+            https://pay.google.com
+            https://applepay.cdn-apple.com
+            https://cdn10.ebuckler.com
+            https://stats.ebuckler.com
+            https://*.masterpass.com;
+        script-src 'self'
+            https://${domain}
+            https://*.iovation.com
+            https://*.klarnacdn.net
+            https://*.paypal.com
+            https://*.affirm.com
+            https://*.payments-amazon.com
+            https://*.oney.io
+            https://*.afterpay.com
+            https://src.mastercard.com
+            https://d.ratepay.com
+            https://d3rpjm0wf8u2co.cloudfront.net
+            https://d35p4vvdul393k.cloudfront.net
+            https://d16i99j5zwwv51.cloudfront.net
+            https://checkout-sdk.sezzle.com
+            https://yookassa.ru
+            https://pay.google.com
+            https://applepay.cdn-apple.com
+            https://cdn10.ebuckler.com
+            https://stats.ebuckler.com
+            https://*.masterpass.com
+            'nonce-${nonce}'
+            'unsafe-eval';
+        connect-src 'self'
+            https://${domain}
+            https://p11.techlab-cdn.com
+            https://*.iovation.com
+            https://*.klarnacdn.net
+            https://*.paypal.com
+            https://*.affirm.com
+            https://*.payments-amazon.com
+            https://*.oney.io
+            https://*.afterpay.com
+            https://src.mastercard.com
+            https://d.ratepay.com
+            https://d3rpjm0wf8u2co.cloudfront.net
+            https://d35p4vvdul393k.cloudfront.net
+            https://d16i99j5zwwv51.cloudfront.net
+            https://checkout-sdk.sezzle.com
+            https://yookassa.ru
+            https://pay.google.com
+            https://applepay.cdn-apple.com
+            https://cdn10.ebuckler.com
+            https://stats.ebuckler.com
+            https://*.masterpass.com;
+        img-src 'self'
+            data:
+            https://${domain}
+            https://*.iovation.com
+            https://*.klarnacdn.net
+            https://*.paypal.com
+            https://*.affirm.com
+            https://*.payments-amazon.com
+            https://*.oney.io
+            https://*.afterpay.com
+            https://src.mastercard.com
+            https://d.ratepay.com
+            https://d3rpjm0wf8u2co.cloudfront.net
+            https://d35p4vvdul393k.cloudfront.net
+            https://d16i99j5zwwv51.cloudfront.net
+            https://checkout-sdk.sezzle.com
+            https://yookassa.ru
+            https://pay.google.com
+            https://applepay.cdn-apple.com
+            https://cdn10.ebuckler.com
+            https://stats.ebuckler.com
+            https://*.masterpass.com;
+        worker-src 'self'
+            blob:
+            https://${domain}
+            https://eu-test.oppwa.com
+            https://eu-prod.oppwa.com;
+    `.replace(/\s+/g, ' ').trim(); // Remove extra spaces and newlines
+
+        // Create the meta tag
+        const metaTag = document.createElement('meta');
+        metaTag.httpEquiv = 'Content-Security-Policy';
+        metaTag.content = cspContent;
+
+        // Add the meta tag to the head
+        // document.head.appendChild(metaTag);
+        document.head.insertBefore(metaTag, document.head.firstChild);
+
     }
 </script>
 
@@ -82,7 +211,7 @@
             display: none;
         }
     </style>
-    <script>
+    <script nonce="<?php echo $block->getNonceId(); ?>">
         wpwlOptions = {
             ...wpwlOptions,
             paymentTarget: "_top",
