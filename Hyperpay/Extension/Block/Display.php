@@ -104,4 +104,15 @@ class Display extends \Magento\Framework\View\Element\Template
     {
         return $this->_adapter->getCss();
     }
+
+    /**
+     * Whether the current order was placed with a card method that should block MADA.
+     * Delegates to Helper\Data::shouldBlockMada().
+     *
+     * @return bool
+     */
+    public function shouldBlockMada(): bool
+    {
+        return $this->_helper->shouldBlockMada();
+    }
 }

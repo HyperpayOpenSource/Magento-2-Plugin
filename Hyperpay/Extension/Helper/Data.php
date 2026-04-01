@@ -126,7 +126,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $paymentMethod = '';
             switch ($code) {
                 case 'HyperPay_Visa':
-                    $paymentMethod = 'VISA';
+                    $paymentMethod = 'VISA MADA';
                     break;
                 case 'HyperPay_CreditCard':
                     $creditCardOptions  = $this->_adapter->getConfigDataForSpecificMethod($code,'creditCardOptions');
@@ -142,10 +142,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $paymentMethod = 'PAYPAL';
                     break;
                 case 'HyperPay_Master':
-                    $paymentMethod = 'MASTER';
+                    $paymentMethod = 'MASTER MADA';
                     break;
                 case 'HyperPay_Amex':
-                    $paymentMethod = 'AMEX';
+                    $paymentMethod = 'AMEX MADA';
                     break;
                 case 'HyperPay_ApplePay':
                     $paymentMethod = 'APPLEPAY';
@@ -157,10 +157,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                     $paymentMethod = 'STC_PAY';
                     break;
                 case 'HyperPay_Jcb':
-                    $paymentMethod = 'JCB';
+                    $paymentMethod = 'JCB MADA';
                     break;
                 case 'HyperPay_Click_to_pay':
-                    $paymentMethod = 'CLICK_TO_PAY VISA MASTER';
+                    $paymentMethod = 'CLICK_TO_PAY VISA MASTER MADA';
                     break;
             }
 
@@ -182,6 +182,44 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function doError($string)
     {
         throw new \Exception($string);
+    }
+
+    /**
+     * Check whether the current order was placed with a card-based HyperPay method
+     * (Visa, Master, Amex, JCB) so the MADA-blocking widget options can be injected.
+     *
+     * @return bool
+     */
+    public function shouldBlockMada(): bool
+    {
+        try {
+            $orderId = $this->_checkoutSession->getLastRealOrderId();
+
+            if (!$orderId) {
+                return false;
+            }
+
+            $order = $this->_checkoutSession->getLastRealOrder();
+
+            $payment = $order->getPayment();
+            if (!$payment) {
+                return false;
+            }
+
+            $code = $payment->getData('method');
+
+            $cardMethods = [
+                'HyperPay_Visa',
+                'HyperPay_Master',
+                'HyperPay_Amex',
+                'HyperPay_Jcb',
+            ];
+
+            return in_array($code, $cardMethods, true);
+        } catch (\Exception $e) {
+            $this->_logger->error('[HyperPay][shouldBlockMada] Exception: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
