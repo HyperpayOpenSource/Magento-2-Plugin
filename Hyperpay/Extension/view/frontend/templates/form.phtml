@@ -50,12 +50,22 @@
     jq331 = jQuery.noConflict(true);
 
     function displayName(element) {
+        var $wrapper = jq331(element);
         jq331('.wpwl-brand-card').each(function () {
-            jq331(element).append(this);
+            $wrapper.append(this);
         });
+        // Measure control's actual pixel offset and fix the brand logo at that position.
+        // Using a fixed 'top' pixel value means the logo won't move when the error
+        // hint grows the wrapper height later.
+        var $control = $wrapper.find('.wpwl-control-cardNumber');
+        var $brand   = $wrapper.find('.wpwl-brand-card');
+        if ($control.length && $brand.length) {
+            var top = $control.position().top + ($control.outerHeight() - $brand.outerHeight()) / 2;
+            $brand.css('top', Math.max(0, top) + 'px');
+        }
     }
 
-    let wpwlOptions = {
+    var wpwlOptions = {
         locale: "<?php echo $block->getLang();?>",
         paymentTarget: "_top",
         style: "<?php echo $block->getStyle();?>",
@@ -75,6 +85,111 @@
        }
     }
 </script>
+
+<style>
+    /* ── Brand logo pinned inside the card-number field ── */
+    /* 'top' is set to a fixed pixel value by JS (displayName) so the logo
+       stays centred in the input even when the error hint grows the wrapper */
+    .wpwl-wrapper-cardNumber {
+        position: relative;
+    }
+
+    .wpwl-wrapper-cardNumber .wpwl-brand-card {
+        position: absolute;
+        /* top is set dynamically via JS — no transform needed */
+        right: 8px;
+        left: auto;
+        margin: 0;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    /* RTL (Arabic): pin to left edge */
+    [dir="rtl"] .wpwl-wrapper-cardNumber .wpwl-brand-card {
+        right: auto;
+        left: 8px;
+    }
+</style>
+
+<?php
+    $_shouldBlockMada = $block->shouldBlockMada();
+?>
+
+<?php if ($_shouldBlockMada): ?>
+    <script>
+        (function () {
+            var _madaBlocked = false;
+            var _observer    = null;
+
+            var MADA_MSG = '<?php echo __('MADA card is not allowed here. Please select the MADA option from the payment methods list.') ?>';
+
+            function applyBlock($form) {
+                if (!$form || !$form.length) return;
+                if (!$form.find('.wpwl-hint-cardNumberError').length) {
+                    $form.find('.wpwl-control-cardNumber')
+                        .removeClass('wpwl-has-error')
+                        .addClass('wpwl-has-error')
+                        .after('<div class="wpwl-hint wpwl-hint-cardNumberError">' + MADA_MSG + '</div>');
+                }
+                $form.find('.wpwl-button-pay').prop('disabled', true);
+            }
+
+            function clearBlock($form) {
+                if (!$form || !$form.length) return;
+                $form.find('.wpwl-hint-cardNumberError').remove();
+                $form.find('.wpwl-control-cardNumber').removeClass('wpwl-has-error');
+                $form.find('.wpwl-button-pay').prop('disabled', false);
+            }
+
+            var _origOnReady = wpwlOptions.onReady;
+            wpwlOptions.onReady = function (paymentForms) {
+                jq331('.wpwl-group.wpwl-group-brand').hide();
+
+                var formEl = document.querySelector('.wpwl-form');
+                if (formEl && !_observer) {
+                    _observer = new MutationObserver(function () {
+                        if (_madaBlocked) {
+                            applyBlock(jq331(formEl));
+                        }
+                    });
+                    _observer.observe(formEl, { childList: true, subtree: true });
+                }
+
+                if (typeof _origOnReady === 'function') {
+                    _origOnReady.call(this, paymentForms);
+                }
+            };
+
+            // onDetectBrand fires on every keystroke as a brand is recognised
+            wpwlOptions.onDetectBrand = function (brands, activeBrand) {
+                var hasMada = (activeBrand && activeBrand.toUpperCase() === 'MADA');
+                if (!hasMada && brands && brands.length) {
+                    for (var i = 0; i < brands.length; i++) {
+                        if ((brands[i] || '').toUpperCase() === 'MADA') { hasMada = true; break; }
+                    }
+                }
+
+                _madaBlocked = hasMada;
+                var $form = jq331('.wpwl-form:visible').first();
+
+                if (hasMada) {
+                    applyBlock($form);
+                } else {
+                    clearBlock($form);
+                }
+            };
+
+            // Final guard: prevent form submission if MADA was entered
+            wpwlOptions.onBeforeSubmitCard = function (event) {
+                if (_madaBlocked) {
+                    event.preventDefault();
+                    applyBlock(jq331('.wpwl-form:visible').first());
+                    return false;
+                }
+            };
+        }());
+    </script>
+<?php endif; ?>
 
 <?php if ($block->getPaymentBrand() === 'CLICK_TO_PAY VISA MASTER') { ?>
     <style>
