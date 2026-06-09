@@ -162,6 +162,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'HyperPay_Click_to_pay':
                     $paymentMethod = 'CLICK_TO_PAY VISA MASTER MADA';
                     break;
+                case 'HyperPay_GooglePay':
+                    $paymentMethod = 'GOOGLEPAY';
+                    break;
+                case 'HyperPay_SamsungPay':
+                    $paymentMethod = 'SAMSUNGPAY';
+                    break;
+                case 'HyperPay_Valu':
+                    $paymentMethod = 'VALU';
+                    break;
             }
 
             return $paymentMethod;
@@ -219,6 +228,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } catch (\Exception $e) {
             $this->_logger->error('[HyperPay][shouldBlockMada] Exception: ' . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Retrieve the last real order from the checkout session, or null if not found.
+     *
+     * @return \Magento\Sales\Model\Order|null
+     */
+    public function getCurrentOrder()
+    {
+        try {
+            if (!$this->_checkoutSession->getLastRealOrderId()) {
+                return null;
+            }
+            return $this->_checkoutSession->getLastRealOrder();
+        } catch (\Exception $e) {
+            return null;
         }
     }
 
@@ -526,6 +552,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 break;
             case 'HyperPay_Click_to_pay':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/click_to_pay.png");
+                break;
+            case 'HyperPay_GooglePay':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/googlepay.svg");
+                break;
+            case 'HyperPay_SamsungPay':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/samsungpay.svg");
+                break;
+            case 'HyperPay_Valu':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/valu.svg");
                 break;
 
 

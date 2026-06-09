@@ -25,6 +25,7 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     const RISK_CHANNEL_ID = 'riskChannelId';
     const ACCESS_TOKEN = 'auth';
     const WEBHOOK_KEY = 'webhook_key';
+    const GOOGLE_MERCHANT_ID = 'google_merchant_id';
     /**
      *
      * @var string
@@ -280,6 +281,16 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     {
         return $this->getConfigDataForSpecificMethod($method, self::ENTITY_ID);
 
+    }
+    /**
+     * Retrieve the Google Merchant ID from configuration (used in wpwlOptions.googlePay.merchantId)
+     *
+     * @param  string $method
+     * @return string
+     */
+    public function getGoogleMerchantId($method)
+    {
+        return (string) $this->getConfigDataForSpecificMethod($method, self::GOOGLE_MERCHANT_ID);
     }
     /**
      * Retrieve the payment type depending on method code from configuration

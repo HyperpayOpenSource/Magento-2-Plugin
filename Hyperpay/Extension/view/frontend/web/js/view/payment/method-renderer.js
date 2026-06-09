@@ -61,6 +61,18 @@ define(
                 type: 'HyperPay_CreditCard',
                 component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
             },
+            {
+                type: 'HyperPay_GooglePay',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
+            },
+            {
+                type: 'HyperPay_SamsungPay',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
+            },
+            {
+                type: 'HyperPay_Valu',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
+            },
         );
         return Component.extend({});
     }
