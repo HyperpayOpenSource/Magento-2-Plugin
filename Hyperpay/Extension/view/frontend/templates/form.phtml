@@ -122,6 +122,7 @@
             var _observer    = null;
 
             var MADA_MSG = '<?php echo __('MADA card is not allowed here. Please select the MADA option from the payment methods list.') ?>';
+            
 
             function applyBlock($form) {
                 if (!$form || !$form.length) return;
@@ -245,6 +246,25 @@
         }
     </script>
 <?php } ?>
+
+<?php if ($block->getPaymentBrand() === 'GOOGLEPAY'): ?>
+    <script>
+        (function () {
+            var googlePayOptions = {
+                gatewayMerchantId: '<?php echo $block->escapeJs($block->getEntityId()); ?>',
+                allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                allowedCardNetworks: ['AMEX', 'DISCOVER', 'JCB', 'MASTERCARD', 'VISA'],
+                buttonColor: 'default',
+                checkoutOption: 'COMPLETE_IMMEDIATE_PURCHASE'
+            };
+            <?php $googleMerchantId = $block->getGoogleMerchantId(); ?>
+            <?php if (!empty($googleMerchantId)): ?>
+            googlePayOptions.merchantId = '<?php echo $block->escapeJs($googleMerchantId); ?>';
+            <?php endif; ?>
+            wpwlOptions = Object.assign({}, wpwlOptions, { googlePay: googlePayOptions });
+        }());
+    </script>
+<?php endif; ?>
 
 <?php if ($block->getPaymentBrand() === 'APPLEPAY' || $block->getPaymentBrand() === 'APPLEPAYTKN') { ?>
     <h1><?php echo __('Please note,ApplePay only works on IOS and Safari browsers') ?></h1>

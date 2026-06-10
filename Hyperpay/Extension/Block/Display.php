@@ -115,4 +115,44 @@ class Display extends \Magento\Framework\View\Element\Template
     {
         return $this->_helper->shouldBlockMada();
     }
+
+    /**
+     * Retrieve the Google Merchant ID for the current order's payment method.
+     * Used in wpwlOptions.googlePay.merchantId (live environment only).
+     *
+     * @return string
+     */
+    public function getGoogleMerchantId(): string
+    {
+        try {
+            $order = $this->_helper->getCurrentOrder();
+            if (!$order) {
+                return '';
+            }
+            $method = $order->getPayment()->getData('method');
+            return $this->_adapter->getGoogleMerchantId($method);
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * Retrieve the HyperPay entity ID for the current order's payment method.
+     * Used in wpwlOptions.googlePay.gatewayMerchantId.
+     *
+     * @return string
+     */
+    public function getEntityId(): string
+    {
+        try {
+            $order = $this->_helper->getCurrentOrder();
+            if (!$order) {
+                return '';
+            }
+            $method = $order->getPayment()->getData('method');
+            return $this->_adapter->getEntity($method);
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
 }

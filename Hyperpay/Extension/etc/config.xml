@@ -144,6 +144,28 @@
                 <cron_cancel>0</cron_cancel>
                 <sort_order>2</sort_order>
             </HyperPay_Click_to_pay>
+            <HyperPay_GooglePay>
+                <title>Google Pay</title>
+                <model>Hyperpay\Extension\Model\Method\GooglePay</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>10</sort_order>
+            </HyperPay_GooglePay>
+<HyperPay_Valu>
+                <title>ValU</title>
+                <model>Hyperpay\Extension\Model\Method\Valu</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>12</sort_order>
+            </HyperPay_Valu>
         </payment>
     </default>
 </config>
