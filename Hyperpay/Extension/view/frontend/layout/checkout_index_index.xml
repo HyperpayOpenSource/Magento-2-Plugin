@@ -97,12 +97,6 @@
                                                                                   xsi:type="boolean">true
                                                                             </item>
                                                                         </item>
-                                                                        <item name="HyperPay_SamsungPay"
-                                                                              xsi:type="array">
-                                                                            <item name="isBillingAddressRequired"
-                                                                                  xsi:type="boolean">true
-                                                                            </item>
-                                                                        </item>
                                                                         <item name="HyperPay_Valu"
                                                                               xsi:type="array">
                                                                             <item name="isBillingAddressRequired"

@@ -165,9 +165,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'HyperPay_GooglePay':
                     $paymentMethod = 'GOOGLEPAY';
                     break;
-                case 'HyperPay_SamsungPay':
-                    $paymentMethod = 'SAMSUNGPAY';
-                    break;
                 case 'HyperPay_Valu':
                     $paymentMethod = 'VALU';
                     break;
@@ -555,9 +552,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 break;
             case 'HyperPay_GooglePay':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/googlepay.svg");
-                break;
-            case 'HyperPay_SamsungPay':
-                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/samsungpay.svg");
                 break;
             case 'HyperPay_Valu':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/valu.svg");

@@ -155,18 +155,7 @@
                 <cron_cancel>0</cron_cancel>
                 <sort_order>10</sort_order>
             </HyperPay_GooglePay>
-            <HyperPay_SamsungPay>
-                <title>Samsung Pay</title>
-                <model>Hyperpay\Extension\Model\Method\SamsungPay</model>
-                <active>0</active>
-                <payment_action>DB</payment_action>
-                <currencycode>SAR</currencycode>
-                <entityId>Enter your Entity Id</entityId>
-                <connector>migs</connector>
-                <cron_cancel>0</cron_cancel>
-                <sort_order>11</sort_order>
-            </HyperPay_SamsungPay>
-            <HyperPay_Valu>
+<HyperPay_Valu>
                 <title>ValU</title>
                 <model>Hyperpay\Extension\Model\Method\Valu</model>
                 <active>0</active>
