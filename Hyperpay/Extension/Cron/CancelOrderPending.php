@@ -86,7 +86,6 @@ class CancelOrderPending
             'HyperPay_Jcb',
             'HyperPay_Click_to_pay',
             'HyperPay_GooglePay',
-            'HyperPay_SamsungPay',
             'HyperPay_Valu'
         ];
         $activeMethods = [];

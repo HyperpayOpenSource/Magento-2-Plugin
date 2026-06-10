@@ -34,7 +34,6 @@ class MainConfigProvider implements ConfigProviderInterface
         'HyperPay_Click_to_pay',
         'HyperPay_CreditCard',
         'HyperPay_GooglePay',
-        'HyperPay_SamsungPay',
         'HyperPay_Valu'
     ];
     /**
