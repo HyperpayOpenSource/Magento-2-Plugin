@@ -168,6 +168,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'HyperPay_Valu':
                     $paymentMethod = 'VALU';
                     break;
+                case 'HyperPay_Jaywan':
+                    $paymentMethod = 'JAYWAN';
+                    break;
             }
 
             return $paymentMethod;
@@ -555,6 +558,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 break;
             case 'HyperPay_Valu':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/valu.svg");
+                break;
+            case 'HyperPay_Jaywan':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/jaywan.svg");
                 break;
 
 
