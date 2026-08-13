@@ -203,6 +203,10 @@ class Request extends \Magento\Framework\App\Action\Action
         if($method == 'HyperPay_Click_to_pay'){
             $data .= '&customParameters[3DS2_enrolled]=true';
         }
+        if($method == 'HyperPay_Aani'){
+            $mobile = $order->getBillingAddress()->getTelephone();
+            $data .= "&customer.mobile=". $mobile;
+        }
 
         if ($this->_adapter->getEnv() && $method == 'HyperPay_ApplePay') {
             $data .= "&customParameters[3Dsimulator.forceEnrolled]=true";

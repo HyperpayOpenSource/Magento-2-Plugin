@@ -177,6 +177,17 @@
                 <cron_cancel>0</cron_cancel>
                 <sort_order>12</sort_order>
             </HyperPay_Jaywan>
+            <HyperPay_Aani>
+                <title>AANI</title>
+                <model>Hyperpay\Extension\Model\Method\Aani</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>AED</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <connector>migs</connector>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>12</sort_order>
+            </HyperPay_Aani>
         </payment>
     </default>
 </config>
