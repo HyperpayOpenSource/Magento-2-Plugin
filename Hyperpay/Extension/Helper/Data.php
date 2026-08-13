@@ -168,8 +168,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'HyperPay_Valu':
                     $paymentMethod = 'VALU';
                     break;
+                case 'HyperPay_Aani':
+                   $paymentMethod = 'AANI';
+                   break;
             }
-
             return $paymentMethod;
         } catch (\Exception $e) {
             $this->_messageManager->addError($e->getMessage());
@@ -556,6 +558,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             case 'HyperPay_Valu':
                 $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/valu.svg");
                 break;
+            case 'HyperPay_Aani':
+               $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/aani.svg");
+               break;
 
 
         }
