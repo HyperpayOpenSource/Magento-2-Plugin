@@ -102,6 +102,17 @@
                                                                             <item name="isBillingAddressRequired"
                                                                                   xsi:type="boolean">true
                                                                             </item>
+                                                                        </item><item name="HyperPay_Jaywan"
+                                                                              xsi:type="array">
+                                                                            <item name="isBillingAddressRequired"
+                                                                                  xsi:type="boolean">true
+                                                                            </item>
+                                                                        </item>
+                                                                        <item name="HyperPay_Aani"
+                                                                              xsi:type="array">
+                                                                            <item name="isBillingAddressRequired"
+                                                                                  xsi:type="boolean">true
+                                                                            </item>
                                                                         </item>
                                                                     </item>
                                                                 </item>

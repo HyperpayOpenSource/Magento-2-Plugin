@@ -34,7 +34,10 @@ class MainConfigProvider implements ConfigProviderInterface
         'HyperPay_Click_to_pay',
         'HyperPay_CreditCard',
         'HyperPay_GooglePay',
-        'HyperPay_Valu'
+        'HyperPay_Valu',
+        'HyperPay_Jaywan',
+        'HyperPay_Aani'
+
     ];
     /**
      * @var PaymentHelper
