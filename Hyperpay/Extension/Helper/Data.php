@@ -174,6 +174,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 case 'HyperPay_Aani':
                    $paymentMethod = 'AANI';
                    break;
+                case 'HyperPay_Tabby':
+                    $paymentMethod = 'TABBY';
+                    break;
+                case 'HyperPay_CliQ':
+                    $paymentMethod = 'CLIQ';
+                    break;
             }
             return $paymentMethod;
         } catch (\Exception $e) {
@@ -498,6 +504,69 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $decodedData;
     }
 
+    /**
+     * Post a flat parameter array as-is (literal keys such as cart.items[0].name)
+     * and retrieve decoded data
+     *
+     * @param  string $url
+     * @param  array  $params
+     * @param  int    $timeout
+     * @return array
+     */
+    public function postForm($url, array $params, $timeout = 60)
+    {
+        $this->setTimeouts($timeout);
+        $this->_curlClient->post($url, $params);
+
+        return $this->decodeResponse($this->_curlClient->getBody());
+    }
+
+    /**
+     * Send a GET request and retrieve decoded data
+     *
+     * @param  string $url
+     * @param  int    $timeout
+     * @return array
+     */
+    public function getJson($url, $timeout = 60)
+    {
+        $this->setTimeouts($timeout);
+        $this->_curlClient->get($url);
+
+        return $this->decodeResponse($this->_curlClient->getBody());
+    }
+
+    /**
+     * Set explicit connect and total timeouts on the curl client
+     *
+     * @param int $timeout
+     */
+    private function setTimeouts($timeout)
+    {
+        $this->_curlClient->setOption(CURLOPT_RETURNTRANSFER, true);
+        $this->_curlClient->setOption(CURLOPT_CONNECTTIMEOUT, min(10, (int)$timeout));
+        $this->_curlClient->setTimeout((int)$timeout);
+    }
+
+    /**
+     * Decode a JSON response body
+     *
+     * @param  string $body
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function decodeResponse($body)
+    {
+        $decoded = json_decode((string)$body, true);
+        if (!is_array($decoded)) {
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __('Failed to get response from the payment gateway')
+            );
+        }
+
+        return $decoded;
+    }
+
     public function getPaymentMarkImageUrlFromMultipleBrands($code)
     {
         $paymentImage = null;
@@ -567,6 +636,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             case 'HyperPay_Aani':
                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/aani.svg");
                break;
+            case 'HyperPay_Tabby':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/tabby.svg");
+                break;
+            case 'HyperPay_CliQ':
+                $paymentImage = $this->_assetRepo->getUrl("Hyperpay_Extension::images/cliq.svg");
+                break;
 
 
         }

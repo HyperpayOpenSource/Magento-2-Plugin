@@ -87,7 +87,9 @@ class CancelOrderPending
             'HyperPay_GooglePay',
             'HyperPay_Valu',
          'HyperPay_Jaywan',
-            'HyperPay_Aani'
+            'HyperPay_Aani',
+            'HyperPay_Tabby',
+            'HyperPay_CliQ'
         ];
         $activeMethods = [];
         foreach ($methods as $method) {
@@ -122,6 +124,13 @@ class CancelOrderPending
                     $accesstoken = $this->_adapter->getAccessToken();
                     $entityId = $this->_adapter->getEntity($method);
                     $orderId = $order->getIncrementId();
+                    $isServerToServer = $this->_adapter->isServerToServer($method);
+                    if ($isServerToServer) {
+                        $orderId = $payment->getAdditionalInformation(\Hyperpay\Extension\Model\Adapter::MERCHANT_TX_ID);
+                        if (empty($orderId)) {
+                            continue;
+                        }
+                    }
                     $url = $baseUrl . "query";
                     $url .= "?entityId=" . $entityId;
                     $url .= "&merchantTransactionId=" . $orderId;
@@ -132,6 +141,8 @@ class CancelOrderPending
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
                     $responseData = curl_exec($ch);
                     if (curl_errno($ch)) {
                         continue;
@@ -148,6 +159,7 @@ class CancelOrderPending
                     } else {
                         $orderTime = new \DateTime($order->getCreatedAt());
                         $status = false;
+                        $pending = false;
                         foreach ($decodedData['payments'] as $payment) {
                             $paymentTime = new \DateTime($payment['timestamp']);
                             $interval = date_diff($paymentTime, $orderTime);
@@ -162,8 +174,13 @@ class CancelOrderPending
                                     $this->_adapter->createInvoice($order);
                                     $status = true;
                                     $this->_adapter->setInfo($order, $payment['id']);
+                                } elseif ($isServerToServer && $this->_adapter->isPending($payment['result']['code'])) {
+                                    $pending = true;
                                 }
                             }
+                        }
+                        if ($pending && !$status) {
+                            continue;
                         }
                         if (!$status) {
                             $order->addStatusHistoryComment('Order has been canceled automatically, ', \Magento\Sales\Model\Order::STATE_CANCELED);

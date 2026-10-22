@@ -76,6 +76,14 @@ define(
             {
                 type: 'HyperPay_Aani',
                 component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
+            },
+            {
+                type: 'HyperPay_Tabby',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
+            },
+            {
+                type: 'HyperPay_CliQ',
+                component: 'Hyperpay_Extension/js/view/payment/method-renderer/DefaultPaymentMethods'
             }
         );
         return Component.extend({});

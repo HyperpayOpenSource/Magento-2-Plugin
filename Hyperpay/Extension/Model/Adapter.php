@@ -26,6 +26,9 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
     const ACCESS_TOKEN = 'auth';
     const WEBHOOK_KEY = 'webhook_key';
     const GOOGLE_MERCHANT_ID = 'google_merchant_id';
+    const S2S_METHODS = ['HyperPay_Tabby', 'HyperPay_CliQ'];
+    const PENDING_CODE_PATTERN = '/^(000\.200|800\.400\.5|100\.400\.500)/';
+    const MERCHANT_TX_ID = 'hp_merchant_tx_id';
     /**
      *
      * @var string
@@ -258,6 +261,63 @@ class Adapter extends \Magento\Framework\Model\AbstractModel
         {
             return $this->getConfigData(self::TEST_URL);
         }
+    }
+    /**
+     * Retrieve scheme and host of the configured gateway url
+     *
+     * @return string
+     */
+    public function getHostUrl()
+    {
+        $parts = parse_url((string)$this->getUrl());
+        $host = $parts['scheme'] . '://' . $parts['host'];
+        if (isset($parts['port'])) {
+            $host .= ':' . $parts['port'];
+        }
+
+        return $host;
+    }
+    /**
+     * Check whether the payment method uses the server-to-server flow
+     *
+     * @param  string $method
+     * @return bool
+     */
+    public function isServerToServer($method)
+    {
+        return in_array($method, self::S2S_METHODS, true);
+    }
+    /**
+     * Check whether the result code means the payment is awaiting confirmation
+     *
+     * @param  string $code
+     * @return bool
+     */
+    public function isPending($code)
+    {
+        return (bool)preg_match(self::PENDING_CODE_PATTERN, (string)$code);
+    }
+    /**
+     * Strip the per-attempt suffix (I + 6 digits) from a merchant transaction id
+     *
+     * @param  string $merchantTransactionId
+     * @return string
+     */
+    public function resolveIncrementId($merchantTransactionId)
+    {
+        return preg_replace('/I\d{6}$/', '', (string)$merchantTransactionId);
+    }
+    /**
+     * Keep the order open while the gateway confirms the payment
+     *
+     * @param $order
+     * @param string $message
+     */
+    public function setPending($order, $message)
+    {
+        $order->setState(OrderStatus::STATE_PENDING_PAYMENT)->setStatus(OrderStatus::STATE_PENDING_PAYMENT);
+        $order->addStatusHistoryComment($message, false);
+        $order->save();
     }
     /**
      * Retrieve the Connector from configuration

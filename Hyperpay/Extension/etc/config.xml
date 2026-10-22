@@ -188,6 +188,26 @@
                 <cron_cancel>0</cron_cancel>
                 <sort_order>12</sort_order>
             </HyperPay_Aani>
+            <HyperPay_Tabby>
+                <title>Tabby</title>
+                <model>Hyperpay\Extension\Model\Method\Tabby</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>SAR</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>13</sort_order>
+            </HyperPay_Tabby>
+            <HyperPay_CliQ>
+                <title>CliQ</title>
+                <model>Hyperpay\Extension\Model\Method\CliQ</model>
+                <active>0</active>
+                <payment_action>DB</payment_action>
+                <currencycode>JOD</currencycode>
+                <entityId>Enter your Entity Id</entityId>
+                <cron_cancel>0</cron_cancel>
+                <sort_order>14</sort_order>
+            </HyperPay_CliQ>
         </payment>
     </default>
 </config>
