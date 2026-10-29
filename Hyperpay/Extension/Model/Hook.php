@@ -79,7 +79,7 @@ class Hook implements \Hyperpay\Extension\Api\HookInterface
                 return "ok";
             }
 
-            $order = $this->_orderFactory->create()->loadByIncrementId($result->payload->merchantTransactionId);
+            $order = $this->_orderFactory->create()->loadByIncrementId($this->_adapter->resolveIncrementId($result->payload->merchantTransactionId));
             if (!$order->getState()) {
                 throw new \Magento\Framework\Webapi\Exception(
                     __('Order Not Found'),
@@ -95,6 +95,10 @@ class Hook implements \Hyperpay\Extension\Api\HookInterface
         }
         try {
             if ($order->getState() === 'processing') {
+                return "ok";
+            }
+            if ($this->_adapter->isServerToServer($order->getPayment()->getData('method'))
+                && $this->_adapter->isPending($result->payload->result->code)) {
                 return "ok";
             }
             $this->_adapter->setInfo($order, $result->payload->id);

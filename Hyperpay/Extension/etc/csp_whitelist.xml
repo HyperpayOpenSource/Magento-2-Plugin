@@ -26,6 +26,8 @@
                 <value id="click2payiesnare" type="host">*.iesnare.com</value>
                 <value id="click2payiesnhfare" type="host">*.requirejs.org</value>
                 <value id="click2payVISA" type="host">*.visa.com</value>
+                <value id="tabby" type="host">*.tabby.ai</value>
+                <value id="hyperpay" type="host">*.hyperpay.com</value>
             </values>
         </policy>
         <policy id="style-src">

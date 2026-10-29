@@ -36,7 +36,9 @@ class MainConfigProvider implements ConfigProviderInterface
         'HyperPay_GooglePay',
         'HyperPay_Valu',
         'HyperPay_Jaywan',
-        'HyperPay_Aani'
+        'HyperPay_Aani',
+        'HyperPay_Tabby',
+        'HyperPay_CliQ'
 
     ];
     /**

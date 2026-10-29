@@ -1,0 +1,21 @@
+<?php
+/** @var \Hyperpay\Extension\Block\Redirect $block */
+$redirect = $block->getRedirect();
+if (!empty($redirect['url'])) {
+    $submitScript = 'document.getElementById("hyperpay-s2s-form").submit();';
+?>
+<p><?php echo $block->escapeHtml(__('Redirecting to the payment page...')) ?></p>
+<form id="hyperpay-s2s-form" method="<?php echo $block->escapeHtmlAttr($redirect['method']) ?>" action="<?php echo $block->escapeUrl($redirect['url']) ?>">
+    <?php foreach ($redirect['params'] as $name => $value) { ?>
+        <input type="hidden" name="<?php echo $block->escapeHtmlAttr($name) ?>" value="<?php echo $block->escapeHtmlAttr($value) ?>"/>
+    <?php } ?>
+    <button type="submit" class="action primary"><?php echo $block->escapeHtml(__('Continue to payment')) ?></button>
+</form>
+<?php if (isset($secureRenderer)) { ?>
+    <?php echo $secureRenderer->renderTag('script', [], $submitScript, false) ?>
+<?php } else { ?>
+    <script><?php echo $submitScript ?></script>
+<?php } ?>
+<?php
+}
+?>

@@ -120,8 +120,13 @@ class Request extends \Magento\Framework\App\Action\Action
             $resultRedirect->setPath('checkout/onepage/failure');
             return $resultRedirect;
         }
+        if ($this->_adapter->isServerToServer($order->getPayment()->getData('method'))) {
+            $resultRedirect = $this->resultRedirectFactory->create();
+            $resultRedirect->setPath('hyperpay/index/redirect');
+            return $resultRedirect;
+        }
         try {
-            $base = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+            $base =$this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
             $statusUrl = $base . "hyperpay/index/status/?method=" . $order->getPayment()->getData('method');
             $urlReq = $this->prepareTheCheckout($order, $statusUrl);
 
